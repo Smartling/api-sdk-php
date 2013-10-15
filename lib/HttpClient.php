@@ -7,6 +7,13 @@
  */
 class HttpClient {
     
+    const REQUEST_TYPE_GET = 'GET';
+    const REQUEST_TYPE_POST = 'POST';
+    const REQUEST_TYPE_PUT = 'PUT';
+    const REQUEST_TYPE_DELETE = 'DELETE';
+    
+    protected static $_boundary = null;
+    
     protected $_host; 
     protected $_port; 
     protected $_path;
@@ -22,7 +29,8 @@ class HttpClient {
     protected $_useGzip = false;    
     protected $_maxRedirects = 5;
     protected $_headersOnly = false;
-    protected $_file;
+    protected $_needUploadFile = false;
+    protected $_fileKey = 'file';
     
     protected $_status;
     protected $_headers = array();
@@ -34,7 +42,7 @@ class HttpClient {
     protected $_redirect_count = 0;
     
     /**
-     * 
+     *  
      * @param string $uri
      * @param int $port
      */
@@ -46,7 +54,7 @@ class HttpClient {
         $this->_port = isset($parsedUrl['port']) ? $parsedUrl['port'] : $port;
     }
     
-    /**
+    /**     
      * 
      * @param string $method
      * @return \HttpClient
@@ -85,7 +93,7 @@ class HttpClient {
         $fp = $this->_connect();
         if ($fp){
             socket_set_timeout($fp, $this->_timeout);
-            $request = $this->_buildRequest();
+            $request = $this->_buildRequest();            
             @fwrite($fp, $request);
             $this->_retrieveResponse($fp);
             fclose($fp);
@@ -99,14 +107,7 @@ class HttpClient {
         
     }
     
-    /**
-     * 
-     * @param string $data
-     */
-    public function setPostData($data){
-        $this->_postdata = $data;
-    }
-    
+        
     /**
      * 
      * @param string | array | object $data
@@ -135,11 +136,39 @@ class HttpClient {
      * @param string | array | object $data
      */
     protected function _buildQuery($data){
-        if (is_array($data) || is_object($data)){
-            $data = http_build_query($data);
-        }
-        if ($this->_method == "POST"){
-            $this->_postdata = $data;
+       if ($this->_method == self::REQUEST_TYPE_GET || $this->_method == self::REQUEST_TYPE_DELETE){
+            if (is_array($data) || is_object($data)){
+                $data = http_build_query($data);
+            }
+        }       
+        if ($this->_method == self::REQUEST_TYPE_POST){
+            $boundary = "--HTTPCLIENT" . md5(microtime()) . "--";
+            $this->setHeaders(array(
+                'Content-Type' => 'multipart/form-data; boundary="' . $boundary . '"',
+            ));            
+            
+            foreach ($data as $name => $value) {
+                if ($name == $this->_fileKey && $this->_needUploadFile == true){                    
+                    continue;
+                } 
+                $this->_postdata .= "--" . $boundary . "\r\n";
+                $this->_postdata .= "Content-Disposition: form-data; name=\"" . $name . "\"\r\n"
+                                 . "Content-Length:" . strlen($value) . "\r\n\r\n"
+                                 . $value . "\r\n";               
+            }
+            if ($this->_needUploadFile){
+                if (file_exists(realpath($data[$this->_fileKey]))){
+                    $file_contents = file_get_contents(realpath($data[$this->_fileKey]));
+                                        
+                    $this->_postdata .= "--" . $boundary . "\r\n"
+                                     . "Content-Disposition: form-data; name=\"" . $this->_fileKey
+                                     .  "\"; filename = \"" . basename($data[$this->_fileKey]) . "\"\r\n"                                         
+                                     . "Content-Length: " . strlen($file_contents) . "\r\n"
+                                     . "Content-Type: application/octet-stream\r\n\r\n"
+                                     . $file_contents . "\r\n";
+                }
+            }
+            $this->_postdata .= "--" . $boundary . "--";            
         }        
         return $data;
     }
@@ -152,15 +181,16 @@ class HttpClient {
     protected function _buildRequest(){
         $headers = array();
         $data = $this->getRequestData();
-        $query = $this->_buildQuery($data);
-        if (!empty($data) && $this->_method == 'GET'){
+        
+        $query = $this->_buildQuery($data);  
+        //$this->_postdata = $query;
+        if (!empty($data) && ($this->_method == self::REQUEST_TYPE_GET || 
+                $this->_method == self::REQUEST_TYPE_DELETE)){
             $path = $this->_path . "?" . $query;
         } else {            
             $path = $this->_path;
-        }      
+        }     
         
-        //var_dump($this->_postdata);
-        //exit();
         $headers[] = "{$this->_method} {$path} {$this->_httpVersion}"; // * Using 1.1 leads to all manner of problems, such as "chunked" encoding
         $headers[] = "Host: {$this->_host}";
         
@@ -180,31 +210,18 @@ class HttpClient {
 
         // If it is a POST, add Content-Type.
         if (!isset($this->_requestHeaders['Content-Type']) &&
-            $this->_method == 'POST') {
-            $headers[] = "Content-Type: multipart/from-data";
+            $this->_method == self::REQUEST_TYPE_POST) {
+            $headers[] = "Content-Type: multipart/form-data";
         }
         
-        /*
-        if (!isset($this->_requestHeaders['User-Agent']))
-            $headers[] = "User-Agent: {$this->_userAgent}";
-        */
-        
+        if ($this->_method == self::REQUEST_TYPE_POST && !isset($this->_requestHeaders['Content-Length'])){
+            $headers[] = "Content-Length:" . strlen($this->_postdata);
+        }
+                
         if (!isset($this->_requestHeaders['Accept']))
             $headers[] = "Accept: {$this->_accept}";
-        if ($this->_method == "POST"){
-            if ($this->_postdata && !isset($this->_requestHeaders['Content-Length'])) {
-                $headers[] = 'Content-Length: '.strlen($this->_postdata);
-            }
-        }
+         
         
-//        if ($this->_file){
-//            $data = file_get_contents($this->_file);
-//            $requestPost = "\r\n";
-//            $requestPost .= "Content-Disposition: form-data; name=\"{$userfile}\"; filename=\"{$this->_file}\"\r\n";
-//        }
-        
-        //var_dump($headers);
-        //exit();
         $request = implode("\r\n", $headers) . "\r\n\r\n" . $this->_postdata;
         return $request;   
     }
@@ -295,11 +312,12 @@ class HttpClient {
     
     /**
      * set file
-     * 
+     * @param bool $flag Description
      * @return HttpClient
      */
-    public function uploadFile($file){
-        $this->_file = $file;
+    public function setNeedUploadFile($flag){
+        $this->_needUploadFile = $flag;
         return $this;
-    }
+    }   
+    
 }
