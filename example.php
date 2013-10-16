@@ -15,34 +15,35 @@
     $api = new SmartlingAPI($key, $projectId);    
         
     $params = array(        
-        'approved'    => true,
+        'approved' => true,
     );
-       
+     
+    //try to upload file
     $result = $api->uploadFile('./test.json', $fileType, $fileUri, $params);
     var_dump($result);
     echo "<br />This is a upload file<br />";
      
+    //try to download file
     $result = $api->downloadFile($fileUri, $locale);
     var_dump($result);
      echo "<br />This is a download file<br />";
      
+    //try to retrieve file status
     $result = $api->getStatus($fileUri, $locale);
     var_dump($result);
      echo "<br />This is a get status<br />";
      
+    //try get files list
     $result = $api->getList($locale);
     var_dump($result);
     echo "<br />This is a get list<br />";
     
+    //try to rename file
     $result = $api->renameFile($fileUri, $newFileUri);
     var_dump($result);
     echo "<br />This is a rename file<br />";   
-    
-    
-//    $result = $api->import($newFileUri, $fileType, $locale, $fileName, $overwrite = false, $translationState);
-//    var_dump($result);
-//    echo "<br />This is import file<br />";
-    
+   
+    //try to delete file
     $result = $api->deleteFile($newFileUri);
     var_dump($result);
     echo "<br />This is delete file<br />";

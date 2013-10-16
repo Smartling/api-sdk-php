@@ -3,14 +3,22 @@
 require_once("HttpClient.php");
  
 class SmartlingAPI
-{
-    protected $_baseUrl = "https://sandbox-api.smartling.com/v1/file";    
+{   
+    const SANDBOX_MODE = 'SANDBOX';
+    const PRODUCTION_MODE = 'PRODUCTION';
+    
+    protected $_baseUrl = "";    
     protected $_apiKey;
     protected $_projectId;    
  
-    public function __construct($apiKey, $projectId) {
+    public function __construct($apiKey, $projectId, $mode = self::SANDBOX_MODE) {
         $this->_apiKey = $apiKey;
-        $this->_projectId = $projectId;        
+        $this->_projectId = $projectId;
+        if ($mode == self::PRODUCTION_MODE){
+            $this->_baseUrl = "https://api.smartling.com/v1";
+        } else {
+            $this->_baseUrl = "https://sandbox-api.smartling.com/v1";
+        }
     }
     
     /**
@@ -22,7 +30,7 @@ class SmartlingAPI
      * @return string
      */
     public function uploadFile($path, $fileType, $fileUri, $params = array()) {        
-        return $this->sendRequest('upload', array_merge_recursive(array(
+        return $this->sendRequest('file/upload', array_merge_recursive(array(
             //'file'     => $path,
             'file'     => $path,
             'fileType' => $fileType,
@@ -37,7 +45,7 @@ class SmartlingAPI
      * @return string
      */
     public function downloadFile($fileUri, $locale, $params = array()) {
-        return $this->sendRequest('get', array_merge_recursive(array(
+        return $this->sendRequest('file/get', array_merge_recursive(array(
             'fileUri' => $fileUri,
             'locale' => $locale
         ), $params), HttpClient::REQUEST_TYPE_GET);
@@ -50,7 +58,7 @@ class SmartlingAPI
      * @return string
      */
     public function getStatus($fileUri, $locale, $params = array()) {
-        return $this->sendRequest('status', array_merge_recursive(array(
+        return $this->sendRequest('file/status', array_merge_recursive(array(
             'fileUri' => $fileUri,
             'locale' => $locale
         ), $params), HttpClient::REQUEST_TYPE_GET);
@@ -63,7 +71,7 @@ class SmartlingAPI
      * @return string
      */
     public function getList($locale, $params = array()) {
-        return $this->sendRequest('list', array_merge_recursive(array(
+        return $this->sendRequest('file/list', array_merge_recursive(array(
             'locale' => $locale
         ), $params), HttpClient::REQUEST_TYPE_GET);
     }
@@ -75,7 +83,7 @@ class SmartlingAPI
      * @return string
      */
     public function renameFile($fileUri, $newFileUri){        
-        return $this->sendRequest('rename', array(
+        return $this->sendRequest('file/rename', array(
             'fileUri' => $fileUri,
             'newFileUri' => $newFileUri,
         ), HttpClient::REQUEST_TYPE_POST);
@@ -87,7 +95,7 @@ class SmartlingAPI
      * @return string
      */
     public function deleteFile($fileUri){
-        return $this->sendRequest('delete', array(
+        return $this->sendRequest('file/delete', array(
             'fileUri' => $fileUri,
         ), HttpClient::REQUEST_TYPE_DELETE);
     }
@@ -104,7 +112,7 @@ class SmartlingAPI
      */
     public function import($fileUri, $fileType, $locale, $file, $overwrite = false, $translationState){
         
-        return $this->sendRequest('import', array(
+        return $this->sendRequest('file/import', array(
             'fileUri'          => $fileUri,
             'fileType'         => $fileType,
             'locale'           => $locale,

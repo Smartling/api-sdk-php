@@ -51,7 +51,7 @@ class HttpClient {
         $this->_host = $parsedUrl['host'];
         $this->_scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] : 'http';
         $this->_path = isset($parsedUrl['path']) ? $parsedUrl['path'] : "/";
-        $this->_port = isset($parsedUrl['port']) ? $parsedUrl['port'] : $port;
+        $this->_port = isset($parsedUrl['port']) ? $parsedUrl['port'] : $port;         
     }
     
     /**     

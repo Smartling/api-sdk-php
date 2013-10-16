@@ -7,7 +7,7 @@
         
      "translationKey1": {
         "attribute": "attribute will not be translated",
-        "translation": "Hello,  {USER_NAME}."
+        "translation": "Hello, {USER_NAME}."
      },
    
      "translationKey2": {
