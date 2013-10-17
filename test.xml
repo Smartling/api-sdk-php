@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- smartling.translate_paths = data/localize/string,
-data/localize2/string, data/localize.title, data/localize2.title -->
+<!-- smartling.translate_paths = data/localize/string, data/localize2/string, data/localize.title, data/localize2.title -->
 <!-- smartling.string_format_paths = html : data/localize2/string-->
 <!-- smartling.placeholder_format_custom = \$\{.*?\} -->
 <data>

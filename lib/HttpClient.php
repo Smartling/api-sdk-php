@@ -90,8 +90,8 @@ class HttpClient {
      * @return boolean
      */
     public function request(){
-        $fp = $this->_connect();
-        if ($fp){
+        $fp = $this->_connect();        
+        if ($fp){            
             socket_set_timeout($fp, $this->_timeout);
             $request = $this->_buildRequest();            
             @fwrite($fp, $request);

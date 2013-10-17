@@ -9,7 +9,8 @@ class SmartlingAPI
     
     protected $_baseUrl = "";    
     protected $_apiKey;
-    protected $_projectId;    
+    protected $_projectId; 
+    protected $_response;
  
     public function __construct($apiKey, $projectId, $mode = self::SANDBOX_MODE) {
         $this->_apiKey = $apiKey;
@@ -143,10 +144,20 @@ class SmartlingAPI
                    
         
         if($connection->request())
-        {
-            return $connection->getContent();
+        {            
+            return $this->_response = $connection->getContent();
         } else {
             return new Exception("No connection");
         }
-    }  
+    }
+    
+    public function getCodeStatus(){
+        if (!is_null($this->_response)){
+            if ($result = json_decode($this->_response)){
+                return $result->response->code;
+            }
+        } else {
+            return false;
+        }
+    }
 }
