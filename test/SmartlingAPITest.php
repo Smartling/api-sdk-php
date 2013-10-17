@@ -12,8 +12,8 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
      * @var SmartlingAPI
      */
     protected $object;
-    protected $_apiKey = '';
-    protected $_projectId = '';
+    protected $_apiKey = '9e0af458-ecf7-4fc1-887d-6c67325ed583';
+    protected $_projectId = '1295c174d';
     
 
     /**
@@ -135,9 +135,8 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testUploadFileSuccess(){
         $this->object->uploadFile('../test.xml', 'xml', 'testing.xml');
-        $this->assertContains(
-                "SUCCESS",
-                $this->object->getCodeStatus()
+        $this->assertTrue(
+                "SUCCESS" == $this->object->getCodeStatus()
                 );
     }    
     
@@ -146,9 +145,8 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testGetStatusSuccess(){
        $this->object->getStatus('testing.xml', "ru-RU");
-        $this->assertContains(
-                "SUCCESS",
-                $this->object->getCodeStatus()
+        $this->assertTrue(
+                "SUCCESS" == $this->object->getCodeStatus()
                 );
     }
     
@@ -157,9 +155,8 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testGetListSuccess(){
         $this->object->getList("ru-RU");
-        $this->assertContains(
-                "SUCCESS",
-                $this->object->getCodeStatus()
+        $this->assertTrue(
+                "SUCCESS" == $this->object->getCodeStatus()
                 );
     }
     
@@ -168,9 +165,8 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testRenameFileSuccess(){
         $this->object->renameFile('testing.xml', 'newTestFile.xml');
-        $this->assertContains(
-                "SUCCESS",
-                $this->object->getCodeStatus()
+        $this->assertTrue(
+                "SUCCESS" == $this->object->getCodeStatus()
                 );
     }
     
@@ -179,9 +175,8 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testDeleteFileSuccess(){
         $this->object->deleteFile('newTestFile.xml');
-        $this->assertContains(
-                "SUCCESS",
-                $this->object->getCodeStatus()
+        $this->assertTrue(
+                "SUCCESS" == $this->object->getCodeStatus()
                 );
     }
 

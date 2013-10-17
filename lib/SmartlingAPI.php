@@ -7,10 +7,30 @@ class SmartlingAPI
     const SANDBOX_MODE = 'SANDBOX';
     const PRODUCTION_MODE = 'PRODUCTION';
     
-    protected $_baseUrl = "";    
+    /**
+     *api base url
+     * 
+     * @var string 
+     */
+    protected $_baseUrl = ""; 
+    
+    /**
+     *
+     * @var string 
+     */
     protected $_apiKey;
-    protected $_projectId; 
-    protected $_response;
+    
+    /**
+     *
+     * @var string
+     */
+    protected $_projectId;
+    
+    /**
+     *
+     * @var null | string 
+     */
+    protected $_response = null;
  
     public function __construct($apiKey, $projectId, $mode = self::SANDBOX_MODE) {
         $this->_apiKey = $apiKey;
@@ -151,6 +171,10 @@ class SmartlingAPI
         }
     }
     
+    /**
+     * 
+     * @return boolean | string
+     */
     public function getCodeStatus(){
         if (!is_null($this->_response)){
             if ($result = json_decode($this->_response)){

@@ -1,14 +1,13 @@
 <?php 
     include_once 'lib/SmartlingAPI.php';
         
-    $fileUri = 'testing.json';    
-    $fileType = 'json';
-    $newFileUri = 'newfile.json'; 
-    $locale = 'ru_RU';
-    $fileName = 'translated.json';
+    $fileUri = 'testing.xml';    
+    $fileType = 'xml';
+    $newFileUri = 'newfile.xml'; 
+    $fileName = 'translated.xml';
     $translationState = 'PUBLISHED';
-    $key = "";
-    $projectId = "";
+    $key = "9e0af458-ecf7-4fc1-887d-6c67325ed583";
+    $projectId = "1295c174d";
     $locale = 'ru-RU';
     
     //init api object
@@ -19,9 +18,10 @@
     );
      
     //try to upload file
-    $result = $api->uploadFile('./test.json', $fileType, $fileUri, $params);
+    $result = $api->uploadFile('./test.xml', $fileType, $fileUri, $params);
     var_dump($result);
-    echo "<br />This is a upload file<br />";
+    echo "<br />This is a upload file<br />";    
+    
      
     //try to download file
     $result = $api->downloadFile($fileUri, $locale);

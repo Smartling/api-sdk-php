@@ -51,7 +51,8 @@ class HttpClient {
         $this->_host = $parsedUrl['host'];
         $this->_scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] : 'http';
         $this->_path = isset($parsedUrl['path']) ? $parsedUrl['path'] : "/";
-        $this->_port = isset($parsedUrl['port']) ? $parsedUrl['port'] : $port;         
+        $this->_port = isset($parsedUrl['port']) ? $parsedUrl['port'] : $port;
+        $this->setMethod(self::REQUEST_TYPE_GET);
     }
     
     /**     
@@ -74,11 +75,12 @@ class HttpClient {
                 $this->_requestHeaders[$key] = $value;
             }
         }
+        return $this;
     }
     
     /**
      * 
-     * @return int
+     * @return string
      */
     public function getStatus(){
         return $this->_status;
@@ -102,8 +104,9 @@ class HttpClient {
                 $this->_content = substr($this->_content, 10);
                 $this->_content = gzinflate($this->_content);
             }
-        }
-        return true;
+            return true;
+        } 
+        return false;
         
     }
     
@@ -136,11 +139,14 @@ class HttpClient {
      * @param string | array | object $data
      */
     protected function _buildQuery($data){
+        if (!is_array($data) || empty($data)){
+            return null;
+        }
        if ($this->_method == self::REQUEST_TYPE_GET || $this->_method == self::REQUEST_TYPE_DELETE){
-            if (is_array($data) || is_object($data)){
-                $data = http_build_query($data);
-            }
-        }       
+            $data = http_build_query($data);
+            
+        }
+        
         if ($this->_method == self::REQUEST_TYPE_POST){
             $boundary = "--HTTPCLIENT" . md5(microtime()) . "--";
             $this->setHeaders(array(
@@ -182,8 +188,8 @@ class HttpClient {
         $headers = array();
         $data = $this->getRequestData();
         
-        $query = $this->_buildQuery($data);  
-        //$this->_postdata = $query;
+        $query = is_null($this->_buildQuery($data)) ? '' : $this->_buildQuery($data);  
+        
         if (!empty($data) && ($this->_method == self::REQUEST_TYPE_GET || 
                 $this->_method == self::REQUEST_TYPE_DELETE)){
             $path = $this->_path . "?" . $query;
@@ -240,7 +246,8 @@ class HttpClient {
         
         $fp = @fsockopen($host, $this->_port, $errno, $errstr, $this->_timeout); 
         if (!$fp){
-            throw new Exception($errstr);
+            //throw new Exception($errstr);
+            return false;
         }
         return $fp;
     }
@@ -256,7 +263,7 @@ class HttpClient {
         
         while (!feof($fp)){
             $line = fgets($fp, 4096);
-            //echo $line;
+         
             if ($startAction) {
                 $startAction = false;
 
@@ -279,8 +286,7 @@ class HttpClient {
                     continue;
                 }
 
-                if (!preg_match('/([^:]+):\\s*(.*)/', $line, $m)) {
-                    // Skip to the next header:
+                if (!preg_match('/([^:]+):\\s*(.*)/', $line, $m)) {                    
                     continue;
                 }
 
@@ -318,6 +324,26 @@ class HttpClient {
     public function setNeedUploadFile($flag){
         $this->_needUploadFile = $flag;
         return $this;
-    }   
+    }  
+    
+    /**
+     * 
+     * @param bool $flag
+     * @return \HttpClient
+     */
+    public function setHeadersOnly($flag){
+        $this->_headersOnly = (bool)$flag;
+        return $this;
+    }
+    
+    /**
+     * 
+     * @param bool $flag
+     * @return \HttpClient
+     */
+    public function setUseGzip($flag){
+        $this->_useGzip = (bool)$flag;
+        return $this;
+    }
     
 }
