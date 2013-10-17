@@ -6,8 +6,8 @@
     $newFileUri = 'newfile.xml'; 
     $fileName = 'translated.xml';
     $translationState = 'PUBLISHED';
-    $key = "9e0af458-ecf7-4fc1-887d-6c67325ed583";
-    $projectId = "1295c174d";
+    $key = "";
+    $projectId = "";
     $locale = 'ru-RU';
     
     //init api object

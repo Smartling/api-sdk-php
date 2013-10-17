@@ -12,8 +12,8 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
      * @var SmartlingAPI
      */
     protected $object;
-    protected $_apiKey = '9e0af458-ecf7-4fc1-887d-6c67325ed583';
-    protected $_projectId = '1295c174d';
+    protected $_apiKey = '';
+    protected $_projectId = '';
     
 
     /**
