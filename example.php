@@ -41,8 +41,13 @@
     //try to rename file
     $result = $api->renameFile($fileUri, $newFileUri);
     var_dump($result);
-    echo "<br />This is a rename file<br />";   
-   
+    echo "<br />This is a rename file<br />"; 
+    
+    //try to import
+    $result = $api->import($newFileUri, $fileType, $locale, './test.xml', true, $translationState);
+    var_dump($result);
+    echo "<br />This is a import file<br />"; 
+    
     //try to delete file
     $result = $api->deleteFile($newFileUri);
     var_dump($result);

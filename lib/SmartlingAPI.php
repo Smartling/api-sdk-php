@@ -140,7 +140,7 @@ class SmartlingAPI
             'file'             => $file,
             'overwrite'        => $overwrite,
             'translationState' => $translationState,
-        ), HttpClient::REQUEST_TYPE_POST);
+        ), HttpClient::REQUEST_TYPE_POST, true);
     }
     
     /**
@@ -167,7 +167,7 @@ class SmartlingAPI
         {            
             return $this->_response = $connection->getContent();
         } else {
-            return new Exception("No connection");
+            return new Exception("Can't connect to server");
         }
     }
     

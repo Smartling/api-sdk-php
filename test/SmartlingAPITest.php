@@ -31,6 +31,22 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
     protected function tearDown() {
         
     }
+    
+    /**
+     * 
+     * @param object $object
+     * @param string $methodName
+     * @param array $parameters
+     * @return string | null | int | object | bool | resource | float 
+     */
+    public function invokeMethod(&$object, $methodName, array $parameters = array())
+    {
+        $reflection = new ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $parameters);
+    }
 
     /**
      * @covers SmartlingAPI::uploadFile
@@ -112,6 +128,20 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
                 $this->object->renameFile('testing.xml', 'newTestFile.xml')
                 );
     }
+    
+    /**
+     * @covers SmartlingAPI::import
+     */
+    public function testImport(){
+        $this->assertNotEmpty(
+                $this->object->import('translated.xml', 'xml', 'ru-RU', '../test.xml', true, 'PUBLISHED')
+        );
+        
+        $this->assertInternalType(
+                'string',
+                $this->object->import('translated.xml', 'xml', 'ru-RU', '../test.xml', true, 'PUBLISHED')
+                );
+    }
 
     /**
      * @covers SmartlingAPI::deleteFile
@@ -179,7 +209,57 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
                 "SUCCESS" == $this->object->getCodeStatus()
                 );
     }
-
+    
+    /**
+     * @covers SmartlingAPI::sendRequest
+     */
+    public function testSendRequest(){
+        
+        //check response type
+        $this->assertInternalType(
+                'string',
+                $this->invokeMethod($this->object, 'sendRequest', array(
+                    '',
+                    array(),
+                    'POST'
+                ))
+                );
+        
+        //check not equals false
+        $this->assertNotEquals(
+                false,
+                $this->invokeMethod($this->object, 'sendRequest', array(
+                    '',
+                    array(),
+                    'POST'
+                ))
+                );
+        
+    }
+    
+    /**
+     * @covers SmartlingAPI::getCodeStatus
+     */
+    public function testGetCodeStatus(){
+        
+        $this->invokeMethod($this->object, 'sendRequest', array(
+                    '',
+                    array(),
+                    'POST'
+                ));
+        
+        //check response type
+        $this->assertInternalType(
+                'string',
+                $this->object->getCodeStatus()
+                );
+        
+        //not equals false
+        $this->assertNotEquals(
+                false,
+                $this->object->getCodeStatus()
+                );
+    }
 }
 
 ?>
