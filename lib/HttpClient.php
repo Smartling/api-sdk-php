@@ -12,35 +12,147 @@ class HttpClient {
     const REQUEST_TYPE_PUT = 'PUT';
     const REQUEST_TYPE_DELETE = 'DELETE';
     
+    /**
+     * defines boundary in case of different content types
+     * 
+     * @var null | string 
+     */
     protected static $_boundary = null;
     
-    protected $_host; 
+    /**
+     * 
+     * @var string 
+     */
+    protected $_host;
+    
+    /**
+     *
+     * @var int 
+     */
     protected $_port; 
+    
+    /**
+     *
+     * @var string 
+     */
     protected $_path;
+    
+    /**
+     *
+     * @var string 
+     */
     protected $_scheme;
+    
+    /**
+     * http method
+     * 
+     * @var string
+     */
     protected $_method;
+    
+    /**
+     * stores data for POST query
+     * 
+     * @var string
+     */
     protected $_postdata = '';    
+    
+    /**
+     *
+     * @var string
+     */
     protected $_httpVersion = 'HTTP/1.0';
+    
+    /**
+     *
+     * @var string
+     */
     protected $_accept = 'text/xml,application/xml,application/xhtml+xml,text/html,text/plain,image/png,image/jpeg,image/gif,*/*';
-    protected $_acceptEncoding = 'gzip';     
+    
+    /**
+     *
+     * @var string 
+     */
+    protected $_acceptEncoding = 'gzip';
+    
+    /**
+     * collects custom request header for http query
+     * 
+     * @var array 
+     */
     protected $_requestHeaders = array();
+    
+    /**
+     * stores request variables (data) for http request
+     * 
+     * @var string 
+     */
     protected $_requestData;
+    
+    /**
+     *
+     * @var int 
+     */
     protected $_timeout = 30;
-    protected $_useGzip = false;    
-    protected $_maxRedirects = 5;
+    
+    /**
+     *
+     * @var bool 
+     */
+    protected $_useGzip = false; 
+    
+    /**
+     *
+     * @var bool 
+     */
     protected $_headersOnly = false;
+    
+    /**
+     * flag for upload file
+     * 
+     * @var bool 
+     */
     protected $_needUploadFile = false;
-    protected $_fileKey = 'file';
     
+    /**
+     * flag for update content
+     * 
+     * @var bool 
+     */
+    protected $_needUploadContent = false; 
+    
+    /**
+     * holds key in parameters for defining which param stores uploading data
+     * 
+     * @var string 
+     */
+    protected $_fileKey = 'file';   
+    
+    /**
+     *
+     * @var string 
+     */
     protected $_status;
-    protected $_headers = array();
-    protected $_content = '';
-    protected $_errormsg;
-
-    // * Tracker variables:
-
-    protected $_redirect_count = 0;
     
+    /**
+     *
+     * @var array 
+     */
+    protected $_headers = array();
+    
+    /**
+     * stores response content
+     * 
+     * @var string 
+     */
+    protected $_content = '';
+    
+    /**
+     *
+     * @var array 
+     */
+    protected $_errormsg;
+        
     /**
      *  
      * @param string $uri
@@ -135,6 +247,7 @@ class HttpClient {
 
 
     /**
+     * prepare data for http request body depending request method
      * 
      * @param string | array | object $data
      */
@@ -162,17 +275,22 @@ class HttpClient {
                                  . "Content-Length:" . strlen($value) . "\r\n\r\n"
                                  . $value . "\r\n";               
             }
-            if ($this->_needUploadFile){
-                if (file_exists(realpath($data[$this->_fileKey]))){
+            if ($this->_needUploadFile || $this->_needUploadContent){
+                if ($this->_needUploadFile && file_exists(realpath($data[$this->_fileKey]))){
                     $file_contents = file_get_contents(realpath($data[$this->_fileKey]));
-                                        
-                    $this->_postdata .= "--" . $boundary . "\r\n"
-                                     . "Content-Disposition: form-data; name=\"" . $this->_fileKey
-                                     .  "\"; filename = \"" . basename($data[$this->_fileKey]) . "\"\r\n"                                         
-                                     . "Content-Length: " . strlen($file_contents) . "\r\n"
-                                     . "Content-Type: application/octet-stream\r\n\r\n"
-                                     . $file_contents . "\r\n";
                 }
+                
+                if ($this->_needUploadContent && ($data[$this->_fileKey] !== '')){
+                    $file_contents = $data[$this->_fileKey];
+                }
+                
+                $this->_postdata .= "--" . $boundary . "\r\n"
+                                 . "Content-Disposition: form-data; name=\"" . $this->_fileKey
+                                 .  "\"; filename = \"" . basename($data[$this->_fileKey]) . "\"\r\n"                                         
+                                 . "Content-Length: " . strlen($file_contents) . "\r\n"
+                                 . "Content-Type: application/octet-stream\r\n\r\n"
+                                 . $file_contents . "\r\n";
+                
             }
             $this->_postdata .= "--" . $boundary . "--";            
         }        
@@ -233,6 +351,7 @@ class HttpClient {
     }
     
     /**
+     * establish connection with server
      * 
      * @return resource
      */
@@ -253,6 +372,7 @@ class HttpClient {
     }
     
     /**
+     * parse response and unset headers
      * 
      * @param resource $fp
      * @return boolean
@@ -317,16 +437,29 @@ class HttpClient {
     }
     
     /**
-     * set file
+     * set flag for uploading file content
+     * 
      * @param bool $flag Description
      * @return HttpClient
      */
     public function setNeedUploadFile($flag){
         $this->_needUploadFile = $flag;
         return $this;
-    }  
+    } 
     
     /**
+     * set flag for uploading content
+     * 
+     * @param bool $flag
+     * @return \HttpClient
+     */
+    public function setNeedUploadContent($flag){
+        $this->_needUploadContent = $flag;
+        return $this;
+    }
+    
+    /**
+     * set headers 
      * 
      * @param bool $flag
      * @return \HttpClient
@@ -337,6 +470,7 @@ class HttpClient {
     }
     
     /**
+     * 
      * 
      * @param bool $flag
      * @return \HttpClient

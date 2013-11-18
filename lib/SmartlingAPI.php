@@ -7,6 +7,9 @@ class SmartlingAPI
     const SANDBOX_MODE = 'SANDBOX';
     const PRODUCTION_MODE = 'PRODUCTION';
     
+    const SANDBOX_URL = 'https://sandbox-api.smartling.com/v1';
+    const PRODUCTION_URL = 'https://api.smartling.com/v1';
+    
     /**
      *api base url
      * 
@@ -36,18 +39,19 @@ class SmartlingAPI
         $this->_apiKey = $apiKey;
         $this->_projectId = $projectId;
         if ($mode == self::PRODUCTION_MODE){
-            $this->_baseUrl = "https://api.smartling.com/v1";
+            $this->_baseUrl = self::PRODUCTION_URL;
         } else {
-            $this->_baseUrl = "https://sandbox-api.smartling.com/v1";
+            $this->_baseUrl = self::SANDBOX_URL;
         }
     }
     
     /**
+     * upload file to Smartling service
      * 
      * @param string $path
      * @param string $fileType
      * @param string $fileUri
-     * @param string $charset
+     * @param array $params
      * @return string
      */
     public function uploadFile($path, $fileType, $fileUri, $params = array()) {        
@@ -60,6 +64,24 @@ class SmartlingAPI
     }
     
     /**
+     * upload content to Smartling service
+     * 
+     * @param string $content
+     * @param string $fileType
+     * @param string $fileUri
+     * @param array $params
+     * @return string
+     */
+    public function uploadContent($content, $fileType, $fileUri, $params = array()){
+        return $this->sendRequest('file/upload', array_merge_recursive(array(            
+            'file'     => $content,
+            'fileType' => $fileType,
+            'fileUri'  => $fileUri
+        ), $params), HttpClient::REQUEST_TYPE_POST, false, true);
+    }
+    
+    /**
+     * download translated content from Smartling Service 
      * 
      * @param string $fileUri
      * @param string $locale
@@ -73,6 +95,7 @@ class SmartlingAPI
     }
     
     /**
+     * retrieve status about file translation progress
      * 
      * @param string $fileUri
      * @param string $locale
@@ -86,6 +109,7 @@ class SmartlingAPI
     }
     
     /**
+     * get uploaded files list
      * 
      * @param string $locale
      * @param array $params
@@ -98,6 +122,7 @@ class SmartlingAPI
     }
     
     /**
+     * rename uploaded before files
      * 
      * @param string $fileUri
      * @param string $newFileUri
@@ -111,6 +136,7 @@ class SmartlingAPI
     }
     
     /**
+     * remove uploaded files from Smartling Service
      * 
      * @param string $fileUri
      * @return string
@@ -122,6 +148,7 @@ class SmartlingAPI
     }
     
     /**
+     * import files form Service
      * 
      * @param string $fileUri
      * @param string $fileType
@@ -144,13 +171,14 @@ class SmartlingAPI
     }
     
     /**
+     * send request to Smartling Service
      * 
      * @param string $uri
      * @param array $requestData
      * @param string $method
      * @return string
      */
-    protected function sendRequest($uri, $requestData, $method, $needUploadFile = false) {
+    protected function sendRequest($uri, $requestData, $method, $needUploadFile = false, $needUploadContent = false) {
         $connection = new HttpClient($this->_baseUrl. "/" . $uri, 443);
         
         $data['apiKey'] = $this->_apiKey;
@@ -160,7 +188,8 @@ class SmartlingAPI
                 
         $connection->setMethod($method)                    
                    ->setRequestData($request)
-                   ->setNeedUploadFile($needUploadFile);
+                   ->setNeedUploadFile($needUploadFile)
+                   ->setNeedUploadContent($needUploadContent);
                    
         
         if($connection->request())

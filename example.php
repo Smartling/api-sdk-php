@@ -5,6 +5,10 @@
     $fileType = 'xml';
     $newFileUri = 'newfile.xml'; 
     $fileName = 'translated.xml';
+    
+    $content = file_get_contents(realpath('./test.xml'));
+    $fileContentUri = "testing_content.xml";
+    
     $translationState = 'PUBLISHED';
     $key = "";
     $projectId = "";
@@ -22,7 +26,11 @@
     var_dump($result);
     echo "<br />This is a upload file<br />";    
     
-     
+    //try to upload content
+    $result = $api->uploadContent($content, $fileType, $fileContentUri);
+    var_dump($result);
+    echo "<br />This is a upload content<br />"; 
+    
     //try to download file
     $result = $api->downloadFile($fileUri, $locale);
     var_dump($result);
