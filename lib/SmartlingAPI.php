@@ -61,7 +61,7 @@ class SmartlingAPI {
    * @return string
    */
   public function uploadFile($path, $params = array()) {
-    return $this->sendRequest('file/upload', $params, HttpClient::REQUEST_TYPE_POST, true);
+    return $this->sendRequest('file/upload', array_merge_recursive(array('file' => $path), $params), HttpClient::REQUEST_TYPE_POST, true);
   }
 
   /**
