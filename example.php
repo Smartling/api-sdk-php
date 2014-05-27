@@ -22,19 +22,11 @@ $locales_array = array('ru-RU');
 //init api object
 $api = new SmartlingAPI($baseUrl, $key, $projectId);
 
-$params = array(
-  'approved' => true,
-);
-
 $upload_params = new FileUploadParameterBuilder();
 $upload_params->setFileUri($fileUri)
     ->setFileType($fileType)
     ->setLocalesToApprove($locales_array)
-    // Error: response code -> VALIDATION_ERROR and message ->
-    // Failed to convert property value of type java.lang.String to required type boolean
-    // for property overwriteApprovedLocales; nested exception
-    // is java.lang.IllegalArgumentException: Invalid boolean value []
-    ->setOverwriteApprovedLocales(0) // Must be set 0 (not FALSE).
+    ->setOverwriteApprovedLocales(0)
     ->setApproved(0)
     ->setCallbackUrl('http://test.com/smartling');
 $upload_params = $upload_params->buildParameters();

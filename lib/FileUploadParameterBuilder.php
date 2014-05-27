@@ -110,9 +110,9 @@ class FileUploadParameterBuilder {
    *
    * @param bool $overwriteApprovedLocales
    */
-  public function setOverwriteApprovedLocales($overwriteApprovedLocales = FALSE) {
-    $this->_overwriteApprovedLocales = $overwriteApprovedLocales;
-    $this->_parametersArray['overwriteApprovedLocales'] = $overwriteApprovedLocales;
+  public function setOverwriteApprovedLocales($overwriteApprovedLocales = 0) {
+    $this->_overwriteApprovedLocales = (int)$overwriteApprovedLocales;
+    $this->_parametersArray['overwriteApprovedLocales'] = (int)$overwriteApprovedLocales;
     return $this;
   }
 

@@ -59,7 +59,8 @@ class SmartlingAPI {
    * @return string
    */
   public function uploadFile($path, $params = array()) {
-    return $this->sendRequest('file/upload', array_merge_recursive(array('file' => $path), $params), HttpClient::REQUEST_TYPE_POST, true);
+  	$params['file'] = $path;
+    return $this->sendRequest('file/upload', $params, HttpClient::REQUEST_TYPE_POST, true);
   }
 
   /**
@@ -82,7 +83,7 @@ class SmartlingAPI {
    * @return string
    */
   public function downloadFile($fileUri, $locale, $params = array()) {
-    return $this->sendRequest('file/get', array_merge_recursive(array(
+    return $this->sendRequest('file/get', array_replace_recursive(array(
           'fileUri' => $fileUri,
           'locale' => $locale
                 ), $params), HttpClient::REQUEST_TYPE_GET);
@@ -96,7 +97,7 @@ class SmartlingAPI {
    * @return string
    */
   public function getStatus($fileUri, $locale, $params = array()) {
-    return $this->sendRequest('file/status', array_merge_recursive(array(
+    return $this->sendRequest('file/status', array_replace_recursive(array(
           'fileUri' => $fileUri,
           'locale' => $locale
                 ), $params), HttpClient::REQUEST_TYPE_GET);
@@ -110,7 +111,7 @@ class SmartlingAPI {
    * @return string
    */
   public function getList($locale, $params = array()) {
-    return $this->sendRequest('file/list', array_merge_recursive(array(
+    return $this->sendRequest('file/list', array_replace_recursive(array(
           'locale' => $locale
                 ), $params), HttpClient::REQUEST_TYPE_GET);
   }
@@ -178,7 +179,7 @@ class SmartlingAPI {
     $data['apiKey'] = $this->_apiKey;
     $data['projectId'] = $this->_projectId;
 
-    $request = array_merge_recursive($data, $requestData);
+    $request = array_replace_recursive($data, $requestData);
 
     $connection->setMethod($method)
         ->setNeedUploadFile($needUploadFile)
