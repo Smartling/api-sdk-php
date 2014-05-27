@@ -2,6 +2,9 @@
 
 include_once 'lib/SmartlingAPI.php';
 
+$key = "";
+$projectId = "";
+
 $baseUrl = 'https://api.smartling.com/v1';
 $fileUri = 'testing.xml';
 $fileType = 'xml';
@@ -12,10 +15,9 @@ $content = file_get_contents(realpath('./test.xml'));
 $fileContentUri = "testing_content.xml";
 
 $translationState = 'PUBLISHED';
-$key = "";
-$projectId = "";
 $locale = 'ru-RU';
 $locales_array = array('ru-RU');
+
 
 //init api object
 $api = new SmartlingAPI($baseUrl, $key, $projectId);
@@ -28,17 +30,23 @@ $upload_params = new FileUploadParameterBuilder();
 $upload_params->setFileUri($fileUri)
     ->setFileType($fileType)
     ->setLocalesToApprove($locales_array)
-    ->setApproved(TRUE)
-    ->setCallbackUrl('http://test.com/smartling')
-    ->buildParameters();
+    // Error: response code -> VALIDATION_ERROR and message ->
+    // Failed to convert property value of type java.lang.String to required type boolean
+    // for property overwriteApprovedLocales; nested exception
+    // is java.lang.IllegalArgumentException: Invalid boolean value []
+    ->setOverwriteApprovedLocales(0) // Must be set 0 (not FALSE).
+    ->setApproved(0)
+    ->setCallbackUrl('http://test.com/smartling');
+$upload_params = $upload_params->buildParameters();
+
 
 //try to upload file
-$result = $api->uploadFile('./test.xml', $params);
+$result = $api->uploadFile('./test.xml', $upload_params);
 var_dump($result);
 echo "<br />This is a upload file<br />";
 
 //try to upload content
-$result = $api->uploadContent($content, $fileType, $fileContentUri);
+$result = $api->uploadContent($content, $upload_params);
 var_dump($result);
 echo "<br />This is a upload content<br />";
 
@@ -51,6 +59,7 @@ echo "<br />This is a download file<br />";
 $result = $api->getStatus($fileUri, $locale);
 var_dump($result);
 echo "<br />This is a get status<br />";
+
 
 //try get files list
 $result = $api->getList($locale);

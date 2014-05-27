@@ -123,7 +123,7 @@ class FileUploadParameterBuilder {
    */
   public function setLocalesToApprove($localesToApprove) {
     if (is_array($localesToApprove)) {
-      $this->_localesToApprove = $localesToApprove;
+      $this->_localesToApprove = array_unique($localesToApprove);
       $i = 0;
       foreach ($localesToApprove as $locale_code) {
         $this->_parametersArray['localesToApprove[' . $i . ']'] = $locale_code;
@@ -139,6 +139,7 @@ class FileUploadParameterBuilder {
    * @return array
    */
   public function buildParameters() {
+    $params = array();
     foreach ($this->_parametersArray as $key => $value) {
       $params[$key] = $value;
     }

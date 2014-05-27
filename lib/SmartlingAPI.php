@@ -55,8 +55,6 @@ class SmartlingAPI {
    * upload file to Smartling service
    *
    * @param string $path
-   * @param string $fileType
-   * @param string $fileUri
    * @param array $params
    * @return string
    */
@@ -68,18 +66,12 @@ class SmartlingAPI {
    * upload content to Smartling service
    *
    * @param string $content
-   * @param string $fileType
-   * @param string $fileUri
    * @param array $params
    * @return string
    */
-  public function uploadContent($content, $fileType, $fileUri, $params = array()) {
-    return $this->sendRequest('file/upload', array_merge_recursive(array(
-          'overwriteApprovedLocales' => FALSE,
-          'file' => $content,
-          'fileType' => $fileType,
-          'fileUri' => $fileUri
-                ), $params), HttpClient::REQUEST_TYPE_POST, false, true);
+  public function uploadContent($content, $params = array()) {
+    $params['file'] = $content;
+    return $this->sendRequest('file/upload', $params, HttpClient::REQUEST_TYPE_POST, false, true);
   }
 
   /**
@@ -189,13 +181,12 @@ class SmartlingAPI {
     $request = array_merge_recursive($data, $requestData);
 
     $connection->setMethod($method)
-        ->setRequestData($request)
         ->setNeedUploadFile($needUploadFile)
         ->setNeedUploadContent($needUploadContent);
 
 
-    if ($connection->request()) {
-      return $this->_response = $connection->getContent();
+    if ($res = $connection->request($request)) {
+      return $res;
     }
     else {
       return new Exception("Can't connect to server");
