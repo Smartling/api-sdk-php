@@ -187,7 +187,7 @@ class SmartlingAPI {
 
 
     if ($res = $connection->request($request)) {
-      return $res;
+      return $this->_response = $connection->getContent();
     }
     else {
       return new Exception("Can't connect to server");
