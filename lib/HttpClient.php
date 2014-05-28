@@ -164,7 +164,7 @@ class HttpClient {
         curl_setopt($ch, CURLOPT_URL, $this->_uri . $get_params);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
 
         if (in_array($this->_method, array(self::REQUEST_TYPE_POST, self::REQUEST_TYPE_DELETE, self::REQUEST_TYPE_PUT))) {
