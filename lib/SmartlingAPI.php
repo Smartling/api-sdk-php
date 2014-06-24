@@ -110,10 +110,9 @@ class SmartlingAPI {
    * @param array $params
    * @return string
    */
-  public function getList($locale, $params = array()) {
-    return $this->sendRequest('file/list', array_replace_recursive(array(
-          'locale' => $locale
-                ), $params), HttpClient::REQUEST_TYPE_GET);
+  public function getList($locale = '', $params = array()) {
+    $params = (empty($locale)) ? $params : array_replace_recursive(array('locale' => $locale), $params);
+    return $this->sendRequest('file/list', $params, HttpClient::REQUEST_TYPE_GET);
   }
 
   /**
