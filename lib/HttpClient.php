@@ -235,7 +235,7 @@ class HttpClient {
     public function request($data){
         $get_params = '';
         if ($this->_method == self::REQUEST_TYPE_GET || $this->_method == self::REQUEST_TYPE_DELETE) {
-            $get_params = '?' . http_build_query($data);
+            $get_params = '?' . http_build_query($data, NULL, '&');
         }
 
         $ch = curl_init();
