@@ -267,7 +267,7 @@ class HttpClient {
         }
 
         $result = $this->_content = $this->curl_exec_follow($ch);// curl_exec($ch);
-        $this->_header = curl_getinfo($ch);
+        $this->_headers = curl_getinfo($ch);
 
         if (!$result) {
             $this->_errormsg = 'Error: "' . curl_error($ch) . '" - Code: ' . curl_errno($ch);
