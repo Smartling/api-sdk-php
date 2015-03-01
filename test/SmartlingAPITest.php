@@ -209,6 +209,16 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
                 "SUCCESS" == $this->object->getCodeStatus()
                 );
     }
+
+    /**
+     * @covers SmartlingAPI::getLocaleList
+     */
+    public function testGetLocaleListSuccess(){
+        $this->object->getLocaleList();
+        $this->assertTrue(
+            "SUCCESS" == $this->object->getCodeStatus()
+        );
+    }
     
     /**
      * @covers SmartlingAPI::sendRequest
