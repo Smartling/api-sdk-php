@@ -128,7 +128,22 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
                 $this->object->renameFile('testing.xml', 'newTestFile.xml')
                 );
     }
-    
+
+    /**
+     * @covers SmartlingAPI::getAuthorizedLocales
+     */
+    public function testGetAuthorizedLocales() {
+
+        $this->assertNotEmpty(
+                $this->object->getAuthorizedLocales('testing.xml')
+        );
+
+        $this->assertInternalType(
+                'string',
+                $this->object->getAuthorizedLocales('testing.xml')
+                );
+    }
+
     /**
      * @covers SmartlingAPI::import
      */
@@ -209,7 +224,17 @@ class SmartlingAPITest extends PHPUnit_Framework_TestCase {
                 "SUCCESS" == $this->object->getCodeStatus()
                 );
     }
-    
+
+    /**
+     * @covers SmartlingAPI::getAuthorizedLocales
+     */
+    public function testGetAuthorizedLocalesSuccess(){
+        $this->object->getAuthorizedLocales('testing.xml');
+        $this->assertTrue(
+                "SUCCESS" == $this->object->getCodeStatus()
+                );
+    }
+
     /**
      * @covers SmartlingAPI::sendRequest
      */
