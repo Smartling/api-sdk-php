@@ -1,5 +1,5 @@
 <?php
-// require_once dirname(__FILE__) . '/../lib/HttpClient.php';
+// require_once dirname(__FILE__) . '/../src/HttpClient.php';
 // /*
 //  * To change this template, choose Tools | Templates
 //  * and open the template in the editor.
