@@ -52,6 +52,10 @@ $result = $api->getStatus($fileUri, $locale);
 var_dump($result);
 echo "<br />This is a get status<br />";
 
+//try to retrieve file authorized locales
+$result = $api->getAuthorizedLocales($fileUri);
+var_dump($result);
+echo "<br />This is a get authorized locales<br />";
 
 //try get files list
 $result = $api->getList($locale);

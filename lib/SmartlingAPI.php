@@ -217,4 +217,18 @@ class SmartlingAPI {
     }
   }
 
+  /**
+   * Get list of authorized locales for given file.
+   *
+   * @param string $fileUri
+   *
+   * @return array
+   *   List of locales authorized in Smartling.
+   */
+  public function getAuthorizedLocales($fileUri) {
+    return $this->sendRequest('file/authorized_locales', array(
+      'fileUri' => $fileUri,
+    ), HttpClient::REQUEST_TYPE_GET);
+  }
+
 }
