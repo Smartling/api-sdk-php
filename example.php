@@ -76,3 +76,8 @@ echo "<br />This is a import file<br />";
 $result = $api->deleteFile($newFileUri);
 var_dump($result);
 echo "<br />This is delete file<br />";
+
+//try to get locale list for project
+$result = $api->getLocaleList();
+var_dump($result);
+echo "<br />This is the list of project locales<br />";

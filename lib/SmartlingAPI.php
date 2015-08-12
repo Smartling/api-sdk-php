@@ -142,6 +142,15 @@ class SmartlingAPI {
   }
 
   /**
+   * get locale list for project
+   *
+   * @return string
+   */
+  public function getLocaleList() {
+      return $this->sendRequest('project/locale/list', array(), HttpClient::REQUEST_TYPE_GET);
+  }
+
+  /**
    * import files form Service
    *
    * @param string $fileUri
