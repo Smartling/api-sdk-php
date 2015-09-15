@@ -52,6 +52,15 @@ class SmartlingAPI {
   }
 
   /**
+    * get locale list for project
+    *
+    * @return string
+    */
+  public function getLocaleList() {
+    return $this->sendRequest('project/locale/list', array(), HttpClient::REQUEST_TYPE_GET);
+  }
+
+  /**
    * upload file to Smartling service
    *
    * @param string $path
@@ -142,15 +151,6 @@ class SmartlingAPI {
   }
 
   /**
-   * get locale list for project
-   *
-   * @return string
-   */
-  public function getLocaleList() {
-      return $this->sendRequest('project/locale/list', array(), HttpClient::REQUEST_TYPE_GET);
-  }
-
-  /**
    * import files form Service
    *
    * @param string $fileUri
@@ -198,7 +198,7 @@ class SmartlingAPI {
       return $this->_response = $connection->getContent();
     }
     else {
-      return new Exception("Can't connect to server");
+      return new Exception("Can't connect to server: " . $connection->getError());
     }
   }
 
@@ -215,6 +215,26 @@ class SmartlingAPI {
     else {
       return false;
     }
+  }
+
+  /**
+   * upload context to Smartling
+   *
+   * @param array $data
+   * @return string
+   */
+  public function uploadContext($data) {
+    return $this->sendRequest('context/html', $data, HttpClient::REQUEST_TYPE_POST);
+  }
+
+  /**
+   * Get statistics for context upload
+   *
+   * @param array $data
+   * @return string
+   */
+  public function getContextStats($data) {
+    return $this->sendRequest('context/html', $data, HttpClient::REQUEST_TYPE_GET);
   }
 
   /**

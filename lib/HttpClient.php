@@ -6,7 +6,7 @@
  * @author Igor
  */
 class HttpClient {
-    
+
     const REQUEST_TYPE_GET = 'GET';
     const REQUEST_TYPE_POST = 'POST';
     const REQUEST_TYPE_PUT = 'PUT';
@@ -17,65 +17,65 @@ class HttpClient {
 
     /**
      * http method
-     * 
+     *
      * @var string
      */
     protected $_method;
-    
+
     /**
      *
      * @var string
      */
     protected $_accept = 'text/xml,application/xml,application/xhtml+xml,text/html,text/plain,image/png,image/jpeg,image/gif,*/*';
-    
+
     /**
      * flag for upload file
-     * 
-     * @var bool 
+     *
+     * @var bool
      */
     protected $_needUploadFile = false;
-    
+
     /**
      * flag for update content
-     * 
-     * @var bool 
+     *
+     * @var bool
      */
-    protected $_needUploadContent = false; 
-    
+    protected $_needUploadContent = false;
+
     /**
      * holds key in parameters for defining which param stores uploading data
-     * 
-     * @var string 
+     *
+     * @var string
      */
-    protected $_fileKey = 'file';   
-    
+    protected $_fileKey = 'file';
+
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $_status;
-    
+
     /**
      *
-     * @var array 
+     * @var array
      */
     protected $_headers = array();
-    
+
     /**
      * stores response content
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $_content = '';
-    
+
     /**
      *
-     * @var array 
+     * @var array
      */
     protected $_errormsg;
-        
+
     /**
-     *  
+     *
      * @param string $uri
      * @param int $port
      */
@@ -83,9 +83,9 @@ class HttpClient {
         $this->_uri = $uri;
         $this->setMethod(self::REQUEST_TYPE_GET);
     }
-    
-    /**     
-     * 
+
+    /**
+     *
      * @param string $method
      * @return \HttpClient
      */
@@ -93,9 +93,9 @@ class HttpClient {
         $this->_method = $method;
         return $this;
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
     public function getStatus(){
@@ -111,7 +111,7 @@ class HttpClient {
      * @return string
      */
     protected function curl_exec_follow($ch, &$maxredirect = null) {
-  
+
       // we emulate a browser here since some websites detect
       // us as a bot and don't let us do our job
       $user_agent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.5)".
@@ -127,16 +127,16 @@ class HttpClient {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
       } else {
-        
+
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 
         if ($mr > 0)
         {
           $original_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
           $newurl = $original_url;
-          
+
           $rch = curl_copy_handle($ch);
-          
+
           curl_setopt($rch, CURLOPT_HEADER, true);
           curl_setopt($rch, CURLOPT_NOBODY, true);
           curl_setopt($rch, CURLOPT_FORBID_REUSE, false);
@@ -151,27 +151,27 @@ class HttpClient {
               if ($code == 301 || $code == 302) {
                 preg_match('/Location:(.*?)\n/', $header, $matches);
                 $newurl = trim(array_pop($matches));
-                
+
                 // if no scheme is present then the new url is a
                 // relative path and thus needs some extra care
                 if(!preg_match("/^https?:/i", $newurl)){
                   $newurl = $original_url . $newurl;
-                }   
+                }
               } else {
                 $code = 0;
               }
             }
           } while ($code && --$mr);
-          
+
           curl_close($rch);
-          
+
           if (!$mr)
           {
             if ($maxredirect === null)
             trigger_error('Too many redirects.', E_USER_WARNING);
             else
             $maxredirect = 0;
-            
+
             return false;
           }
           curl_setopt($ch, CURLOPT_URL, $newurl);
@@ -226,10 +226,10 @@ class HttpClient {
 
         return array('delimiter' => $delimiter, 'data' => $post_data);
     }
-    
+
     /**
-     * make request  
-     * 
+     * make request
+     *
      * @return string
      */
     public function request($data){
@@ -248,13 +248,11 @@ class HttpClient {
 
             if ($this->_needUploadFile || $this->_needUploadContent){
                 if ($this->_needUploadFile && file_exists(realpath($data[$this->_fileKey]))){
-                    if ($this->_needUploadFile && file_exists(realpath($data[$this->_fileKey]))){
-                        if (!class_exists('CURLFile')) {
-                            $data['file'] = '@' . realpath($data['file']);
-                        }
-                        else {
-                            $data['file'] = new CURLFile(realpath($data['file']));
-                        }
+                    if (!class_exists('CURLFile')) {
+                        $data['file'] = '@' . realpath($data['file']);
+                    }
+                    else {
+                        $data['file'] = new CURLFile(realpath($data['file']));
                     }
                 }
 
@@ -283,29 +281,29 @@ class HttpClient {
 
         return $result;
     }
-    
+
     /**
-     * 
+     *
      * @return string
-     */    
+     */
     public function getContent(){
         return $this->_content;
     }
-    
+
     /**
      * set flag for uploading file content
-     * 
+     *
      * @param bool $flag Description
      * @return HttpClient
      */
     public function setNeedUploadFile($flag){
         $this->_needUploadFile = $flag;
         return $this;
-    } 
-    
+    }
+
     /**
      * set flag for uploading content
-     * 
+     *
      * @param bool $flag
      * @return \HttpClient
      */
