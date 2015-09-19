@@ -30,7 +30,7 @@ class FileUploadParameterBuilder {
    *
    * @var bool
    */
-  protected $_approved = FALSE;
+  protected $_approved = TRUE;
 
   /**
    * api locales to approve

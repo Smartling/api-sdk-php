@@ -1,5 +1,5 @@
 {
-    "name": "smartling/api-skd-php",
+    "name": "smartling/api-sdk-php",
     "type": "library",
     "description": "PHP library to communicate with SmartlingAPI",
     "keywords": ["smartling", "i18n", "internationalization", "automated translation"],
