@@ -1,7 +1,6 @@
 <?php
 
-require_once("HttpClient.php");
-require_once("FileUploadParameterBuilder.php");
+namespace Smartling\Api;
 
 class SmartlingAPI {
 
@@ -11,31 +10,37 @@ class SmartlingAPI {
   const PRODUCTION_URL = 'https://api.smartling.com/v1';
 
   /**
-   * api base url
+   * Smartling API base url.
    *
    * @var string
    */
-  protected $_baseUrl = "";
+  protected $baseUrl;
 
   /**
+   * Smartling API key.
    *
    * @var string
    */
-  protected $_apiKey;
+  protected $apiKey;
 
   /**
+   * Smartling API project ID.
    *
    * @var string
    */
-  protected $_projectId;
+  protected $projectId;
 
+  /**
+   * @var HttpClientInterface
+   */
+  protected $connection;
   /**
    *
    * @var null | string
    */
   protected $_response = null;
 
-  public function __construct($baseUrl, $apiKey, $projectId, $mode = self::SANDBOX_MODE) {
+  public function __construct($baseUrl, $apiKey, $projectId, $mode = self::SANDBOX_MODE, $connection = null) {
     $this->_apiKey = $apiKey;
     $this->_projectId = $projectId;
     if ($mode == self::PRODUCTION_MODE) {
@@ -49,10 +54,17 @@ class SmartlingAPI {
     else {
       $this->_baseUrl = self::SANDBOX_URL;
     }
+
+    if (!$connection) {
+      $this->connection = new HttpClient($baseUrl, 403);
+    }
+    else {
+      $this->connection = $connection;
+    }
   }
 
   /**
-    * get locale list for project
+    * Get locale list for project.
     *
     * @return string
     */
@@ -61,15 +73,15 @@ class SmartlingAPI {
   }
 
   /**
-   * upload file to Smartling service
+   * Upload file to Smartling service.
    *
    * @param string $path
    * @param array $params
    * @return string
    */
   public function uploadFile($path, $params = array()) {
-  	$params['file'] = $path;
-    return $this->sendRequest('file/upload', $params, HttpClient::REQUEST_TYPE_POST, true);
+    $params['file'] = $path;
+    return $this->sendRequest('file/upload', $params, HttpClientInterface::REQUEST_TYPE_POST, true);
   }
 
   /**
@@ -81,7 +93,7 @@ class SmartlingAPI {
    */
   public function uploadContent($content, $params = array()) {
     $params['file'] = $content;
-    return $this->sendRequest('file/upload', $params, HttpClient::REQUEST_TYPE_POST, false, true);
+    return $this->sendRequest('file/upload', $params, HttpClientInterface::REQUEST_TYPE_POST, false, true);
   }
 
   /**
@@ -95,7 +107,7 @@ class SmartlingAPI {
     return $this->sendRequest('file/get', array_replace_recursive(array(
           'fileUri' => $fileUri,
           'locale' => $locale
-                ), $params), HttpClient::REQUEST_TYPE_GET);
+                ), $params), HttpClientInterface::REQUEST_TYPE_GET);
   }
 
   /**
@@ -109,7 +121,7 @@ class SmartlingAPI {
     return $this->sendRequest('file/status', array_replace_recursive(array(
           'fileUri' => $fileUri,
           'locale' => $locale
-                ), $params), HttpClient::REQUEST_TYPE_GET);
+                ), $params), HttpClientInterface::REQUEST_TYPE_GET);
   }
 
   /**
@@ -121,7 +133,7 @@ class SmartlingAPI {
    */
   public function getList($locale = '', $params = array()) {
     $params = (empty($locale)) ? $params : array_replace_recursive(array('locale' => $locale), $params);
-    return $this->sendRequest('file/list', $params, HttpClient::REQUEST_TYPE_GET);
+    return $this->sendRequest('file/list', $params, HttpClientInterface::REQUEST_TYPE_GET);
   }
 
   /**
@@ -135,7 +147,7 @@ class SmartlingAPI {
     return $this->sendRequest('file/rename', array(
           'fileUri' => $fileUri,
           'newFileUri' => $newFileUri,
-            ), HttpClient::REQUEST_TYPE_POST);
+            ), HttpClientInterface::REQUEST_TYPE_POST);
   }
 
   /**
@@ -147,7 +159,7 @@ class SmartlingAPI {
   public function deleteFile($fileUri) {
     return $this->sendRequest('file/delete', array(
           'fileUri' => $fileUri,
-            ), HttpClient::REQUEST_TYPE_DELETE);
+            ), HttpClientInterface::REQUEST_TYPE_DELETE);
   }
 
   /**
@@ -157,7 +169,7 @@ class SmartlingAPI {
    * @param string $fileType
    * @param string $locale
    * @param string $file
-   * @param string $overwrite
+   * @param boolean $overwrite
    * @param string $translationState
    * @return string
    */
@@ -170,7 +182,7 @@ class SmartlingAPI {
           'file' => $file,
           'overwrite' => $overwrite,
           'translationState' => $translationState,
-            ), HttpClient::REQUEST_TYPE_POST, true);
+            ), HttpClientInterface::REQUEST_TYPE_POST, true);
   }
 
   /**
@@ -179,26 +191,29 @@ class SmartlingAPI {
    * @param string $uri
    * @param array $requestData
    * @param string $method
+   * @param bool $needUploadFile
+   * @param bool $needUploadContent
    * @return string
+   * @throws \Exception
    */
   protected function sendRequest($uri, $requestData, $method, $needUploadFile = false, $needUploadContent = false) {
-    $connection = new HttpClient($this->_baseUrl . "/" . $uri, 443);
+    $this->connection->setUri($uri);
 
     $data['apiKey'] = $this->_apiKey;
     $data['projectId'] = $this->_projectId;
 
     $request = array_replace_recursive($data, $requestData);
 
-    $connection->setMethod($method)
-        ->setNeedUploadFile($needUploadFile)
-        ->setNeedUploadContent($needUploadContent);
+    $this->connection->setMethod($method)
+        ->requireUploadFile($needUploadFile)
+        ->requireUploadContent($needUploadContent);
 
-
-    if ($res = $connection->request($request)) {
-      return $this->_response = $connection->getContent();
+    if ($this->connection->request($request)) {
+      return $this->_response = $this->connection->getContent();
     }
     else {
-      return new Exception("Can't connect to server: " . $connection->getError());
+      // @todo provide own exceptions type
+      return new \Exception("Can't connect to server: " . $this->connection->getError());
     }
   }
 
@@ -248,7 +263,7 @@ class SmartlingAPI {
   public function getAuthorizedLocales($fileUri) {
     return $this->sendRequest('file/authorized_locales', array(
       'fileUri' => $fileUri,
-    ), HttpClient::REQUEST_TYPE_GET);
+    ), HttpClientInterface::REQUEST_TYPE_GET);
   }
 
 }

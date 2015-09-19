@@ -1,11 +1,13 @@
 <?php
 
+namespace Smartling\Api;
+
 /**
  * Description of HttpClient
  *
  * @author Igor
  */
-class HttpClient {
+class HttpClient implements HttpClientInterface {
 
     const REQUEST_TYPE_GET = 'GET';
     const REQUEST_TYPE_POST = 'POST';
@@ -13,7 +15,7 @@ class HttpClient {
     const REQUEST_TYPE_DELETE = 'DELETE';
 
     protected $_uri;
-
+    protected $_baseUrl;
 
     /**
      * http method
@@ -76,27 +78,25 @@ class HttpClient {
 
     /**
      *
-     * @param string $uri
+     * @param string $baseUrl
+     *
      * @param int $port
      */
-    public function __construct($uri, $port = 80) {
-        $this->_uri = $uri;
+    public function __construct($baseUrl, $port = 80) {
+        $this->_baseUrl = $baseUrl;
         $this->setMethod(self::REQUEST_TYPE_GET);
     }
 
     /**
-     *
-     * @param string $method
-     * @return \HttpClient
+     * {@inheritdoc}
      */
-    public function setMethod($method){
+    public function setMethod($method) {
         $this->_method = $method;
         return $this;
     }
 
     /**
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getStatus(){
         return $this->_headers['http_code'];
@@ -228,18 +228,22 @@ class HttpClient {
     }
 
     /**
+<<<<<<< HEAD:src/HttpClient.php
+     * {@inheritdoc}
+=======
      * make request
      *
      * @return string
+>>>>>>> ae9be7da97b66bb79f7195be8f97fd53b459ecf0:lib/HttpClient.php
      */
-    public function request($data){
+    public function request(array $data) {
         $get_params = '';
         if ($this->_method == self::REQUEST_TYPE_GET || $this->_method == self::REQUEST_TYPE_DELETE) {
             $get_params = '?' . http_build_query($data, NULL, '&');
         }
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->_uri . $get_params);
+        curl_setopt($ch, CURLOPT_URL, $this->_baseUrl . '/' . $this->_uri . $get_params);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
@@ -252,7 +256,7 @@ class HttpClient {
                         $data['file'] = '@' . realpath($data['file']);
                     }
                     else {
-                        $data['file'] = new CURLFile(realpath($data['file']));
+                        $data['file'] = new \CURLFile(realpath($data['file']));
                     }
                 }
 
@@ -283,36 +287,39 @@ class HttpClient {
     }
 
     /**
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function getContent(){
+    public function getContent() {
         return $this->_content;
     }
 
     /**
-     * set flag for uploading file content
-     *
-     * @param bool $flag Description
-     * @return HttpClient
+     * {@inheritdoc}
      */
-    public function setNeedUploadFile($flag){
+    public function requireUploadFile($flag) {
         $this->_needUploadFile = $flag;
         return $this;
     }
 
     /**
-     * set flag for uploading content
-     *
-     * @param bool $flag
-     * @return \HttpClient
+     * {@inheritdoc}
      */
-    public function setNeedUploadContent($flag){
+    public function requireUploadContent($flag){
         $this->_needUploadContent = $flag;
         return $this;
     }
 
-    public function getError() {
-        return $this->_errormsg;
+    /**
+     * {@inheritdoc}
+     */
+    public function getErrorMessage() {
+      return $this->_errormsg;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUri($uri) {
+      $this->_uri = $uri;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-include_once 'lib/SmartlingAPI.php';
+include_once 'src/SmartlingAPI.php';
 
 $key = "";
 $projectId = "";

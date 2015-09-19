@@ -1,5 +1,7 @@
 <?php
 
+namespace Smartling\Api;
+
 class FileUploadParameterBuilder {
 
   /**
