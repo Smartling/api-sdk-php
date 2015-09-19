@@ -27,7 +27,6 @@ To get source code, clone the repo:
 To contribute, fork it and follow [general GitHub guidelines](http://help.github.com/fork-a-repo/) with pull request.
 
 
-
 Copyright and license
 ---------------------
 
