@@ -1,83 +1,91 @@
 <?php
 
-include_once 'src/SmartlingAPI.php';
+/**
+ * @file
+ * Contains example of Smartling API usage.
+ *
+ * How to use:
+ * run "php example.php --api-key={API_KEY} --product-id={PRODUCT_ID}" in console
+ * or open page in browser using url
+ * http://localhost/example.php?api-key={API_KEY}&product-id={PRODUCT_ID}
+ */
 
-$key = "";
-$projectId = "";
+include_once 'vendor/autoload.php';
 
-$baseUrl = 'https://api.smartling.com/v1';
-$fileUri = 'testing.xml';
+use Smartling\SmartlingApi;
+use GuzzleHttp\Client;
+
+if (!empty($_GET['api-key']) || !empty($_GET['product-id'])) {
+  $key = $_GET['api-key'];
+  $projectId = $_GET['product-id'];
+}
+else {
+  foreach ($argv as $param) {
+    if (strpos($param, '--api-key') === 0) {
+      $key = substr($param, 10);
+    }
+    elseif (strpos($param, '--product-id') === 0) {
+      $projectId = substr($param, 13);
+    }
+  }
+}
+
+if (empty($key) || empty($projectId)) {
+  die('You have to specify Api Key and Product Id');
+}
+
+$baseUrl = 'https://api.smartling.com/v1/';
+$fileName = 'test.xml';
+$fileUri = 'test/resources/test.xml';
+$fileRealPath = realpath($fileUri);
 $fileType = 'xml';
-$newFileUri = 'newfile.xml';
-$fileName = 'translated.xml';
+$newFileName = 'new_test_file.xml';
+$retrievalType = 'pseudo';
 
-$content = file_get_contents(realpath('./test.xml'));
+$content = file_get_contents(realpath($fileUri));
 $fileContentUri = "testing_content.xml";
 
 $translationState = 'PUBLISHED';
 $locale = 'ru-RU';
 $locales_array = array('ru-RU');
 
+$client = new Client(['base_uri' => $baseUrl, 'debug' => TRUE]);
+$api = new SmartlingApi($baseUrl, $key, $projectId, $client);
 
-//init api object
-$api = new SmartlingAPI($baseUrl, $key, $projectId);
+$result = $api->uploadFile($fileRealPath, $fileName, $fileType);
+print (string) $result->getBody();
+echo "\nThis is a upload file\n";
 
-$upload_params = new FileUploadParameterBuilder();
-$upload_params->setFileUri($fileUri)
-    ->setFileType($fileType)
-    ->setLocalesToApprove($locales_array)
-    ->setOverwriteApprovedLocales(0)
-    ->setApproved(0)
-    ->setCallbackUrl('http://test.com/smartling');
-$upload_params = $upload_params->buildParameters();
+////try to download file
+$result = $api->downloadFile($fileName, $locale, $retrievalType);
+print (string) $result->getBody();
+echo "\nThis is a download file\n";
 
+$result = $api->getStatus($fileName, $locale);
+print (string) $result->getBody();
+echo "\nThis is a get status\n";
 
-//try to upload file
-$result = $api->uploadFile('./test.xml', $upload_params);
-var_dump($result);
-echo "<br />This is a upload file<br />";
+$result = $api->getAuthorizedLocales($fileName);
+print (string) $result->getBody();
+echo "\nThis is a get authorized locales\n";
 
-//try to upload content
-$result = $api->uploadContent($content, $upload_params);
-var_dump($result);
-echo "<br />This is a upload content<br />";
+$result = $api->getList($locale, ['limit' => 5, 'fileTypes' => 'xml', 'uriMask' => 'test']);
+print (string) $result->getBody();
+echo "\nThis is a get list\n";
 
-//try to download file
-$result = $api->downloadFile($fileUri, $locale);
-var_dump($result);
-echo "<br />This is a download file<br />";
+$result = $api->renameFile($fileName, $newFileName);
+print (string) $result->getBody();
+$api->renameFile($newFileName, $fileName);
+echo "\nThis is a rename file\n";
 
-//try to retrieve file status
-$result = $api->getStatus($fileUri, $locale);
-var_dump($result);
-echo "<br />This is a get status<br />";
+$result = $api->import($fileName, $fileType, $locale, $fileRealPath, $translationState, ['overwrite' => TRUE]);
+print (string) $result->getBody();
+echo "\nThis is a import file\n";
 
-//try to retrieve file authorized locales
-$result = $api->getAuthorizedLocales($fileUri);
-var_dump($result);
-echo "<br />This is a get authorized locales<br />";
+$result = $api->deleteFile($fileName);
+print (string) $result->getBody();
+echo "\nThis is delete file\n";
 
-//try get files list
-$result = $api->getList($locale);
-var_dump($result);
-echo "<br />This is a get list<br />";
-
-//try to rename file
-$result = $api->renameFile($fileUri, $newFileUri);
-var_dump($result);
-echo "<br />This is a rename file<br />";
-
-//try to import
-$result = $api->import($newFileUri, $fileType, $locale, './test.xml', true, $translationState);
-var_dump($result);
-echo "<br />This is a import file<br />";
-
-//try to delete file
-$result = $api->deleteFile($newFileUri);
-var_dump($result);
-echo "<br />This is delete file<br />";
-
-//try to get locale list for project
 $result = $api->getLocaleList();
-var_dump($result);
-echo "<br />This is the list of project locales<br />";
+print (string) $result->getBody();
+echo "\nThis is the list of project locales\n";

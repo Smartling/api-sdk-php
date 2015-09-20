@@ -1,7 +1,6 @@
 <?php
 
-use Smartling\Api\HttpClientInterface;
-use Smartling\Api\SmartlingApi;
+use Smartling\SmartlingApi;
 
 /**
  * Test class for SmartlingAPI.
