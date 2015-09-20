@@ -327,11 +327,16 @@ class SmartlingApi {
     if (in_array($method, ['GET', 'DELETE'])) {
       $options['query'] = $requestData;
     }
-    elseif ($needUploadFile) {
+    else {
       $options['multipart'] = [];
-      // Remove file from params array to add it manually later.
-      $file = $requestData['file'];
-      unset($requestData['file']);
+      // Remove file from params array and add it as a stream.
+      if (!empty($requestData['file'])) {
+        $options['multipart'][] = [
+          'name' => 'file',
+          'contents' => fopen($requestData['file'], 'r'),
+        ];
+        unset($requestData['file']);
+      }
       foreach ($requestData as $key => $value) {
         $options['multipart'][] = [
           'name' => $key,
@@ -339,15 +344,6 @@ class SmartlingApi {
           'contents' => (string) $value,
         ];
       }
-
-      // Separate handling for file content.
-      $options['multipart'][] = [
-        'name' => 'file',
-        'contents' => fopen($file, 'r'),
-      ];
-    }
-    else {
-      $options['form_params'] = $requestData;
     }
 
     try {
@@ -409,6 +405,10 @@ class SmartlingApi {
   public function getAuthorizedLocales($fileUri, $params = []) {
     $params['fileUri'] = $fileUri;
     return $this->sendRequest('file/authorized_locales', $params, 'GET');
+  }
+
+  protected function readFile($realFilePath) {
+    return fopen($realFilePath, 'r');
   }
 
 }
