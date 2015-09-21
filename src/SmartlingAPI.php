@@ -3,7 +3,6 @@
 namespace Smartling;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 
 class SmartlingApi {
 
@@ -40,6 +39,20 @@ class SmartlingApi {
    */
   protected $httpClient;
 
+  /**
+   * Creates SmartlingApi instance.
+   *
+   * @param string $baseUrl
+   *   Base URL of smartling service.
+   * @param string $apiKey
+   *   Api Key string.
+   * @param string $projectId
+   *   Project ID string.
+   * @param \GuzzleHttp\ClientInterface $http_client
+   *   Instance of Guzzle http client.
+   * @param string $mode
+   *   Production or Sandbox mode.
+   */
   public function __construct($baseUrl, $apiKey, $projectId, ClientInterface $http_client, $mode = self::SANDBOX_MODE) {
     $this->apiKey = $apiKey;
     $this->projectId = $projectId;
@@ -51,14 +64,89 @@ class SmartlingApi {
     }
 
     $this->httpClient = $http_client;
+  }
 
+
+  /**
+   * Sends request to Smartling Service via Guzzle Client.
+   *
+   * @param string $uri
+   *   Resource uri.
+   * @param array $requestData
+   *   Parameters to be send as query or multipart form elements.
+   * @param string $method
+   *   Http method uppercased.
+   * @param bool $needUploadFile
+   *   Flag that requestData contains file that has to be handled manually.
+   * @param bool $needUploadContent
+   *   Flag that requestData contains file content that has to be handled manually.
+   *
+   * @return array
+   *   Decoded JSON answer.
+   *
+   * @throws \Smartling\SmartlingApiException
+   */
+  protected function sendRequest($uri, $requestData, $method, $needUploadFile = false, $needUploadContent = false) {
+    // Set api key and product id as required arguments.
+    $requestData['apiKey'] = $this->apiKey;
+    $requestData['projectId'] = $this->projectId;
+
+    // Ask for JSON and disable Guzzle exceptions.
+    $options = [
+      'headers' => [
+        'Accept' => 'application/json',
+      ],
+      'http_errors' => FALSE,
+    ];
+
+    // For GET and DELETE http methods use just query parameter builder.
+    if (in_array($method, ['GET', 'DELETE'])) {
+      $options['query'] = $requestData;
+    }
+    else {
+      $options['multipart'] = [];
+      // Remove file from params array and add it as a stream.
+      if (!empty($requestData['file'])) {
+        $options['multipart'][] = [
+          'name' => 'file',
+          'contents' => fopen($requestData['file'], 'r'),
+        ];
+        unset($requestData['file']);
+      }
+      foreach ($requestData as $key => $value) {
+        // Hack to cast FALSE to '0' instead of empty string.
+        if (is_bool($value)) {
+          $value = (int) $value;
+        }
+        $options['multipart'][] = [
+          'name' => $key,
+          // Typecast everything to string to avoid curl notices.
+          'contents' => (string) $value,
+        ];
+      }
+    }
+
+    $guzzle_response = $this->httpClient->request($method, $uri, $options);
+
+    $response = json_decode($guzzle_response->getBody(), TRUE);
+
+    if (empty($response['response']['code']) || $response['response']['code'] == 'VALIDATION_ERROR') {
+      throw new SmartlingApiException(implode(' ', $response['response']['messages']));
+    }
+
+    return $response['response']['data'];
   }
 
   /**
-    * Get locale list for project.
-    *
-    * @return string
-    */
+   * Get locale list for project.
+   *
+   * @return array
+   *   List of locales objects.
+   *
+   * @throws \Smartling\SmartlingApiException
+   *
+   * @see http://docs.smartling.com/pages/API/Projects/
+   */
   public function getLocaleList() {
     return $this->sendRequest('project/locale/list', [], 'GET');
   }
@@ -84,10 +172,10 @@ class SmartlingApi {
    *   - 'localesToApprove': This value, if set, authorizes strings for
    *     translation into specific locales.
    *
-   * @return \GuzzleHttp\Psr7\Response
+   * @return array
+   *   Data about uploaded file.
    *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Smartling\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Upload-File/
    */
@@ -133,11 +221,10 @@ class SmartlingApi {
    *     return the original string or an empty string where no translation
    *     is available.
    *
-   * @return \GuzzleHttp\Psr7\Response
-   *   Object that will contain translated file binary data in body.
+   * @return string
+   *   File content.
    *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Smartling\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Download-File/
    */
@@ -156,10 +243,10 @@ class SmartlingApi {
    *   A locale identifier as specified in project setup.
    * @param array $params
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
+   *   Data about request file.
    *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Smartling\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Status/
    */
@@ -206,11 +293,10 @@ class SmartlingApi {
    *     "fileUri_desc". If you do not specify ascending or descending, the
    *     default is ascending.
    *
-   * @return \GuzzleHttp\Psr7\Response
+   * @return array
    *   List of files objects.
    *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Smartling\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/List/
    */
@@ -232,10 +318,10 @@ class SmartlingApi {
    *   name, similar to how version control systems identify the file.
    * @param array $params
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return string
+   *   Just empty string if everything was successfully.
    *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Smartling\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Rename/
    */
@@ -258,6 +344,8 @@ class SmartlingApi {
    *   Value that uniquely identifies the file.
    *
    * @return string
+   *
+   * @throws \Smartling\SmartlingApiException
    */
   public function deleteFile($fileUri) {
     return $this->sendRequest('file/delete', ['fileUri' => $fileUri], 'DELETE');
@@ -289,8 +377,7 @@ class SmartlingApi {
    *
    * @return string
    *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Smartling\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/Translation-Imports/
    */
@@ -301,72 +388,6 @@ class SmartlingApi {
     $params['file'] = $fileRealPath;
     $params['translationState'] = $translationState;
     return $this->sendRequest('file/import', $params, 'POST', true);
-  }
-
-  /**
-   * send request to Smartling Service
-   *
-   * @param string $uri
-   * @param array $requestData
-   * @param string $method
-   * @param bool $needUploadFile
-   * @param bool $needUploadContent
-   * @return \Psr\Http\Message\ResponseInterface
-   * @throws \Exception
-   */
-  protected function sendRequest($uri, $requestData, $method, $needUploadFile = false, $needUploadContent = false) {
-    $requestData['apiKey'] = $this->apiKey;
-    $requestData['projectId'] = $this->projectId;
-    $options = [
-      'headers' => [
-        'Accept' => 'application/json',
-      ],
-      'http_errors' => FALSE,
-    ];
-
-    if (in_array($method, ['GET', 'DELETE'])) {
-      $options['query'] = $requestData;
-    }
-    else {
-      $options['multipart'] = [];
-      // Remove file from params array and add it as a stream.
-      if (!empty($requestData['file'])) {
-        $options['multipart'][] = [
-          'name' => 'file',
-          'contents' => fopen($requestData['file'], 'r'),
-        ];
-        unset($requestData['file']);
-      }
-      foreach ($requestData as $key => $value) {
-        $options['multipart'][] = [
-          'name' => $key,
-          // Typecast everything to string to avoid curl notices.
-          'contents' => (string) $value,
-        ];
-      }
-    }
-
-    try {
-      return $this->httpClient->request($method, $uri, $options);
-    }
-    catch (GuzzleException $e) {
-      throw $e;
-    }
-  }
-
-  /**
-   *
-   * @return boolean | string
-   */
-  public function getCodeStatus() {
-    if (!is_null($this->_response)) {
-      if ($result = json_decode($this->_response)) {
-        return $result->response->code;
-      }
-    }
-    else {
-      return false;
-    }
   }
 
   /**
@@ -399,8 +420,7 @@ class SmartlingApi {
    * @return \Psr\Http\Message\ResponseInterface
    *   List of locales authorized in Smartling.
    *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \Smartling\SmartlingApiException
    */
   public function getAuthorizedLocales($fileUri, $params = []) {
     $params['fileUri'] = $fileUri;
