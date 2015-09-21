@@ -7,7 +7,7 @@
     </php>
     <testsuites>
         <testsuite name="Smartling API SDK PHP Test Suite">
-            <directory>./tests/</directory>
+            <directory>./test/</directory>
         </testsuite>
     </testsuites>
     <filter>
