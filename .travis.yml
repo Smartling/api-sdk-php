@@ -7,7 +7,9 @@ php:
   - hhvm
   - nightly
 
-script: phpunit --coverage-text
+before_script: composer install
+
+script: phpunit --coverage-text --debug --verbose
 
 notifications:
   email:

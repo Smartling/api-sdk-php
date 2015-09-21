@@ -14,7 +14,10 @@
         "phpunit/phpunit": "~4"
     },
     "autoload": {
-        "psr-4": { "Smartling\\": "src/" }
+        "psr-4": {
+            "Smartling\\": "src/",
+            "Smartling\\Tests\\": "tests/"
+        }
     },
     "minimum-stability": "dev",
     "extra": {

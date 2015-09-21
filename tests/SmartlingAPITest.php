@@ -1,11 +1,13 @@
 <?php
 
+namespace Smartling\Tests;
+
 use Smartling\SmartlingApi;
 
 /**
  * Test class for SmartlingAPI.
  */
-class SmartlingAPITest extends PHPUnit_Framework_TestCase
+class SmartlingAPITest extends \PHPUnit_Framework_TestCase
 {
 
     /**
