@@ -1,7 +1,4 @@
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.8/phpunit.xsd"
-         colors="true"
-         bootstrap="vendor/autoload.php">
+<phpunit colors="true" bootstrap="./vendor/autoload.php">
     <php>
         <ini name="error_reporting" value="-1" />
     </php>
@@ -15,7 +12,6 @@
             <directory>./</directory>
             <exclude>
                 <directory>./vendor</directory>
-                <directory>./tests</directory>
             </exclude>
         </whitelist>
     </filter>

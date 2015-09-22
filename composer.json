@@ -14,12 +14,10 @@
         "phpunit/phpunit": "~4"
     },
     "autoload": {
-        "psr-4": { "Smartling\\": "src/" }
-    },
-    "minimum-stability": "dev",
-    "extra": {
-        "branch-alias": {
-            "dev-master": "future"
+        "psr-4": {
+            "Smartling\\": "src/",
+            "Smartling\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
