@@ -7,7 +7,7 @@ use Smartling\SmartlingApi;
 /**
  * Test class for SmartlingAPI.
  */
-class SmartlingAPITest extends \PHPUnit_Framework_TestCase
+class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -49,7 +49,7 @@ class SmartlingAPITest extends \PHPUnit_Framework_TestCase
      */
     public function invokeMethod(&$object, $methodName, array $parameters = array())
     {
-        $reflection = new ReflectionClass(get_class($object));
+        $reflection = new \ReflectionClass(get_class($object));
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);
 
@@ -69,7 +69,7 @@ class SmartlingAPITest extends \PHPUnit_Framework_TestCase
                 'multipart' => [
                     [
                         'name' => 'file',
-                        'contents' => fopen('test/resources/test.xml', 'r')
+                        'contents' => fopen('tests/resources/test.xml', 'r')
                     ],
                     [
                         'name' => 'approved',
@@ -95,7 +95,7 @@ class SmartlingAPITest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->object->uploadFile('test/resources/test.xml', 'test.xml', 'xml', ['approved' => TRUE]);
+        $this->object->uploadFile('tests/resources/test.xml', 'test.xml', 'xml', ['approved' => TRUE]);
     }
 
     /**
@@ -266,7 +266,7 @@ class SmartlingAPITest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->object->import('test.xml', 'xml', 'en-EN', 'test/resources/test.xml', 'PUBLISHED', ['overwrite' => FALSE]);
+        $this->object->import('test.xml', 'xml', 'en-EN', 'tests/resources/test.xml', 'PUBLISHED', ['overwrite' => FALSE]);
     }
 
     /**
