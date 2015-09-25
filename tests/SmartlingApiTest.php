@@ -17,6 +17,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     protected $apiKey = 'TEST_API_KEY';
     protected $projectId = 'TEST_PROJECT_ID';
     protected $validResponse = '{"response":{"data":{"wordCount":1629,"stringCount":503,"overWritten":false},"code":"SUCCESS","messages":[]}}';
+    protected $responseWithException = '{"response":{"data":null,"code":"VALIDATION_ERROR","messages":["Validation error text"]}}';
     protected $client;
     protected $responseMock;
 
@@ -47,7 +48,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      * @param array $parameters
      * @return string | null | int | object | bool | resource | float
      */
-    public function invokeMethod(&$object, $methodName, array $parameters = array())
+    public function invokeMethod(&$object, $methodName, array $parameters = [])
     {
         $reflection = new \ReflectionClass(get_class($object));
         $method = $reflection->getMethod($methodName);
@@ -291,30 +292,112 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \Smartling\SmartlingApi::sendRequest
+     * @covers \Smartling\SmarltingApi:getContextStats
      */
-    public function _testSendRequest()
+    public function testGetContextStats() {
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with('GET', 'context/html', [
+                'headers' => ['Accept' => 'application/json'],
+                'http_errors' => FALSE,
+                'query' => [
+                    'apiKey' => $this->apiKey,
+                    'projectId' => $this->projectId,
+                ],
+            ])
+            ->willReturn($this->responseMock);
+        $this->object->getContextStats([]);
+    }
+
+    /**
+     * @covers \Smartling\SmarltingApi:uploadContext
+     */
+    public function testUploadContext() {
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with('POST', 'context/html', [
+                'headers' => ['Accept' => 'application/json'],
+                'http_errors' => FALSE,
+                'multipart' => [
+                    [
+                      'name' => 'apiKey',
+                      'contents'=> $this->apiKey,
+                    ],
+                    [
+                      'name' => 'projectId',
+                      'contents' => $this->projectId,
+                    ]
+                ],
+            ])
+            ->willReturn($this->responseMock);
+        $this->object->uploadContext([]);
+    }
+
+    /**
+     * @covers \Smartling\SmartlingApi::sendRequest
+     * @dataProvider sendRequestValidProvider
+     */
+    public function testSendRequest($uri, $requestData, $method, $params)
     {
+        $this->client->expects($this->once())
+          ->method('request')
+          ->with($method, $uri, $params)
+          ->willReturn($this->responseMock);
 
-        //check response type
-        $this->assertInternalType(
-            'string',
-            $this->invokeMethod($this->object, 'sendRequest', array(
-                '',
-                array(),
-                'POST'
-            ))
-        );
+        $result = $this->invokeMethod($this->client, 'sendRequest', [$uri, $requestData, $method]);
+        $this->assertEquals(['wordCount' => 1629, 'stringCount' => 503, 'overWritten' => false], $result);
+    }
 
-        //check not equals false
-        $this->assertNotEquals(
-            false,
-            $this->invokeMethod($this->object, 'sendRequest', array(
-                '',
-                array(),
-                'POST'
-            ))
-        );
-
+    public function sendRequestValidProvider() {
+        return [
+            [
+                'uri',
+                [],
+                'GET',
+                [
+                  'headers' => ['Accept' => 'application/json'],
+                  'http_errors' => FALSE,
+                  'query' => [
+                    'apiKey' => $this->apiKey,
+                    'projectId' => $this->projectId,
+                  ],
+                ]
+            ],
+            [
+                'uri',
+                [
+                    'key' => 'value',
+                    'boolean_false' => FALSE,
+                    'boolean_true' => TRUE,
+                ],
+                'POST',
+                [
+                  'headers' => ['Accept' => 'application/json'],
+                  'http_errors' => FALSE,
+                  'multipart' => [
+                    [
+                      'name' => 'key',
+                      'contents'=> 'value',
+                    ],
+                    [
+                      'name' => 'boolean_false',
+                      'contents'=> '0',
+                    ],
+                    [
+                      'name' => 'boolean_true',
+                      'contents'=> '1',
+                    ],
+                    [
+                      'name' => 'apiKey',
+                      'contents'=> $this->apiKey,
+                    ],
+                    [
+                      'name' => 'projectId',
+                      'contents' => $this->projectId,
+                    ]
+                  ],
+                ]
+            ]
+        ];
     }
 }

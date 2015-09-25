@@ -86,7 +86,7 @@ class SmartlingApi
      *
      * @throws \Smartling\SmartlingApiException
      */
-    protected function sendRequest($uri, $requestData, $method, $needUploadFile = false, $needUploadContent = false)
+    protected function sendRequest($uri, $requestData, $method)
     {
         // Set api key and product id as required arguments.
         $requestData['apiKey'] = $this->apiKey;
