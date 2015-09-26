@@ -181,7 +181,7 @@ class SmartlingApi
         $params['file'] = $realPath;
         $params['fileUri'] = $file_name;
         $params['fileType'] = $file_type;
-        return $this->sendRequest('file/upload', $params, 'POST', true);
+        return $this->sendRequest('file/upload', $params, 'POST');
     }
 
     /**
@@ -379,7 +379,7 @@ class SmartlingApi
         $params['locale'] = $locale;
         $params['file'] = $fileRealPath;
         $params['translationState'] = $translationState;
-        return $this->sendRequest('file/import', $params, 'POST', true);
+        return $this->sendRequest('file/import', $params, 'POST');
     }
 
     /**
