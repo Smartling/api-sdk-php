@@ -1,3 +1,6 @@
+![Build Status](https://secure.travis-ci.org/M1r1k/api-sdk-php.svg?branch=master)](http://travis-ci.org/M1r1k/api-sdk-php)
+
+
 [Smartling Translation API](http://docs.smartling.com)
 =================
 
