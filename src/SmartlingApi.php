@@ -76,17 +76,13 @@ class SmartlingApi
      *   Parameters to be send as query or multipart form elements.
      * @param string $method
      *   Http method uppercased.
-     * @param bool $needUploadFile
-     *   Flag that requestData contains file that has to be handled manually.
-     * @param bool $needUploadContent
-     *   Flag that requestData contains file content that has to be handled manually.
      *
      * @return array
      *   Decoded JSON answer.
      *
      * @throws \Smartling\SmartlingApiException
      */
-    protected function sendRequest($uri, $requestData, $method, $needUploadFile = false, $needUploadContent = false)
+    protected function sendRequest($uri, $requestData, $method)
     {
         // Set api key and product id as required arguments.
         $requestData['apiKey'] = $this->apiKey;
@@ -109,7 +105,7 @@ class SmartlingApi
             if (!empty($requestData['file'])) {
                 $options['multipart'][] = [
                     'name' => 'file',
-                    'contents' => fopen($requestData['file'], 'r'),
+                    'contents' => $this->readFile($requestData['file']),
                 ];
                 unset($requestData['file']);
             }
@@ -121,7 +117,7 @@ class SmartlingApi
                 $options['multipart'][] = [
                     'name' => $key,
                     // Typecast everything to string to avoid curl notices.
-                    'contents' => (string)$value,
+                    'contents' => (string) $value,
                 ];
             }
         }
@@ -185,20 +181,7 @@ class SmartlingApi
         $params['file'] = $realPath;
         $params['fileUri'] = $file_name;
         $params['fileType'] = $file_type;
-        return $this->sendRequest('file/upload', $params, 'POST', true);
-    }
-
-    /**
-     * Uploads original source content to Smartling.
-     *
-     * @param string $content
-     * @param array $params
-     * @return string
-     */
-    public function uploadContent($content, $params = array())
-    {
-        $params['file'] = $content;
-        return $this->sendRequest('file/upload', $params, 'POST', false, true);
+        return $this->sendRequest('file/upload', $params, 'POST');
     }
 
     /**
@@ -396,7 +379,7 @@ class SmartlingApi
         $params['locale'] = $locale;
         $params['file'] = $fileRealPath;
         $params['translationState'] = $translationState;
-        return $this->sendRequest('file/import', $params, 'POST', true);
+        return $this->sendRequest('file/import', $params, 'POST');
     }
 
     /**
@@ -439,9 +422,25 @@ class SmartlingApi
         return $this->sendRequest('file/authorized_locales', $params, 'GET');
     }
 
-    protected function readFile($realFilePath)
-    {
-        return fopen($realFilePath, 'r');
+    /**
+     * OOP wrapper for fopen() function.
+     *
+     * @param string $realPath
+     *   Real path for file.
+     *
+     * @return resource
+     *
+     * @throws \Smartling\SmartlingApiException
+     */
+    protected function readFile($realPath) {
+        $stream = @fopen($realPath, 'r');
+
+        if (!$stream) {
+            throw new SmartlingApiException("File $realPath was not able to be read.");
+        }
+        else {
+            return $stream;
+        }
     }
 
 }
