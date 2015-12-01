@@ -221,6 +221,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testDownloadFile()
     {
+        $expected_xml = '<?xml version="1.0"?><response><item key="6"></item></response>';
         $this->client->expects($this->once())
             ->method('request')
             ->with('GET', 'file/get', [
@@ -234,9 +235,11 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
                     'projectId' => $this->projectId,
                 ],
             ])
-            ->willReturn($this->responseMock);
+            ->willReturn($expected_xml);
 
-        $this->object->downloadFile('test.xml', 'en-EN', ['retrievalType' => 'pseudo']);
+        $actual_xml = $this->object->downloadFile('test.xml', 'en-EN', ['retrievalType' => 'pseudo']);
+
+        $this->assertEquals($expected_xml, $actual_xml);
     }
 
     /**
