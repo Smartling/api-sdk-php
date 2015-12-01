@@ -7,7 +7,7 @@ use GuzzleHttp\ClientInterface;
 class SmartlingApi
 {
 
-    const SERVICE_URL = 'https://api.smartling.com/v1/';
+    const DEFAULT_SERVICE_URL = 'https://api.smartling.com/v1';
 
     /**
      * Smartling API base url.
@@ -46,12 +46,15 @@ class SmartlingApi
      *   Project ID string.
      * @param \GuzzleHttp\ClientInterface $http_client
      *   Instance of Guzzle http client.
+     * @param string $base_service_url
+     *   Url for Smartling translation service.
      */
-    public function __construct($apiKey, $projectId, ClientInterface $http_client)
+    public function __construct($apiKey, $projectId, ClientInterface $http_client, $base_service_url = null)
     {
         $this->apiKey = $apiKey;
         $this->projectId = $projectId;
         $this->httpClient = $http_client;
+        $this->baseUrl = rtrim($base_service_url ?: self::DEFAULT_SERVICE_URL , '/');
     }
 
     /**
@@ -109,21 +112,32 @@ class SmartlingApi
             }
         }
 
+        // Avoid double slashes in final URL.
         $uri = ltrim($uri, "/");
 
-        $guzzle_response = $this->httpClient->request($method, self::SERVICE_URL . $uri, $options);
-
+        $guzzle_response = $this->httpClient->request($method, $this->baseUrl . $uri, $options);
         $response_body = (string) $guzzle_response->getBody();
-        if (strpos($response_body, '<?xml') === 0) {
+
+        // Catch all errors from Smartling and throw appropriate exception.
+        if ($guzzle_response->getStatusCode() >= 400) {
+            $error_response = json_decode($response_body, TRUE);
+
+            if (!$error_response || empty($error_response['response']['messages'])) {
+                throw new SmartlingApiException('Bad response format from Smartling');
+            }
+
+            throw new SmartlingApiException(implode(' || ', $error_response['response']['messages']), $guzzle_response->getStatusCode());
+        }
+
+        // "Download file" method return translated file directly.
+        if ('file/get' == $uri) {
             return $response_body;
         }
 
         $response = json_decode($response_body, TRUE);
-        // @see http://docs.smartling.com/pages/API/Getting-Started/Response-Format/
-        // @todo Review response code results.
-        if ($response['response']['code'] !== 'SUCCESS') {
-            $code = self::strToErrorCode($response['response']['code']);
-            throw new SmartlingApiException(implode(' || ', $response['response']['messages']), $code);
+        // Throw exception if json is not valid.
+        if (!$response || empty($response['response']['data'])) {
+            throw new SmartlingApiException('Bad response format from Smartling');
         }
 
         return $response['response']['data'];
@@ -214,6 +228,7 @@ class SmartlingApi
     {
         $params['fileUri'] = $fileUri;
         $params['locale'] = $locale;
+
         return $this->sendRequest('file/get', $params, 'GET');
     }
 
@@ -439,31 +454,4 @@ class SmartlingApi
         }
     }
 
-    /**
-     * Returns an error message string.
-     *
-     * @param int $code
-     * @return string
-     */
-    public static function errorCodeToStr($code) {
-        $errors = [
-            0 => 'VALIDATION_ERROR'
-        ];
-
-        return isset($errors[$code]) ? $errors[$code] : '';
-    }
-
-    /**
-     * Returns an int value that corresponds to error message.
-     *
-     * @param string $str
-     * @return int
-     */
-    public static function strToErrorCode($str) {
-        $errors = [
-            'VALIDATION_ERROR' => 0
-        ];
-
-        return isset($errors[$str]) ? $errors[$str] : -1;
-    }
 }

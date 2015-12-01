@@ -120,27 +120,26 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     /**
      * Tests constructor.
      *
-     * @param string $actualBaseUrl
-     *   Base Url string that will be passed as and argument to constructor.
      * @param string $apiKey
      *   Api key string.
      * @param string $projectId
      *   Project Id string.
      * @param \GuzzleHttp\ClientInterface $client
      *   Mock of Guzzle http client instance.
-     * @param null|string $mode
-     *   Production, sandbox or no value for mode.
-     * @param string $expectedBaseUrl
-     *   Base url that has to be set inside constructor.
+     * @param string|null $expected_base_url
+     *   Base Url string that will be used as based url.
+     * @param string|null $actual_base_url
+     *   Base Url string that will be passed as and argument to constructor.
      *
      * @covers       \Smartling\SmartlingApi::__construct
      *
      * @dataProvider constructorDataProvider
      */
-    public function testConstructor($apiKey, $projectId, $client)
+    public function testConstructor($apiKey, $projectId, $client, $expected_base_url, $actual_base_url)
     {
-        $smartlingApi = new SmartlingApi($apiKey, $projectId, $client);
+        $smartlingApi = new SmartlingApi($apiKey, $projectId, $client, $actual_base_url);
 
+        $this->assertEquals($expected_base_url, $this->readProperty($smartlingApi, 'baseUrl'));
         $this->assertEquals($apiKey, $this->readProperty($smartlingApi, 'apiKey'));
         $this->assertEquals($projectId, $this->readProperty($smartlingApi, 'projectId'));
         $this->assertEquals($client, $this->readProperty($smartlingApi, 'httpClient'));
@@ -162,14 +161,10 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         return [
-            ['api-key', 'product-id', $mockedClient],
-//            ['uri', 'api-key', 'product-id', $mockedClient, SmartlingApi::PRODUCTION_MODE, 'uri'],
-//            ['uri', 'api-key', 'product-id', $mockedClient, null, rtrim(SmartlingApi::SANDBOX_URL, '/')],
-//            ['uri', 'api-key', 'product-id', $mockedClient, 'unknown', rtrim(SmartlingApi::SANDBOX_URL, '/')],
-//            ['', 'api-key', 'product-id', $mockedClient, 'unknown', rtrim(SmartlingApi::SANDBOX_URL, '/')],
-//            ['', 'api-key', 'product-id', $mockedClient, SmartlingApi::PRODUCTION_MODE, rtrim(SmartlingApi::SERVICE_URL, '/')],
-//            ['', 'api-key', 'product-id', $mockedClient, SmartlingApi::SANDBOX_MODE, rtrim(SmartlingApi::SANDBOX_URL, '/')],
-//            ['', 'api-key', 'product-id', $mockedClient, null, rtrim(SmartlingApi::SANDBOX_URL, '/')],
+            ['api-key', 'product-id', $mockedClient, SmartlingApi::DEFAULT_SERVICE_URL, null],
+            ['api-key', 'product-id', $mockedClient, SmartlingApi::DEFAULT_SERVICE_URL, SmartlingApi::DEFAULT_SERVICE_URL],
+            ['api-key', 'product-id', $mockedClient, SmartlingApi::DEFAULT_SERVICE_URL, SmartlingApi::DEFAULT_SERVICE_URL . '/'],
+            ['api-key', 'product-id', $mockedClient, 'https://www.google.com.ua/webhp', 'https://www.google.com.ua/webhp'],
         ];
     }
 
@@ -180,7 +175,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SERVICE_URL . 'file/upload', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'file/upload', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -217,24 +212,24 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Smartling\SmartlingApi::downloadFile
+     *
+     * @dataProvider downloadFileParams
      */
-    public function testDownloadFile()
+    public function testDownloadFile($options, $expected_translated_file)
     {
-        $expected_xml = '<?xml version="1.0"?><response><item key="6"></item></response>';
         $this->responseMock = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
             ->disableOriginalConstructor()
             ->getMock();
         $this->responseMock->expects($this->any())
             ->method('getBody')
-            ->willReturn($expected_xml);
+            ->willReturn($expected_translated_file);
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SERVICE_URL . 'file/get', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/get', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
-                'query' => [
-                    'retrievalType' => 'pseudo',
+                'query' => $options + [
                     'fileUri' => 'test.xml',
                     'locale' => 'en-EN',
                     'apiKey' => $this->apiKey,
@@ -243,9 +238,17 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $actual_xml = $this->object->downloadFile('test.xml', 'en-EN', ['retrievalType' => 'pseudo']);
+        $actual_xml = $this->object->downloadFile('test.xml', 'en-EN', $options);
 
-        $this->assertEquals($expected_xml, $actual_xml);
+        $this->assertEquals($expected_translated_file, $actual_xml);
+    }
+
+    public function downloadFileParams() {
+        return [
+            [['retrievalType' => 'pseudo'], '<?xml version="1.0"?><response><item key="6"></item></response>'],
+            [[], '<?xml version="1.0"?><response><item key="6"></item></response>'],
+            [[], '{"string1":"translation1", "string2":"translation2"}'],
+        ];
     }
 
     /**
@@ -255,7 +258,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SERVICE_URL . 'file/status', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/status', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -277,7 +280,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SERVICE_URL . 'project/locale/list', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'project/locale/list', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -298,7 +301,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SERVICE_URL . 'file/list', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/list', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -319,7 +322,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SERVICE_URL . 'file/rename', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'file/rename', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -353,7 +356,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SERVICE_URL . 'file/authorized_locales', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/authorized_locales', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -374,7 +377,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SERVICE_URL . 'file/import', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'file/import', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -424,7 +427,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('DELETE', SmartlingApi::SERVICE_URL . 'file/delete', [
+            ->with('DELETE', SmartlingApi::DEFAULT_SERVICE_URL . 'file/delete', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -445,7 +448,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SERVICE_URL . 'context/html', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -464,7 +467,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SERVICE_URL . 'context/html', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -493,12 +496,78 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $response->expects($this->any())
+            ->method('getStatusCode')
+            ->willReturn(400);
+        $response->expects($this->any())
             ->method('getBody')
             ->willReturn($this->responseWithException);
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SERVICE_URL . 'context/html', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
+                'headers' => ['Accept' => 'application/json'],
+                'http_errors' => FALSE,
+                'query' => [
+                    'apiKey' => $this->apiKey,
+                    'projectId' => $this->projectId,
+                ],
+            ])
+            ->willReturn($response);
+
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'GET']);
+    }
+
+    /**
+     * @covers \Smartling\SmartlingApi::sendRequest
+     * @expectedException \Smartling\SmartlingApiException
+     * @expectedExceptionMessage Bad response format from Smartling
+     */
+    public function testBadJsonFormatSendRequest() {
+        $response = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $response->expects($this->any())
+            ->method('getStatusCode')
+            ->willReturn(200);
+        $response->expects($this->any())
+            ->method('getBody')
+            ->willReturn(rtrim($this->responseWithException, '}'));
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
+                'headers' => ['Accept' => 'application/json'],
+                'http_errors' => FALSE,
+                'query' => [
+                    'apiKey' => $this->apiKey,
+                    'projectId' => $this->projectId,
+                ],
+            ])
+            ->willReturn($response);
+
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'GET']);
+    }
+
+    /**
+     * @covers \Smartling\SmartlingApi::sendRequest
+     * @expectedException \Smartling\SmartlingApiException
+     * @expectedExceptionMessage Bad response format from Smartling
+     */
+    public function testBadJsonFormatInErrorMessageSendRequest() {
+        $response = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $response->expects($this->any())
+            ->method('getStatusCode')
+            ->willReturn(401);
+        $response->expects($this->any())
+            ->method('getBody')
+            ->willReturn(rtrim($this->responseWithException, '}'));
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -524,7 +593,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with($method, SmartlingApi::SERVICE_URL . $uri, $params)
+            ->with($method, SmartlingApi::DEFAULT_SERVICE_URL . $uri, $params)
             ->willReturn($this->responseMock);
 
         $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $requestData, $method]);
@@ -616,7 +685,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      * @expectedException \Smartling\SmartlingApiException
      * @expectedExceptionMessage File unexisted was not able to be read.
      */
-    public function testFailedreadFile()
+    public function testFailedReadFile()
     {
         $invalidFilePath = 'unexisted';
         $smartlingApi = $this->getMockBuilder('Smartling\\SmartlingApi')
