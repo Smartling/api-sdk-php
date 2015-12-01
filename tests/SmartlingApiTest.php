@@ -163,14 +163,14 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         return [
-            ['uri', 'api-key', 'product-id', $mockedClient, SmartlingApi::SANDBOX_MODE, SmartlingApi::SANDBOX_URL],
+            ['uri', 'api-key', 'product-id', $mockedClient, SmartlingApi::SANDBOX_MODE, rtrim(SmartlingApi::SANDBOX_URL, '/')],
             ['uri', 'api-key', 'product-id', $mockedClient, SmartlingApi::PRODUCTION_MODE, 'uri'],
-            ['uri', 'api-key', 'product-id', $mockedClient, null, SmartlingApi::SANDBOX_URL],
-            ['uri', 'api-key', 'product-id', $mockedClient, 'unknown', SmartlingApi::SANDBOX_URL],
-            ['', 'api-key', 'product-id', $mockedClient, 'unknown', SmartlingApi::SANDBOX_URL],
-            ['', 'api-key', 'product-id', $mockedClient, SmartlingApi::PRODUCTION_MODE, SmartlingApi::PRODUCTION_URL],
-            ['', 'api-key', 'product-id', $mockedClient, SmartlingApi::SANDBOX_MODE, SmartlingApi::SANDBOX_URL],
-            ['', 'api-key', 'product-id', $mockedClient, null, SmartlingApi::SANDBOX_URL],
+            ['uri', 'api-key', 'product-id', $mockedClient, null, rtrim(SmartlingApi::SANDBOX_URL, '/')],
+            ['uri', 'api-key', 'product-id', $mockedClient, 'unknown', rtrim(SmartlingApi::SANDBOX_URL, '/')],
+            ['', 'api-key', 'product-id', $mockedClient, 'unknown', rtrim(SmartlingApi::SANDBOX_URL, '/')],
+            ['', 'api-key', 'product-id', $mockedClient, SmartlingApi::PRODUCTION_MODE, rtrim(SmartlingApi::PRODUCTION_URL, '/')],
+            ['', 'api-key', 'product-id', $mockedClient, SmartlingApi::SANDBOX_MODE, rtrim(SmartlingApi::SANDBOX_URL, '/')],
+            ['', 'api-key', 'product-id', $mockedClient, null, rtrim(SmartlingApi::SANDBOX_URL, '/')],
         ];
     }
 
@@ -181,7 +181,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SANDBOX_URL . '/file/upload', [
+            ->with('POST', SmartlingApi::SANDBOX_URL . 'file/upload', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -231,7 +231,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SANDBOX_URL . '/file/get', [
+            ->with('GET', SmartlingApi::SANDBOX_URL . 'file/get', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -256,7 +256,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SANDBOX_URL . '/file/status', [
+            ->with('GET', SmartlingApi::SANDBOX_URL . 'file/status', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -278,7 +278,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SANDBOX_URL . '/project/locale/list', [
+            ->with('GET', SmartlingApi::SANDBOX_URL . 'project/locale/list', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -299,7 +299,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SANDBOX_URL . '/file/list', [
+            ->with('GET', SmartlingApi::SANDBOX_URL . 'file/list', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -320,7 +320,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SANDBOX_URL . '/file/rename', [
+            ->with('POST', SmartlingApi::SANDBOX_URL . 'file/rename', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -354,7 +354,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SANDBOX_URL . '/file/authorized_locales', [
+            ->with('GET', SmartlingApi::SANDBOX_URL . 'file/authorized_locales', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -375,7 +375,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SANDBOX_URL . '/file/import', [
+            ->with('POST', SmartlingApi::SANDBOX_URL . 'file/import', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -425,7 +425,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('DELETE', SmartlingApi::SANDBOX_URL . '/file/delete', [
+            ->with('DELETE', SmartlingApi::SANDBOX_URL . 'file/delete', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -446,7 +446,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SANDBOX_URL . '/context/html', [
+            ->with('GET', SmartlingApi::SANDBOX_URL . 'context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -465,7 +465,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::SANDBOX_URL . '/context/html', [
+            ->with('POST', SmartlingApi::SANDBOX_URL . 'context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -499,7 +499,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::SANDBOX_URL . '/context/html', [
+            ->with('GET', SmartlingApi::SANDBOX_URL . 'context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -525,7 +525,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with($method, SmartlingApi::SANDBOX_URL . '/' . $uri, $params)
+            ->with($method, SmartlingApi::SANDBOX_URL . $uri, $params)
             ->willReturn($this->responseMock);
 
         $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $requestData, $method]);

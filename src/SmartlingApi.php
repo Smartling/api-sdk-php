@@ -64,6 +64,8 @@ class SmartlingApi
             $this->baseUrl = self::SANDBOX_URL;
         }
 
+        $this->baseUrl = rtrim($this->baseUrl, "/");
+
         $this->httpClient = $http_client;
     }
 
@@ -121,6 +123,8 @@ class SmartlingApi
                 ];
             }
         }
+
+        $uri = ltrim($uri, "/");
 
         $guzzle_response = $this->httpClient->request($method, $this->baseUrl . '/' . $uri, $options);
 
