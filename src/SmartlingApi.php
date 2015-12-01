@@ -122,12 +122,19 @@ class SmartlingApi
             }
         }
 
-        $guzzle_response = $this->httpClient->request($method, $uri, $options);
+        $guzzle_response = $this->httpClient->request($method, $this->baseUrl . '/' . $uri, $options);
 
-        $response = json_decode($guzzle_response->getBody(), TRUE);
+        $response_body = (string) $guzzle_response->getBody();
+        if (strpos($response_body, '<?xml') === 0) {
+            return $response_body;
+        }
 
-        if (empty($response['response']['code']) || $response['response']['code'] == 'VALIDATION_ERROR') {
-            throw new SmartlingApiException(implode(' ', $response['response']['messages']));
+        $response = json_decode($response_body, TRUE);
+        // @see http://docs.smartling.com/pages/API/Getting-Started/Response-Format/
+        // @todo Review response code results.
+        if ($response['response']['code'] !== 'SUCCESS') {
+            $code = self::strToErrorCode($response['response']['code']);
+            throw new SmartlingApiException(implode(' || ', $response['response']['messages']), $code);
         }
 
         return $response['response']['data'];
@@ -443,4 +450,31 @@ class SmartlingApi
         }
     }
 
+    /**
+     * Returns an error message string.
+     *
+     * @param int $code
+     * @return string
+     */
+    public static function errorCodeToStr($code) {
+        $errors = [
+            0 => 'VALIDATION_ERROR'
+        ];
+
+        return isset($errors[$code]) ? $errors[$code] : '';
+    }
+
+    /**
+     * Returns an int value that corresponds to error message.
+     *
+     * @param string $str
+     * @return int
+     */
+    public static function strToErrorCode($str) {
+        $errors = [
+            'VALIDATION_ERROR' => 0
+        ];
+
+        return isset($errors[$str]) ? $errors[$str] : -1;
+    }
 }
