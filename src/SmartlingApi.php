@@ -7,10 +7,7 @@ use GuzzleHttp\ClientInterface;
 class SmartlingApi
 {
 
-    const SANDBOX_MODE = 'SANDBOX';
-    const PRODUCTION_MODE = 'PRODUCTION';
-    const SANDBOX_URL = 'https://sandbox-api.smartling.com/v1/';
-    const PRODUCTION_URL = 'https://api.smartling.com/v1/';
+    const SERVICE_URL = 'https://api.smartling.com/v1/';
 
     /**
      * Smartling API base url.
@@ -43,29 +40,17 @@ class SmartlingApi
     /**
      * Creates SmartlingApi instance.
      *
-     * @param string $baseUrl
-     *   Base URL of smartling service.
      * @param string $apiKey
      *   Api Key string.
      * @param string $projectId
      *   Project ID string.
      * @param \GuzzleHttp\ClientInterface $http_client
      *   Instance of Guzzle http client.
-     * @param string $mode
-     *   Production or Sandbox mode.
      */
-    public function __construct($baseUrl, $apiKey, $projectId, ClientInterface $http_client, $mode = self::SANDBOX_MODE)
+    public function __construct($apiKey, $projectId, ClientInterface $http_client)
     {
         $this->apiKey = $apiKey;
         $this->projectId = $projectId;
-        if ($mode == self::PRODUCTION_MODE) {
-            $this->baseUrl = !empty($baseUrl) ? $baseUrl : self::PRODUCTION_URL;
-        } else {
-            $this->baseUrl = self::SANDBOX_URL;
-        }
-
-        $this->baseUrl = rtrim($this->baseUrl, "/");
-
         $this->httpClient = $http_client;
     }
 
@@ -126,7 +111,7 @@ class SmartlingApi
 
         $uri = ltrim($uri, "/");
 
-        $guzzle_response = $this->httpClient->request($method, $this->baseUrl . '/' . $uri, $options);
+        $guzzle_response = $this->httpClient->request($method, self::SERVICE_URL . $uri, $options);
 
         $response_body = (string) $guzzle_response->getBody();
         if (strpos($response_body, '<?xml') === 0) {
