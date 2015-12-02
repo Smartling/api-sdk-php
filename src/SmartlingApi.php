@@ -130,7 +130,7 @@ class SmartlingApi
         }
 
         // "Download file" method return translated file directly.
-        if ('file/get' == $uri) {
+        if ('file/get' === $uri) {
             return $response_body;
         }
 
