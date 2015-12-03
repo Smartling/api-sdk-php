@@ -175,7 +175,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'file/upload', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . '/file/upload', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -226,7 +226,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/get', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/file/get', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => $options + [
@@ -258,7 +258,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/status', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/file/status', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -280,7 +280,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'project/locale/list', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/project/locale/list', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -301,7 +301,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/list', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/file/list', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -322,7 +322,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'file/rename', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . '/file/rename', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -356,7 +356,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'file/authorized_locales', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/file/authorized_locales', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -377,7 +377,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'file/import', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . '/file/import', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -427,7 +427,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('DELETE', SmartlingApi::DEFAULT_SERVICE_URL . 'file/delete', [
+            ->with('DELETE', SmartlingApi::DEFAULT_SERVICE_URL . '/file/delete', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -448,7 +448,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -467,7 +467,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
+            ->with('POST', SmartlingApi::DEFAULT_SERVICE_URL . '/context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'multipart' => [
@@ -504,7 +504,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -535,7 +535,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -567,7 +567,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . 'context/html', [
+            ->with('GET', SmartlingApi::DEFAULT_SERVICE_URL . '/context/html', [
                 'headers' => ['Accept' => 'application/json'],
                 'http_errors' => FALSE,
                 'query' => [
@@ -593,7 +593,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     {
         $this->client->expects($this->once())
             ->method('request')
-            ->with($method, SmartlingApi::DEFAULT_SERVICE_URL . $uri, $params)
+            ->with($method, SmartlingApi::DEFAULT_SERVICE_URL . '/' .$uri, $params)
             ->willReturn($this->responseMock);
 
         $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $requestData, $method]);

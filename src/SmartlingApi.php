@@ -115,7 +115,7 @@ class SmartlingApi
         // Avoid double slashes in final URL.
         $uri = ltrim($uri, "/");
 
-        $guzzle_response = $this->httpClient->request($method, $this->baseUrl . $uri, $options);
+        $guzzle_response = $this->httpClient->request($method, $this->baseUrl . '/' . $uri, $options);
         $response_body = (string) $guzzle_response->getBody();
 
         // Catch all errors from Smartling and throw appropriate exception.
