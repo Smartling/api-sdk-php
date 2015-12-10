@@ -36,7 +36,7 @@ if (empty($key) || empty($projectId)) {
 
 $baseUrl = 'https://api.smartling.com/v1/';
 $fileName = 'test.xml';
-$fileUri = 'test/resources/test.xml';
+$fileUri = 'tests/resources/test.xml';
 $fileRealPath = realpath($fileUri);
 $fileType = 'xml';
 $newFileName = 'new_test_file.xml';
@@ -50,42 +50,42 @@ $locale = 'ru-RU';
 $locales_array = array('ru-RU');
 
 $client = new Client(['base_uri' => $baseUrl, 'debug' => TRUE]);
-$api = new SmartlingApi($baseUrl, $key, $projectId, $client);
+$api = new SmartlingApi($key, $projectId, $client, $baseUrl);
 
 $result = $api->uploadFile($fileRealPath, $fileName, $fileType);
-print (string) $result->getBody();
+var_dump($result);
 echo "\nThis is a upload file\n";
 
 ////try to download file
-$result = $api->downloadFile($fileName, $locale, $retrievalType);
-print (string) $result->getBody();
+$result = $api->downloadFile($fileName, $locale, ['retrievalType' => $retrievalType]);
+var_dump($result);
 echo "\nThis is a download file\n";
 
 $result = $api->getStatus($fileName, $locale);
-print (string) $result->getBody();
+var_dump($result);
 echo "\nThis is a get status\n";
 
 $result = $api->getAuthorizedLocales($fileName);
-print (string) $result->getBody();
+var_dump($result);
 echo "\nThis is a get authorized locales\n";
 
 $result = $api->getList($locale, ['limit' => 5, 'fileTypes' => 'xml', 'uriMask' => 'test']);
-print (string) $result->getBody();
+var_dump($result);
 echo "\nThis is a get list\n";
-
-$result = $api->renameFile($fileName, $newFileName);
-print (string) $result->getBody();
-$api->renameFile($newFileName, $fileName);
-echo "\nThis is a rename file\n";
+//
+//$result = $api->renameFile($fileName, $newFileName);
+//var_dump($result);
+//$api->renameFile($newFileName, $fileName);
+//echo "\nThis is a rename file\n";
 
 $result = $api->import($fileName, $fileType, $locale, $fileRealPath, $translationState, ['overwrite' => TRUE]);
-print (string) $result->getBody();
+var_dump($result);
 echo "\nThis is a import file\n";
 
 $result = $api->deleteFile($fileName);
-print (string) $result->getBody();
+var_dump($result);
 echo "\nThis is delete file\n";
 
 $result = $api->getLocaleList();
-print (string) $result->getBody();
+var_dump($result);
 echo "\nThis is the list of project locales\n";

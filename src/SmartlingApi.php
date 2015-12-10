@@ -130,13 +130,13 @@ class SmartlingApi
         }
 
         // "Download file" method return translated file directly.
-        if ('file/get' === $uri) {
+        if ('file/get' == $uri) {
             return $response_body;
         }
 
         $response = json_decode($response_body, TRUE);
         // Throw exception if json is not valid.
-        if (!$response || empty($response['response']['data'])) {
+        if (!$response || empty($response['response']) || !array_key_exists('data', $response['response'])) {
             throw new SmartlingApiException('Bad response format from Smartling');
         }
 
