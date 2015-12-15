@@ -2,4 +2,4 @@
 
 namespace Smartling\Exceptions;
 
-class InvalidAccessTokenException extends \Exception {}
+class SmartlingApiException extends \Exception {}

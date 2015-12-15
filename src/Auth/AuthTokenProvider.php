@@ -6,6 +6,7 @@ use GuzzleHttp\ClientInterface;
 use Smartling\Logger\DevNullLogger;
 use Smartling\Logger\LoggerInterface;
 use GuzzleHttp\Client;
+use Smartling\Exceptions\SmartlingApiException;
 
 class AuthTokenProvider implements AuthApiInterface {
   protected $userIdentifier;
@@ -24,7 +25,7 @@ class AuthTokenProvider implements AuthApiInterface {
   }
 
   public static function create($userIdentifier, $secretKey) {
-    $client = new Client(['base_uri' => self::$apiUrl, 'debug' => TRUE]);
+    $client = new Client(['base_uri' => self::$apiUrl, 'debug' => FALSE]);
     $logger = new DevNullLogger();
 
     return new static($userIdentifier, $secretKey, $client, $logger);
@@ -40,14 +41,16 @@ class AuthTokenProvider implements AuthApiInterface {
 
 
   public function getAccessToken() {
-    return $this->sendRequest('authenticate', [], 'POST');
+    $token = $this->sendRequest('authenticate', [], 'POST');
+    return $token['accessToken'];
+
   }
 
 
   protected function sendRequest($uri, $requestData, $method) {
     // Set api key and product id as required arguments.
-    $requestData['apiKey'] = $this->apiKey;
-    $requestData['projectId'] = $this->projectId;
+    $requestData['userIdentifier'] = $this->userIdentifier;
+    $requestData['userSecret'] = $this->secretKey;
 
     // Ask for JSON and disable Guzzle exceptions.
     $options = [
@@ -61,37 +64,38 @@ class AuthTokenProvider implements AuthApiInterface {
     if (in_array($method, ['GET', 'DELETE'])) {
       $options['query'] = $requestData;
     } else {
-      $options['multipart'] = [];
-
-      foreach ($requestData as $key => $value) {
-        // Hack to cast FALSE to '0' instead of empty string.
-        if (is_bool($value)) {
-          $value = (int)$value;
-        }
-        $options['multipart'][] = [
-          'name' => $key,
-          // Typecast everything to string to avoid curl notices.
-          'contents' => (string) $value,
-        ];
-      }
+      $options['json'] = $requestData;
+//      $options['multipart'] = [];
+//
+//      foreach ($requestData as $key => $value) {
+//        // Hack to cast FALSE to '0' instead of empty string.
+//        if (is_bool($value)) {
+//          $value = (int)$value;
+//        }
+//        $options['multipart'][] = [
+//          'name' => $key,
+//          // Typecast everything to string to avoid curl notices.
+//          'contents' => (string) $value,
+//        ];
+//      }
     }
 
     // Avoid double slashes in final URL.
     $uri = ltrim($uri, "/");
-    $options['retries'] = 11;
+//    $options['retries'] = 11;
 
-    $guzzle_response = $this->httpClient->request($method, $this->baseUrl . '/' . $uri, $options);
+    $guzzle_response = $this->httpClient->request($method, self::$apiUrl . $uri, $options);
     $response_body = (string) $guzzle_response->getBody();
 
     // Catch all errors from Smartling and throw appropriate exception.
     if ($guzzle_response->getStatusCode() >= 400) {
       $error_response = json_decode($response_body, TRUE);
 
-      if (!$error_response || empty($error_response['response']['messages'])) {
+      if (!$error_response || empty($error_response['response']['errors'])) {
         throw new SmartlingApiException('Bad response format from Smartling');
       }
 
-      throw new SmartlingApiException(implode(' || ', $error_response['response']['messages']), $guzzle_response->getStatusCode());
+      throw new SmartlingApiException(implode(' || ', $error_response['response']['errors']), $guzzle_response->getStatusCode());
     }
 
     // "Download file" method return translated file directly.
@@ -100,6 +104,7 @@ class AuthTokenProvider implements AuthApiInterface {
     }
 
     $response = json_decode($response_body, TRUE);
+
     // Throw exception if json is not valid.
     if (!$response || empty($response['response']['data'])) {
       throw new SmartlingApiException('Bad response format from Smartling');
