@@ -102,13 +102,14 @@ class SmartlingFileApi {
    * @throws \Smartling\Exceptions\SmartlingApiException
    */
   protected function sendRequest($uri, $requestData, $method) {
-
+    //@todo: add type hinting for array
     $token = $this->auth->getAccessToken();
     //var_dump($token);
     // Ask for JSON and disable Guzzle exceptions.
     $options = [
       'headers' => [
         'Accept' => 'application/json',
+        //@todo: get type from auth object
         'Authorization' => ' Bearer ' . $token,
       ],
       'http_errors' => FALSE,
@@ -149,6 +150,7 @@ class SmartlingFileApi {
     $response_body = (string) $guzzle_response->getBody();
     //var_dump($response_body);
     // Catch all errors from Smartling and throw appropriate exception.
+    //@todo: add special handling for 401 error - authentication error => expire token
     if ($guzzle_response->getStatusCode() >= 400) {
       $error_response = json_decode($response_body, TRUE);
 
@@ -157,10 +159,12 @@ class SmartlingFileApi {
       }
 
       //var_dump($error_response['response']['errors']);
+      //@todo: implode messages
       throw new SmartlingApiException($error_response['response']['errors'][0]['message'], $guzzle_response->getStatusCode());
     }
 
     // "Download file" method return translated file directly.
+    //@todo: split into 2 cases
     if (strpos($response_body, '<?xml') === 0) {
       return $response_body;
     }
@@ -171,7 +175,7 @@ class SmartlingFileApi {
       throw new SmartlingApiException('Bad response format from Smartling');
     }
 
-    return isset($response['response']['data'])?:TRUE;
+    return isset($response['response']['data'])?$response['response']['data']:TRUE;
   }
 
   /**
