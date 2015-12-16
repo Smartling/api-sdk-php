@@ -10,6 +10,7 @@ use Smartling\Logger\DevNullLogger;
 use Smartling\Logger\LoggerInterface;
 use GuzzleHttp\Client;
 
+use Smartling\Params\BaseParameters;
 use Smartling\Params\UploadFileParameters;
 use Smartling\Params\DownloadFileParameters;
 use Smartling\Params\ListFilesParameters;
@@ -293,6 +294,8 @@ class SmartlingFileApi {
    *   Value that uniquely identifies the file.
    * @param string $locale
    *   A locale identifier as specified in project setup.
+   * @param BaseParameters $params
+   *   Additional parameters that might be added later
    *
    * @return array
    *   Data about request file.
@@ -301,8 +304,8 @@ class SmartlingFileApi {
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Status/
    */
-  public function getStatus($fileUri, $locale) {
-    $params = [];
+  public function getStatus($fileUri, $locale, BaseParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
     $params['fileUri'] = $fileUri;
     return $this->sendRequest("locales/$locale/file/status", $params, self::REQUEST_TYPE_GET);
   }
@@ -354,6 +357,7 @@ class SmartlingFileApi {
    * @param string $newFileUri
    *   The new value for fileUri. We recommend that you use file path + file
    *   name, similar to how version control systems identify the file.
+   * @param BaseParameters $params
    *
    * @return string
    *   Just empty string if everything was successfully.
@@ -362,8 +366,8 @@ class SmartlingFileApi {
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Rename/
    */
-  public function renameFile($fileUri, $newFileUri) {
-    $params = [];
+  public function renameFile($fileUri, $newFileUri, BaseParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
     $params['fileUri'] = $fileUri;
     $params['newFileUri'] = $newFileUri;
     return $this->sendRequest('file/rename', $params, self::REQUEST_TYPE_POST);
@@ -380,13 +384,16 @@ class SmartlingFileApi {
    *
    * @param string $fileUri
    *   Value that uniquely identifies the file.
+   * @param BaseParameters $params
    *
    * @return string
    *
    * @throws \Smartling\Exceptions\SmartlingApiException
    */
-  public function deleteFile($fileUri) {
-    return $this->sendRequest('file/delete', ['fileUri' => $fileUri], self::REQUEST_TYPE_POST);
+  public function deleteFile($fileUri, BaseParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
+    $params['fileUri'] = $fileUri;
+    return $this->sendRequest('file/delete', $params, self::REQUEST_TYPE_POST);
   }
 
   /**
@@ -453,14 +460,15 @@ class SmartlingFileApi {
    *
    * @param string $fileUri
    *   Value that uniquely identifies the file.
+   * @param  BaseParameters $params
    *
    * @return \Psr\Http\Message\ResponseInterface
    *   List of locales authorized in Smartling.
    *
    * @throws \Smartling\Exceptions\SmartlingApiException
    */
-  public function getAuthorizedLocales($fileUri) {
-    $params = [];
+  public function getAuthorizedLocales($fileUri, BaseParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
     $params['fileUri'] = $fileUri;
     return $this->sendRequest('file/authorized-locales', $params, self::REQUEST_TYPE_GET);
   }
@@ -469,10 +477,12 @@ class SmartlingFileApi {
    * retrieve all statuses about file translations progress
    *
    * @param string $fileUri
+   * @param BaseParameters $params
+   *
    * @return string
    */
-  public function getStatusAllLocales($fileUri) {
-    $params = [];
+  public function getStatusAllLocales($fileUri, BaseParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
     $params['fileUri'] = $fileUri;
 
     return $this->sendRequest('file/status', $params, self::REQUEST_TYPE_GET);
@@ -483,10 +493,12 @@ class SmartlingFileApi {
    * retrieve all statuses about file translations progress
    *
    * @param string $fileUri
+   * @param BaseParameters $params
+   *
    * @return string
    */
-  public function getLastModified($fileUri) {
-    $params = [];
+  public function getLastModified($fileUri, BaseParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
     $params['fileUri'] = $fileUri;
 
     return $this->sendRequest('file/last-modified', $params, self::REQUEST_TYPE_GET);
