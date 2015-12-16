@@ -10,6 +10,11 @@ use Smartling\Logger\DevNullLogger;
 use Smartling\Logger\LoggerInterface;
 use GuzzleHttp\Client;
 
+use Smartling\Params\UploadFileParameters;
+use Smartling\Params\DownloadFileParameters;
+use Smartling\Params\ListFilesParameters;
+
+
 
 class SmartlingFileApi {
 
@@ -85,6 +90,27 @@ class SmartlingFileApi {
     return new static($projectId, $auth, $client, $logger);
   }
 
+  /**
+   * OOP wrapper for fopen() function.
+   *
+   * @param string $realPath
+   *   Real path for file.
+   *
+   * @return resource
+   *
+   * @throws \Smartling\Exceptions\SmartlingApiException
+   */
+  protected function readFile($realPath) {
+    $stream = @fopen($realPath, 'r');
+
+    if (!$stream) {
+      throw new SmartlingApiException("File $realPath was not able to be read.");
+    }
+    else {
+      return $stream;
+    }
+  }
+
 
   /**
    * Sends request to Smartling Service via Guzzle Client.
@@ -95,22 +121,24 @@ class SmartlingFileApi {
    *   Parameters to be send as query or multipart form elements.
    * @param string $method
    *   Http method uppercased.
+   * @param boolean $processResponseBody
+   *   Tells whether reposnse should be processed as usual or not. The body
+   *   shouldn't be processed when we download a file, and response is an XML.
    *
    * @return array
    *   Decoded JSON answer.
    *
    * @throws \Smartling\Exceptions\SmartlingApiException
    */
-  protected function sendRequest($uri, $requestData, $method) {
-    //@todo: add type hinting for array
+  protected function sendRequest($uri, array $requestData, $method, $processResponseBody = TRUE) {
     $token = $this->auth->getAccessToken();
+    $tokenType = $this->auth->getTokenType();
     //var_dump($token);
     // Ask for JSON and disable Guzzle exceptions.
     $options = [
       'headers' => [
         'Accept' => 'application/json',
-        //@todo: get type from auth object
-        'Authorization' => ' Bearer ' . $token,
+        'Authorization' => " $tokenType $token",
       ],
       'http_errors' => FALSE,
     ];
@@ -148,24 +176,26 @@ class SmartlingFileApi {
     //print($this->baseUrl . '/' . $uri);
     $guzzle_response = $this->httpClient->request($method, $this->baseUrl . '/' . $uri, $options);
     $response_body = (string) $guzzle_response->getBody();
-    //var_dump($response_body);
+    $status_code = $guzzle_response->getStatusCode();
+
+    //Special handling for 401 error - authentication error => expire token
+    if ($status_code == 401) {
+      $this->auth->resetToken();
+    }
+
     // Catch all errors from Smartling and throw appropriate exception.
-    //@todo: add special handling for 401 error - authentication error => expire token
-    if ($guzzle_response->getStatusCode() >= 400) {
+    if ($status_code >= 400) {
       $error_response = json_decode($response_body, TRUE);
 
       if (!$error_response || empty($error_response['response']['errors'])) {
         throw new SmartlingApiException('Bad response format from Smartling');
       }
 
-      //var_dump($error_response['response']['errors']);
-      //@todo: implode messages
-      throw new SmartlingApiException($error_response['response']['errors'][0]['message'], $guzzle_response->getStatusCode());
+      $error_msg = array_map(function($a){return $a['message'];}, $error_response['response']['errors']);
+      throw new SmartlingApiException(implode(' || ', $error_msg), $guzzle_response->getStatusCode());
     }
 
-    // "Download file" method return translated file directly.
-    //@todo: split into 2 cases
-    if (strpos($response_body, '<?xml') === 0) {
+    if (!$processResponseBody) {
       return $response_body;
     }
 
@@ -190,7 +220,7 @@ class SmartlingFileApi {
    *   Unique identifier for the file type. Permitted values: android, ios,
    *   gettext, html, javaProperties, yaml, xliff, xml, json, docx, pptx, xlsx,
    *   idml, qt, resx, plaintext, cvs, stringsdict.
-   * @param array $params
+   * @param UploadFileParameters $params
    *   (optional) An associative array of additional options, with the following
    *   elements:
    *   - 'approved': Determines whether content in the file is authorized
@@ -202,11 +232,13 @@ class SmartlingFileApi {
    * @return array
    *   Data about uploaded file.
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Upload-File/
    */
-  public function uploadFile($realPath, $file_name, $file_type, $params = array()) {
+  public function uploadFile($realPath, $file_name, $file_type, UploadFileParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
+
     $params['file'] = $realPath;
     $params['fileUri'] = $file_name;
     $params['fileType'] = $file_type;
@@ -226,7 +258,7 @@ class SmartlingFileApi {
    * @param string $locale
    *   A locale identifier as specified in project setup. If no locale
    *   is specified, original content is returned.
-   * @param array $params
+   * @param DownloadFileParameters $params
    *   (optional) An associative array of additional options, with the following
    *   elements:
    *   - 'retrievalType': Determines the desired format for the download. Could
@@ -239,14 +271,19 @@ class SmartlingFileApi {
    * @return string
    *   File content.
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Download-File/
    */
-  public function downloadFile($fileUri, $locale = '', $params = []) {
+  public function downloadFile($fileUri, $locale = '', DownloadFileParameters $params = NULL) {
+    if (empty($locale)) {
+      return;
+    }
+
+    $params = (is_null($params)) ? [] : $params->exportToArray();
     $params['fileUri'] = $fileUri;
 
-    return $this->sendRequest("locales/{$locale}/file", $params, self::REQUEST_TYPE_GET);
+    return $this->sendRequest("locales/{$locale}/file", $params, self::REQUEST_TYPE_GET, FALSE);
   }
 
   /**
@@ -256,16 +293,16 @@ class SmartlingFileApi {
    *   Value that uniquely identifies the file.
    * @param string $locale
    *   A locale identifier as specified in project setup.
-   * @param array $params
    *
    * @return array
    *   Data about request file.
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Status/
    */
-  public function getStatus($fileUri, $locale, $params = []) {
+  public function getStatus($fileUri, $locale) {
+    $params = [];
     $params['fileUri'] = $fileUri;
     return $this->sendRequest("locales/$locale/file/status", $params, self::REQUEST_TYPE_GET);
   }
@@ -273,7 +310,7 @@ class SmartlingFileApi {
   /**
    * Lists recently uploaded files. Returns a maximum of 500 files.
    *
-   * @param array $params
+   * @param ListFilesParameters $params
    *   (optional) An associative array of additional options, with the following
    *   elements:
    *   - 'uriMask': Returns only files with a URI containing a given string.
@@ -292,25 +329,17 @@ class SmartlingFileApi {
    *   - 'limit': For result set returns, limits the number of files returned;
    *     for example, for a result set of 50 files, a limit of "10" would
    *     return files 0 - 10.
-   *   - 'conditions': An array of the following conditions:
-   *     haveAtLeastOneUnapproved, haveAtLeastOneApproved,
-   *     haveAtLeastOneTranslated, haveAllTranslated, haveAllApproved,
-   *     haveAllUnapproved. Conditions are combined using the logical "OR".
-   *   - 'orderBy': Sets the name of the parameter to order results by: fileUri,
-   *     stringCount, wordCount, approvedStringCount, completedStringCount,
-   *     lastUploaded and fileType. You can specify ascending or descending with
-   *     each parameter by adding "_asc" or "_desc"; for example,
-   *     "fileUri_desc". If you do not specify ascending or descending, the
-   *     default is ascending.
    *
    * @return array
    *   List of files objects.
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/List/
    */
-  public function getList($params = []) {
+  public function getList(ListFilesParameters $params = NULL) {
+    $params = (is_null($params)) ? [] : $params->exportToArray();
+
     return $this->sendRequest('files/list', $params, self::REQUEST_TYPE_GET);
   }
 
@@ -325,16 +354,16 @@ class SmartlingFileApi {
    * @param string $newFileUri
    *   The new value for fileUri. We recommend that you use file path + file
    *   name, similar to how version control systems identify the file.
-   * @param array $params
    *
    * @return string
    *   Just empty string if everything was successfully.
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/FileAPI/Rename/
    */
-  public function renameFile($fileUri, $newFileUri, $params = []) {
+  public function renameFile($fileUri, $newFileUri) {
+    $params = [];
     $params['fileUri'] = $fileUri;
     $params['newFileUri'] = $newFileUri;
     return $this->sendRequest('file/rename', $params, self::REQUEST_TYPE_POST);
@@ -354,7 +383,7 @@ class SmartlingFileApi {
    *
    * @return string
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    */
   public function deleteFile($fileUri) {
     return $this->sendRequest('file/delete', ['fileUri' => $fileUri], self::REQUEST_TYPE_POST);
@@ -378,7 +407,7 @@ class SmartlingFileApi {
    *   Value indicating the workflow state to import the translations into.
    *   Content will be imported into the language's default workflow.
    *   Could be 'PUBLISHED' or 'POST_TRANSLATION'.
-   * @param array $params
+   * @param boolean $overwrite
    *   (optional) An associative array of additional options, with the following
    *   elements:
    *   - 'overwrite': Boolean indicating whether or not to overwrite existing
@@ -386,15 +415,16 @@ class SmartlingFileApi {
    *
    * @return string
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    *
    * @see http://docs.smartling.com/pages/API/Translation-Imports/
    */
-  public function import($locale, $fileUri, $fileType, $fileRealPath, $translationState, $params = []) {
+  public function import($locale, $fileUri, $fileType, $fileRealPath, $translationState, $overwrite  = FALSE) {
     $params['fileUri'] = $fileUri;
     $params['fileType'] = $fileType;
     $params['file'] = $fileRealPath;
     $params['translationState'] = $translationState;
+    $params['overwrite'] = $overwrite;
     return $this->sendRequest("/locales/$locale/file/import", $params, self::REQUEST_TYPE_POST);
   }
 
@@ -423,39 +453,17 @@ class SmartlingFileApi {
    *
    * @param string $fileUri
    *   Value that uniquely identifies the file.
-   * @param array $params
    *
    * @return \Psr\Http\Message\ResponseInterface
    *   List of locales authorized in Smartling.
    *
-   * @throws \Smartling\SmartlingApiException
+   * @throws \Smartling\Exceptions\SmartlingApiException
    */
-  public function getAuthorizedLocales($fileUri, $params = []) {
+  public function getAuthorizedLocales($fileUri) {
+    $params = [];
     $params['fileUri'] = $fileUri;
     return $this->sendRequest('file/authorized-locales', $params, self::REQUEST_TYPE_GET);
   }
-
-  /**
-   * OOP wrapper for fopen() function.
-   *
-   * @param string $realPath
-   *   Real path for file.
-   *
-   * @return resource
-   *
-   * @throws \Smartling\Exceptions\SmartlingApiException
-   */
-  protected function readFile($realPath) {
-    $stream = @fopen($realPath, 'r');
-
-    if (!$stream) {
-      throw new SmartlingApiException("File $realPath was not able to be read.");
-    }
-    else {
-      return $stream;
-    }
-  }
-
 
   /**
    * retrieve all statuses about file translations progress
@@ -463,7 +471,8 @@ class SmartlingFileApi {
    * @param string $fileUri
    * @return string
    */
-  public function getStatusAllLocales($fileUri, $params = []) {
+  public function getStatusAllLocales($fileUri) {
+    $params = [];
     $params['fileUri'] = $fileUri;
 
     return $this->sendRequest('file/status', $params, self::REQUEST_TYPE_GET);
@@ -476,7 +485,8 @@ class SmartlingFileApi {
    * @param string $fileUri
    * @return string
    */
-  public function getLastModified($fileUri, $params = []) {
+  public function getLastModified($fileUri) {
+    $params = [];
     $params['fileUri'] = $fileUri;
 
     return $this->sendRequest('file/last-modified', $params, self::REQUEST_TYPE_GET);

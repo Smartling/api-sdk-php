@@ -9,6 +9,8 @@ use GuzzleHttp\Client;
 use Smartling\Exceptions\SmartlingApiException;
 
 class AuthTokenProvider implements AuthApiInterface {
+  protected $data;
+
   protected $userIdentifier;
   protected $secretKey;
   protected $logger;
@@ -41,13 +43,27 @@ class AuthTokenProvider implements AuthApiInterface {
 
 
   public function getAccessToken() {
-    $token = $this->sendRequest('authenticate', [], 'POST');
-    return $token['accessToken'];
+    $this->data = $this->sendRequest('authenticate', [], 'POST');
+    /*
+     ["accessToken"]=>  string(1087) "eyJhbGciOiJ..."
+     ["refreshToken"]=>  string(821) "eyJh..."
+     ["expiresIn"]=>  int(300)
+     ["refreshExpiresIn"]=>  int(3660)
+     ["tokenType"]=>  string(6) "Bearer"
+     */
+    return $this->data['accessToken'];
+  }
 
+  public function getTokenType() {
+    return isset($this->data['tokenType']) ? $this->data['tokenType'] : '';
+  }
+
+  public function resetToken() {
+    $this->data = [];
   }
 
 
-  protected function sendRequest($uri, $requestData, $method) {
+  protected function sendRequest($uri, array $requestData, $method) {
     // Set api key and product id as required arguments.
     $requestData['userIdentifier'] = $this->userIdentifier;
     $requestData['userSecret'] = $this->secretKey;
@@ -57,6 +73,7 @@ class AuthTokenProvider implements AuthApiInterface {
       'headers' => [
         'Accept' => 'application/json',
       ],
+      //@todo: google if we need this
       'http_errors' => FALSE,
     ];
 

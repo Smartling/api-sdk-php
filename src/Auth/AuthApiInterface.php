@@ -6,7 +6,11 @@ interface AuthApiInterface {
 
   /**
    * @return string token
-   * @throws InvalidAccessTokenException
+   * @throws Smartling\Exceptions\InvalidAccessTokenException
    */
   public function getAccessToken();
+
+  public function getTokenType();
+
+  public function resetToken();
 }
