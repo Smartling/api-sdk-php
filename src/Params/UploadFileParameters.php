@@ -8,8 +8,9 @@ class UploadFileParameters extends BaseParameters {
     return $this;
   }
 
-  public function setClientLibId($client_lib_id) {
-    $this->params['smartling.client_lib_id'] = $client_lib_id;
+  public function setClientLibId($client_lib_id, $version) {
+    $json = ['client' => $client_lib_id, 'version' => $version];
+    $this->params['smartling.client_lib_id'] = json_encode($json);
     return $this;
   }
 
@@ -20,7 +21,7 @@ class UploadFileParameters extends BaseParameters {
 
   public function setAuthorized($authorized) {
     //@todo: accroding to the doc this will be renamed to "authorize" with default value FALSE
-    $this->params['approved'] = $authorized;
+    $this->params['approved'] = (int) $authorized;
     return $this;
   }
 

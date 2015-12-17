@@ -277,10 +277,6 @@ class SmartlingFileApi {
    * @see http://docs.smartling.com/pages/API/FileAPI/Download-File/
    */
   public function downloadFile($fileUri, $locale = '', DownloadFileParameters $params = NULL) {
-    if (empty($locale)) {
-      return;
-    }
-
     $params = (is_null($params)) ? [] : $params->exportToArray();
     $params['fileUri'] = $fileUri;
 
