@@ -431,26 +431,6 @@ class SmartlingFileApi {
     return $this->sendRequest("/locales/$locale/file/import", $params, self::REQUEST_TYPE_POST);
   }
 
-//  /**
-//   * upload context to Smartling
-//   *
-//   * @param array $data
-//   * @return string
-//   */
-//  public function uploadContext($data) {
-//    return $this->sendRequest('context/html', $data, self::REQUEST_TYPE_POST);
-//  }
-//
-//  /**
-//   * Get statistics for context upload
-//   *
-//   * @param array $data
-//   * @return string
-//   */
-//  public function getContextStats($data) {
-//    return $this->sendRequest('context/html', $data, self::REQUEST_TYPE_GET);
-//  }
-
   /**
    * Get list of authorized locales for given file.
    *
