@@ -2,6 +2,8 @@
 
 namespace Smartling\Logger;
 
+use Psr\Log\LoggerInterface;
+
 class DevNullLogger implements LoggerInterface {
 
   /**

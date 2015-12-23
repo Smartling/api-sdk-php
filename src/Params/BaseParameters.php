@@ -2,14 +2,29 @@
 
 namespace Smartling\Params;
 
+/**
+ * Class BaseParameters
+ *
+ * @package Smartling\Params
+ */
 class BaseParameters implements ParameterInterface {
-  protected $params = [];
 
-  public function exportToArray() {
-    return $this->params;
-  }
+	/**
+	 * @var array
+	 */
+	protected $params = [ ];
 
-  public function set($key, $value) {
-    $this->params[$key] = $value;
-  }
+	/**
+	 * @inheritdoc
+	 */
+	public function exportToArray () {
+		return $this->params;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function set ( $key, $value ) {
+		$this->params[ $key ] = $value;
+	}
 }

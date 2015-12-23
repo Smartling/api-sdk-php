@@ -2,8 +2,25 @@
 
 namespace Smartling\Params;
 
+/**
+ * Interface ParameterInterface
+ *
+ * @package Smartling\Params
+ */
 interface ParameterInterface {
-  public function exportToArray();
 
-  public function set($key, $value);
+	/**
+	 * Returns associative array with key => value pairs of set params
+	 *
+	 * @return array
+	 */
+	public function exportToArray ();
+
+	/**
+	 * @param string $key
+	 * @param mixed  $value
+	 *
+	 * @return void
+	 */
+	public function set ( $key, $value );
 }

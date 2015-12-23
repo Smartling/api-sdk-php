@@ -1,32 +1,84 @@
 <?php
 
 namespace Smartling\Params;
+use Smartling\Bootstrap;
 
+/**
+ * Class UploadFileParameters
+ *
+ * @package Smartling\Params
+ */
 class UploadFileParameters extends BaseParameters {
-  public function __construct() {
-    $this->params['smartling.client_lib_id'] = "{\"client\":\"api-sdk-php\",\"version\":\"2.x\"}";
-    return $this;
-  }
 
-  public function setClientLibId($client_lib_id, $version) {
-    $json = ['client' => $client_lib_id, 'version' => $version];
-    $this->params['smartling.client_lib_id'] = json_encode($json);
-    return $this;
-  }
+	const CLIENT_LIB_ID_SDK = 'api-sdk-php';
+	const CLIENT_LIB_ID_VERSION = '2.x';
 
-  public function setCallbackUrl($callback_url) {
-    $this->params['callbackUrl'] = $callback_url;
-    return $this;
-  }
+	public function __construct ( $clientLibId = self::CLIENT_LIB_ID_SDK, $clientLibVersion = self::CLIENT_LIB_ID_VERSION ) {
+		$this->setClientLibId( $clientLibId, $clientLibVersion );
+	}
 
-  public function setAuthorized($authorized) {
-    //@todo: accroding to the doc this will be renamed to "authorize" with default value FALSE
-    $this->params['approved'] = (int) $authorized;
-    return $this;
-  }
+	/**
+	 * @param string $client_lib_id
+	 * @param string $version
+	 *
+	 * @return UploadFileParameters
+	 */
+	public function setClientLibId ( $client_lib_id, $version ) {
 
-  public function setLocalesToApprove($locales_to_approve) {
-    $this->params['localesToApprove'] = $locales_to_approve;
-    return $this;
-  }
+		$this->set(
+			'smartling.client_lib_id',
+			json_encode(
+				[
+					'client'  => $client_lib_id,
+					'version' => $version,
+				],
+				JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
+			)
+		);
+
+		return $this;
+	}
+
+	/**
+	 * @param string $callback_url
+	 *
+	 * @return UploadFileParameters
+	 */
+	public function setCallbackUrl ( $callback_url ) {
+		$this->set( 'callbackUrl', $callback_url );
+
+		return $this;
+	}
+
+	/**
+	 * @param int $authorized
+	 *
+	 * @return UploadFileParameters
+	 */
+	public function setAuthorized ( $authorized ) {
+		$this->set( 'authorize', $authorized );
+
+		return $this;
+	}
+
+	/**
+	 * @param array $locales_to_approve
+	 *
+	 * @return UploadFileParameters
+	 */
+	public function setLocalesToApprove ( $locales_to_approve ) {
+		$this->set( 'localeIdsToAuthorize', $locales_to_approve );
+
+		return $this;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function exportToArray () {
+		$params              = $this->params;
+		$params['authorize'] =  ( empty( $params['localeIdsToAuthorize'] ) ) ? : false;
+
+		return $params;
+	}
 }

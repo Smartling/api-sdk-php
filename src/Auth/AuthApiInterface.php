@@ -1,16 +1,28 @@
 <?php
 
 namespace Smartling\Auth;
+use Smartling\Exceptions\InvalidAccessTokenException;
 
+/**
+ * Interface AuthApiInterface
+ *
+ * @package Smartling\Auth
+ */
 interface AuthApiInterface {
 
   /**
    * @return string token
-   * @throws Smartling\Exceptions\InvalidAccessTokenException
+   * @throws InvalidAccessTokenException
    */
   public function getAccessToken();
 
+  /**
+   * @return string
+   */
   public function getTokenType();
 
+  /**
+   * @return void
+   */
   public function resetToken();
 }
