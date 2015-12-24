@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartling\Params;
+namespace Smartling\File\Params;
 
 /**
  * Class BaseParameters
