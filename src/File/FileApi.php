@@ -1,312 +1,42 @@
 <?php
 
-namespace Smartling;
+namespace Smartling\File;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
-use Smartling\Auth\AuthApiInterface;
-use Smartling\Auth\AuthTokenProvider;
+use Smartling\AuthApi\AuthApiInterface;
+use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
+use Smartling\File\Params\DownloadFileParameters;
+use Smartling\File\Params\ListFilesParameters;
+use Smartling\File\Params\ParameterInterface;
+use Smartling\File\Params\UploadFileParameters;
 use Smartling\Helpers\HttpVerbHelper;
-use Smartling\Params\DownloadFileParameters;
-use Smartling\Params\ListFilesParameters;
-use Smartling\Params\ParameterInterface;
-use Smartling\Params\UploadFileParameters;
 
-class SmartlingFileApi {
 
-	const STRATEGY_GENERAL = 'general';
+/**
+ * Class FileApi
+ *
+ * @package Smartling\Api
+ */
+class FileApi extends BaseApiAbstract {
 
-	const STRATEGY_DOWNLOAD = 'download';
-
-	/**
-	 * Default service entry point
-	 */
-	const DEFAULT_SERVICE_URL = 'https://api.smartling.com/files-api/v2/projects/';
+	const ENDPOINT_URL = 'https://api.smartling.com/files-api/v2/projects';
 
 	/**
-	 * Project Id in Smartling dashboard
-	 *
-	 * @var string
-	 */
-	private $projectId;
-
-	/**
-	 * Smartling API base url.
-	 *
-	 * @var string
-	 */
-	private $baseUrl;
-
-	/**
-	 * Smartling API key.
-	 *
-	 * @var string
-	 */
-	private $auth;
-
-	/**
-	 * Http Client abstraction.
-	 *
-	 * @var ClientInterface
-	 */
-	private $httpClient;
-
-	/**
-	 * Logger.
-	 *
-	 * @var LoggerInterface
-	 */
-	private $logger;
-
-	/**
-	 * @return string
-	 */
-	private function getProjectId () {
-		return $this->projectId;
-	}
-
-	/**
-	 * @param string $projectId
-	 */
-	private function setProjectId ( $projectId ) {
-		$this->projectId = $projectId;
-	}
-
-	/**
-	 * @return string
-	 */
-	private function getBaseUrl () {
-		return $this->baseUrl;
-	}
-
-	/**
-	 * @param string $baseUrl
-	 */
-	private function setBaseUrl ( $baseUrl ) {
-		$this->baseUrl = $baseUrl;
-	}
-
-	/**
-	 * @return string
-	 */
-	private function getAuth () {
-		return $this->auth;
-	}
-
-	/**
-	 * @param string $auth
-	 */
-	private function setAuth ( $auth ) {
-		$this->auth = $auth;
-	}
-
-	/**
-	 * @return ClientInterface
-	 */
-	private function getHttpClient () {
-		return $this->httpClient;
-	}
-
-	/**
-	 * @param ClientInterface $httpClient
-	 */
-	private function setHttpClient ( $httpClient ) {
-		$this->httpClient = $httpClient;
-	}
-
-	/**
-	 * @return LoggerInterface
-	 */
-	private function getLogger () {
-		return $this->logger;
-	}
-
-	/**
-	 * @param LoggerInterface $logger
-	 */
-	private function setLogger ( $logger ) {
-		$this->logger = $logger;
-	}
-
-	/**
-	 * SmartlingFileApi constructor.
-	 *
-	 * @param                  $projectId
-	 * @param AuthApiInterface $auth
-	 * @param ClientInterface  $client
+	 * @param AuthApiInterface $authProvider
+	 * @param string           $projectId
 	 * @param LoggerInterface  $logger
-	 * @param null             $base_service_url
+	 *
+	 * @return FileApi
 	 */
-	public function __construct ( $projectId, AuthApiInterface $auth, ClientInterface $client, LoggerInterface $logger, $base_service_url = null ) {
-		$this->setProjectId( $projectId );
-		$this->setAuth( $auth );
-		$this->setHttpClient( $client );
-		$this->setLogger( $logger );
-		$this->setBaseUrl( rtrim( $base_service_url ? : self::DEFAULT_SERVICE_URL, '/' ) . '/' . $projectId );
-	}
+	public static function create ( AuthApiInterface $authProvider, $projectId, $logger = null ) {
 
+		$client = self::initializeHttpClient( self::ENDPOINT_URL );
 
-	/**
-	 * @param string          $projectId
-	 * @param string          $userIdentifier
-	 * @param string          $secretKey
-	 * @param LoggerInterface $logger
-	 * @param null|string     $serviceUrl
-	 *
-	 * @return static
-	 */
-	public static function create ( $projectId, $userIdentifier, $secretKey, LoggerInterface $logger, $serviceUrl = null ) {
-		$client = new Client(
-			[
-				'base_uri' => self::DEFAULT_SERVICE_URL,
-				'debug'    => false,
-			]
-		);
+		$instance = new self( $projectId, $client, $logger, self::ENDPOINT_URL );
+		$instance->setAuth( $authProvider );
 
-		$auth = AuthTokenProvider::create( $userIdentifier, $secretKey, $logger );
-
-		return new self( $projectId, $auth, $client, $logger, $serviceUrl );
-	}
-
-	/**
-	 * OOP wrapper for fopen() function.
-	 *
-	 * @param string $realPath
-	 *   Real path for file.
-	 *
-	 * @return resource
-	 *
-	 * @throws \Smartling\Exceptions\SmartlingApiException
-	 */
-	protected function readFile ( $realPath ) {
-		$stream = @fopen( $realPath, 'r' );
-
-		if ( ! $stream ) {
-			throw new SmartlingApiException( "File $realPath was not able to be read." );
-		} else {
-			return $stream;
-		}
-	}
-
-
-	/**
-	 * Sends request to Smartling Service via Guzzle Client.
-	 *
-	 * @param string  $uri
-	 *   Resource uri.
-	 * @param array   $requestData
-	 *   Parameters to be send as query or multipart form elements.
-	 * @param string  $method
-	 *   Http method uppercased.
-	 * @param boolean $processResponseBody
-	 *   Tells whether reposnse should be processed as usual or not. The body
-	 *   shouldn't be processed when we download a file, and response is an XML.
-	 *
-	 * @return array
-	 *   Decoded JSON answer.
-	 *
-	 * @throws \Smartling\Exceptions\SmartlingApiException
-	 */
-	protected function sendRequest ( $uri, array $requestData, $method, $processResponseBody = true, $strategy = self::STRATEGY_GENERAL ) {
-		$token     = $this->getAuth()->getAccessToken();
-		$tokenType = $this->getAuth()->getTokenType();
-
-		$options = [
-			'headers'     => [
-				'Accept'        => 'application/json',
-				'Authorization' => " $tokenType $token",
-			],
-			'http_errors' => false,
-		];
-
-		if ( self::STRATEGY_DOWNLOAD === $strategy ) {
-			unset( $options['headers']['Accept'] );
-		}
-
-		if ( in_array( $method, [ HttpVerbHelper::HTTP_VERB_GET, HttpVerbHelper::HTTP_VERB_DELETE ] ) ) {
-			$options['query'] = $requestData;
-		} else {
-			$options['multipart'] = [ ];
-
-
-
-			// Remove file from params array and add it as a stream.
-			if ( ! empty( $requestData['file'] ) ) {
-				$options['multipart'][] = [
-					'name'     => 'file',
-					'contents' => $this->readFile( $requestData['file'] ),
-				];
-				unset( $requestData['file'] );
-			}
-			foreach ( $requestData as $key => $value ) {
-				// Hack to cast FALSE to '0' instead of empty string.
-				if ( is_bool( $value ) ) {
-					$value = (int) $value;
-				}
-
-				if (is_array($value))
-				{
-					foreach($value as $_item)
-					{
-						$options['multipart'][] = [
-							'name'     => $key.'[]',
-							'contents' => (string) $_item,
-						];
-					}
-
-
-				} else
-				{
-
-					$options['multipart'][] = [
-						'name'     => $key,
-						'contents' => (string) $value,
-					];
-				}
-			}
-		}
-
-		// Avoid double slashes in final URL.
-		$uri = ltrim( $uri, "/" );
-
-		$endpoint = $this->getBaseUrl() . '/' . $uri;
-
-		$guzzle_response = $this->getHttpClient()->request( $method, $endpoint, $options );
-		$response_body   = (string) $guzzle_response->getBody();
-		$status_code     = $guzzle_response->getStatusCode();
-
-		//Special handling for 401 error - authentication error => expire token
-		if ( $status_code == 401 ) {
-			$this->getAuth()->resetToken();
-		}
-
-		// Catch all errors from Smartling and throw appropriate exception.
-		if ( $status_code >= 400 ) {
-			$error_response = json_decode( $response_body, true );
-
-			if ( ! $error_response || empty( $error_response['response']['errors'] ) ) {
-				throw new SmartlingApiException( 'Bad response format from Smartling' );
-			}
-
-			$error_msg = array_map( function ( $a ) {
-				return $a['message'];
-			}, $error_response['response']['errors'] );
-			throw new SmartlingApiException( implode( ' || ', $error_msg ), $guzzle_response->getStatusCode() );
-		}
-
-		if ( ! $processResponseBody ) {
-			return $response_body;
-		}
-
-		$response = json_decode( $response_body, true );
-		// Throw exception if json is not valid.
-		if ( ! $response || $response['response']['code'] !== 'SUCCESS' ) {
-			throw new SmartlingApiException( 'Bad response format from Smartling' );
-		}
-
-		return isset( $response['response']['data'] ) ? $response['response']['data'] : true;
+		return $instance;
 	}
 
 	/**
@@ -338,7 +68,10 @@ class SmartlingFileApi {
 	 * @see http://docs.smartling.com/pages/API/FileAPI/Upload-File/
 	 */
 	public function uploadFile ( $realPath, $file_name, $file_type, UploadFileParameters $params = null ) {
-		$params = ( is_null( $params ) ) ? [ ] : $params->exportToArray();
+		if ( is_null( $params ) ) {
+			$params = new UploadFileParameters();
+		}
+		$params = $params->exportToArray();
 
 		$params['file']     = $realPath;
 		$params['fileUri']  = $file_name;
@@ -381,7 +114,7 @@ class SmartlingFileApi {
 		$params            = ( is_null( $params ) ) ? [ ] : $params->exportToArray();
 		$params['fileUri'] = $fileUri;
 
-		return $this->sendRequest( "locales/{$locale}/file", $params, HttpVerbHelper::HTTP_VERB_GET, false, self::STRATEGY_DOWNLOAD );
+		return $this->sendRequest( "locales/{$locale}/file", $params, HttpVerbHelper::HTTP_VERB_GET, self::STRATEGY_DOWNLOAD );
 	}
 
 	/**
@@ -581,9 +314,5 @@ class SmartlingFileApi {
 		$params['fileUri'] = $fileUri;
 
 		return $this->sendRequest( 'file/last-modified', $params, HttpVerbHelper::HTTP_VERB_GET );
-	}
-
-	public function getProjectDetails () {
-		return $this->sendRequest( '', [], HttpVerbHelper::HTTP_VERB_GET );
 	}
 }

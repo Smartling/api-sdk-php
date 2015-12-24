@@ -1,7 +1,6 @@
 <?php
 
-namespace Smartling\Params;
-use Smartling\Bootstrap;
+namespace Smartling\File\Params;
 
 /**
  * Class UploadFileParameters
@@ -10,8 +9,8 @@ use Smartling\Bootstrap;
  */
 class UploadFileParameters extends BaseParameters {
 
-	const CLIENT_LIB_ID_SDK = 'api-sdk-php';
-	const CLIENT_LIB_ID_VERSION = '2.x';
+	const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
+	const CLIENT_LIB_ID_VERSION = '1.0.0';
 
 	public function __construct ( $clientLibId = self::CLIENT_LIB_ID_SDK, $clientLibVersion = self::CLIENT_LIB_ID_VERSION ) {
 		$this->setClientLibId( $clientLibId, $clientLibVersion );
@@ -77,7 +76,7 @@ class UploadFileParameters extends BaseParameters {
 	 */
 	public function exportToArray () {
 		$params              = $this->params;
-		$params['authorize'] =  ( empty( $params['localeIdsToAuthorize'] ) ) ? : false;
+		$params['authorize'] = ( empty( $params['localeIdsToAuthorize'] ) ) ? : false;
 
 		return $params;
 	}
