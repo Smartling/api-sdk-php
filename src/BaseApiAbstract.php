@@ -259,11 +259,20 @@ abstract class BaseApiAbstract {
 
 	/**
 	 * @param int $responseStatusCode
+	 * @throws SmartlingApiException
 	 */
 	private function checkAuthenticationError ( $responseStatusCode ) {
 		//Special handling for 401 error - authentication error => expire token
 		if ( 401 === (int) $responseStatusCode ) {
-			$this->getAuth()->resetToken();
+			if (!($this->getAuth() instanceof AuthApiInterface)) {
+				$type = gettype($this->getAuth());
+				if ('object' === $type) {
+					$type .= '::' . get_class($this->getAuth());
+				}
+				throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type);
+			} else {
+				$this->getAuth()->resetToken();
+			}
 		}
 	}
 
