@@ -1,80 +1,314 @@
 <?php
 /**
- * @file
- * Contains example of Smartling API usage.
+ * This file contains examples of Smartling API 2.x usage.
  *
  * How to use:
- * run "php example.php --api-key={API_KEY} --product-id={PRODUCT_ID}" in console
- * or open page in browser using url
- * http://localhost/example.php?api-key={API_KEY}&product-id={PRODUCT_ID}
+ * run "php example.php --project-id={PROJECT_ID} --user-id={USER_IDENTIFIER} --secret-key={SECRET_KEY}" in console
+ *
+ * Be sure you that dependencies are solved bu composer BEFORE running.
  */
-include_once 'vendor/autoload.php';
-use Smartling\SmartlingFileApi;
 
-use Smartling\Params\DownloadFileParameters;
-use Smartling\Params\ListFilesParameters;
+$longOpts = [
+	'project-id:',
+	'user-id:',
+	'secret-key:',
+];
 
-if (!empty($_GET['user-id']) || !empty($_GET['secret-key']) || !empty($_GET['project-id'])) {
-  $projectId = $_GET['project-id'];
-  $userSecretKey = $_GET['secret-key'];
-  $userIdentifier = $_GET['user-id'];
-} else {
-  $projectId = '';
-  $userSecretKey = '';
-  $userIdentifier = '';
+$options = getopt( '', $longOpts );
+
+if (
+	! array_key_exists( 'project-id', $options )
+	|| ! array_key_exists( 'user-id', $options )
+	|| ! array_key_exists( 'secret-key', $options )
+) {
+	echo 'Missing required params.' . PHP_EOL;
+	exit;
 }
 
-$fileName = 'test.xml';
-$fileUri = 'tests/resources/test.xml';
-$fileRealPath = realpath($fileUri);
-$fileType = 'xml';
-$newFileName = 'new_test_file.xml';
-$retrievalType = 'pseudo';
-$content = file_get_contents(realpath($fileUri));
-$fileContentUri = "testing_content.xml";
+$autoloader = 'vendor/autoload.php';
+
+if ( ! file_exists( $autoloader ) || ! is_readable( $autoloader ) ) {
+	echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
+	exit;
+} else {
+	require_once 'vendor/autoload.php';
+}
+
+$projectId      = $options['project-id'];
+$userIdentifier = $options['user-id'];
+$userSecretKey  = $options['secret-key'];
+
+
+$fileName         = 'test.xml';
+$fileUri          = 'tests/resources/test.xml';
+$fileRealPath     = realpath( $fileUri );
+$fileType         = 'xml';
+$newFileName      = 'new_test_file.xml';
+$retrievalType    = 'pseudo';
+$content          = file_get_contents( realpath( $fileUri ) );
+$fileContentUri   = "testing_content.xml";
 $translationState = 'PUBLISHED';
-$locale = 'ru-RU';
-$locales_array = array('ru-RU');
+$locale           = 'ru-RU';
+$locales_array    = [ $locale ];
 
-$api = SmartlingFileApi::create($projectId, $userIdentifier, $userSecretKey);
+resetFiles( $userIdentifier, $userSecretKey, $projectId, [ $fileName, $newFileName ] );
 
-$result = $api->uploadFile($fileRealPath, $fileName, $fileType);
-var_dump($result);
-echo "\nThis is a upload file\n";
+/**
+ * Upload file example
+ */
+try {
+	echo '::: File Upload Example :::' . PHP_EOL;
 
-//try to download file
-$params = new DownloadFileParameters();
-$params->setRetrievalType($retrievalType);
-$result = $api->downloadFile($fileName, $locale, $params);
-var_dump($result);
-echo "\nThis is a download file\n";
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
 
-$result = $api->getStatus($fileName, $locale);
-var_dump($result);
-echo "\nThis is a get status\n";
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
 
-$result = $api->getAuthorizedLocales($fileName);
-var_dump($result);
-echo "\nThis is a get authorized locales\n";
+	$result = $fileApi->uploadFile( $fileRealPath, $fileName, $fileType );
 
-$params = new ListFilesParameters();
-$params
-  ->setFileTypes('xml')
-  ->setUriMask('test')
-  ->setLimit(5);
-$result = $api->getList($params);
-var_dump($result);
-echo "\nThis is a get list\n";
+	echo 'File upload result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
 
-$result = $api->renameFile($fileName, $newFileName);
-var_dump($result);
-$api->renameFile($newFileName, $fileName);
-echo "\nThis is a rename file\n";
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while uploading file.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
 
-$result = $api->import($locale, $fileName, $fileType, $fileRealPath, $translationState, TRUE);
-var_dump($result);
-echo "\nThis is a import file\n";
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
 
-$result = $api->deleteFile($fileName);
-var_dump($result);
-echo "\nThis is delete file\n";
+
+/**
+ * Download file example
+ */
+try {
+	echo '::: File Download Example :::' . PHP_EOL;
+
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+
+	$params = new \Smartling\File\Params\DownloadFileParameters();
+	$params->setRetrievalType( $retrievalType );
+
+	$result = $fileApi->downloadFile( $fileName, $locale, $params );
+
+	echo 'File download result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
+
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while downloading file.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
+
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
+
+/**
+ * Getting file status example
+ */
+try {
+	echo '::: Get File Status Example :::' . PHP_EOL;
+
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+
+	$result = $fileApi->getStatus( $fileName, $locale );
+
+	echo 'Get File Status result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
+
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while getting file status.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
+
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
+
+/**
+ * Getting Authorized locales for file
+ */
+try {
+	echo '::: Get File Authorized Locales Example :::' . PHP_EOL;
+
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+
+	$result = $fileApi->getAuthorizedLocales( $fileName );
+
+	echo 'Get File Authorized Locales result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
+
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while getting file authorized locales.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
+
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
+
+/**
+ * Listing Files
+ */
+try {
+	echo '::: List Files Example :::' . PHP_EOL;
+
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+
+	$params = new \Smartling\File\Params\ListFilesParameters();
+	$params
+		->setFileTypes( $fileType )
+		->setUriMask( 'test' )
+		->setLimit( 5 );
+
+	$result = $fileApi->getList( $params );
+
+	echo 'List Files result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
+
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while getting file list.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
+
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
+
+/**
+ * Importing Files
+ */
+try {
+	echo '::: File Import Example :::' . PHP_EOL;
+
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+
+	$result = $fileApi->import( $locale, $fileName, $fileType, $fileRealPath, $translationState, true );
+
+	echo 'File Import result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
+
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while importing file.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
+
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
+
+/**
+ * Renaming Files
+ */
+try {
+	echo '::: Rename File Example :::' . PHP_EOL;
+
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+
+	$result = $fileApi->renameFile( $fileName, $newFileName );
+
+	echo 'Rename File result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
+
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while renaming files.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
+
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
+
+/**
+ * Deleting Files
+ */
+try {
+	echo '::: File Deletion Example :::' . PHP_EOL;
+
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+
+	$result = $fileApi->deleteFile( $newFileName );
+
+	echo 'File Delete result:' . PHP_EOL;
+	echo var_export( $result, true ) . PHP_EOL . PHP_EOL;
+
+} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+	$messageTemplate = 'Error happened while deleting file.' . PHP_EOL
+	                   . 'Response code: %s' . PHP_EOL
+	                   . 'Response message: %s' . PHP_EOL;
+
+	echo vsprintf(
+		$messageTemplate,
+		[
+			$e->getCode(),
+			$e->getMessage(),
+		]
+	);
+}
+
+/**
+ * @param string $userIdentifier
+ * @param string $userSecretKey
+ * @param string $projectId
+ * @param array  $files
+ */
+function resetFiles ( $userIdentifier, $userSecretKey, $projectId, $files = [ ] ) {
+	$authProvider = \Smartling\AuthApi\AuthTokenProvider::create( $userIdentifier, $userSecretKey );
+
+	foreach ( $files as $file ) {
+		try {
+			$fileApi = \Smartling\File\FileApi::create( $authProvider, $projectId );
+			$fileApi->deleteFile( $file );
+		} catch ( \Smartling\Exceptions\SmartlingApiException $e ) {
+		}
+	}
+}
