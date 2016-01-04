@@ -6,27 +6,27 @@
     <string name="name1">non-translatable-1</string>
     <string name="name2">non-translatable-2</string>
     <localize title="Menu">
-     <string name="name1">Hello</string>
-     <string name="name2">How are you?</string>
+        <string name="name1">Hello</string>
+        <string name="name2">How are you?</string>
     </localize>
     <localize title="Options">
-     <!-- smartling.sltrans = notranslate -->
-     <string name="name1">non-translatable-3</string>
-     <!-- smartling.sltrans = translate -->
-     <string name="name2">translatable-3</string>
+        <!-- smartling.sltrans = notranslate -->
+        <string name="name1">non-translatable-3</string>
+        <!-- smartling.sltrans = translate -->
+        <string name="name2">translatable-3</string>
     </localize>
     <localize2 title="List">
-     <string name="name1">translatable-4</string>
-     <string name="name2">translatable-5</string>
-     <string name="name3"><![CDATA[ <div style="blocked"
+        <string name="name1">translatable-4</string>
+        <string name="name2">translatable-5</string>
+        <string name="name3"><![CDATA[ <div style="blocked"
 title="translatable-6"> <span title="translatable-4"
 href="non-translatable-2"> translatable-5 </span><br>
 </div> ]]></string>
-     <string name="name4"><![CDATA[ <#if (contactInfo>
+        <string name="name4"><![CDATA[ <#if (contactInfo>
 3)> translatable-7 ${name} &gt;</#if> ]]></string>
     </localize2>
     <nolocalize title="no-translate">
-      <string name="name1">non-translatable-4</string>
-      <string name="name2">non-translatable-5</string>
+        <string name="name1">non-translatable-4</string>
+        <string name="name2">non-translatable-5</string>
     </nolocalize>
 </data>

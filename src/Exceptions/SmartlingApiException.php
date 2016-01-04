@@ -2,4 +2,6 @@
 
 namespace Smartling\Exceptions;
 
-class SmartlingApiException extends \Exception {}
+class SmartlingApiException extends \Exception
+{
+}

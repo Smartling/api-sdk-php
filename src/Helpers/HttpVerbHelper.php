@@ -7,11 +7,12 @@ namespace Smartling\Helpers;
  *
  * @package Smartling\Helpers
  */
-class HttpVerbHelper {
+class HttpVerbHelper
+{
 
-	const HTTP_VERB_GET = 'GET';
+    const HTTP_VERB_GET = 'GET';
 
-	const HTTP_VERB_POST = 'POST';
+    const HTTP_VERB_POST = 'POST';
 
-	const HTTP_VERB_DELETE = 'DELETE';
+    const HTTP_VERB_DELETE = 'DELETE';
 }

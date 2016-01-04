@@ -9,44 +9,47 @@ use Smartling\Exceptions\SmartlingApiException;
  *
  * @package Smartling\Params
  */
-class DownloadFileParameters extends BaseParameters {
+class DownloadFileParameters extends BaseParameters
+{
 
-	const RETRIEVAL_TYPE_PUBLISHED = 'published';
+    const RETRIEVAL_TYPE_PUBLISHED = 'published';
 
-	const RETRIEVAL_TYPE_PENDING = 'pending';
+    const RETRIEVAL_TYPE_PENDING = 'pending';
 
-	const RETRIEVAL_TYPE_PSEUDO = 'pseudo';
+    const RETRIEVAL_TYPE_PSEUDO = 'pseudo';
 
-	/**
-	 * @param string $retrievalType
-	 *
-	 * @return DownloadFileParameters
-	 * @throws SmartlingApiException
-	 */
-	public function setRetrievalType ( $retrievalType ) {
+    /**
+     * @param string $retrievalType
+     *
+     * @return DownloadFileParameters
+     * @throws SmartlingApiException
+     */
+    public function setRetrievalType($retrievalType)
+    {
 
-		$validRetrivalType = in_array(
-			$retrievalType,
-			[
-				self::RETRIEVAL_TYPE_PENDING,
-				self::RETRIEVAL_TYPE_PUBLISHED,
-				self::RETRIEVAL_TYPE_PSEUDO,
-			],
-			true
-		);
+        $validRetrivalType = in_array(
+            $retrievalType,
+            [
+                self::RETRIEVAL_TYPE_PENDING,
+                self::RETRIEVAL_TYPE_PUBLISHED,
+                self::RETRIEVAL_TYPE_PSEUDO,
+            ],
+            true
+        );
 
-		if ( ! $validRetrivalType ) {
-			throw new SmartlingApiException( 'Unknown retrieval type: ' . var_export( $retrievalType, true ) );
-		}
+        if (!$validRetrivalType) {
+            throw new SmartlingApiException('Unknown retrieval type: ' . var_export($retrievalType, true));
+        }
 
-		$this->set( 'retrievalType', $retrievalType );
+        $this->set('retrievalType', $retrievalType);
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function setIncludeOriginalStrings ( $include_original_strings ) {
-		$this->params['includeOriginalStrings'] = $include_original_strings;
+    public function setIncludeOriginalStrings($include_original_strings)
+    {
+        $this->params['includeOriginalStrings'] = $include_original_strings;
 
-		return $this;
-	}
+        return $this;
+    }
 }

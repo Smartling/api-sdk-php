@@ -9,21 +9,22 @@ use Smartling\Exceptions\InvalidAccessTokenException;
  *
  * @package Smartling\Auth
  */
-interface AuthApiInterface {
+interface AuthApiInterface
+{
 
-	/**
-	 * @return string token
-	 * @throws InvalidAccessTokenException
-	 */
-	public function getAccessToken ();
+    /**
+     * @return string token
+     * @throws InvalidAccessTokenException
+     */
+    public function getAccessToken();
 
-	/**
-	 * @return string
-	 */
-	public function getTokenType ();
+    /**
+     * @return string
+     */
+    public function getTokenType();
 
-	/**
-	 * @return void
-	 */
-	public function resetToken ();
+    /**
+     * @return void
+     */
+    public function resetToken();
 }

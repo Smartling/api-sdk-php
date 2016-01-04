@@ -7,20 +7,21 @@ namespace Smartling\File\Params;
  *
  * @package Smartling\Params
  */
-interface ParameterInterface {
+interface ParameterInterface
+{
 
-	/**
-	 * Returns associative array with key => value pairs of set params
-	 *
-	 * @return array
-	 */
-	public function exportToArray ();
+    /**
+     * Returns associative array with key => value pairs of set params
+     *
+     * @return array
+     */
+    public function exportToArray();
 
-	/**
-	 * @param string $key
-	 * @param mixed  $value
-	 *
-	 * @return void
-	 */
-	public function set ( $key, $value );
+    /**
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function set($key, $value);
 }

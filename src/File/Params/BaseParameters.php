@@ -7,24 +7,27 @@ namespace Smartling\File\Params;
  *
  * @package Smartling\Params
  */
-class BaseParameters implements ParameterInterface {
+class BaseParameters implements ParameterInterface
+{
 
-	/**
-	 * @var array
-	 */
-	protected $params = [ ];
+    /**
+     * @var array
+     */
+    protected $params = [];
 
-	/**
-	 * @inheritdoc
-	 */
-	public function exportToArray () {
-		return $this->params;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function exportToArray()
+    {
+        return $this->params;
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function set ( $key, $value ) {
-		$this->params[ $key ] = $value;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function set($key, $value)
+    {
+        $this->params[$key] = $value;
+    }
 }
