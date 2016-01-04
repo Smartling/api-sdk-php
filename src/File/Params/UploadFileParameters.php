@@ -11,7 +11,7 @@ class UploadFileParameters extends BaseParameters
 {
 
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
-    const CLIENT_LIB_ID_VERSION = '1.0.0';
+    const CLIENT_LIB_ID_VERSION = '2.0.0';
 
     public function __construct($clientLibId = self::CLIENT_LIB_ID_SDK, $clientLibVersion = self::CLIENT_LIB_ID_VERSION)
     {
