@@ -9,7 +9,6 @@ namespace Smartling\File\Params;
  */
 interface ParameterInterface
 {
-
     /**
      * Returns associative array with key => value pairs of set params
      *

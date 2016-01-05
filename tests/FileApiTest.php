@@ -58,41 +58,79 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     protected $streamPlaceholder = 'stream';
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|\Psr\Http\Message\StreamInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     protected $responseMock;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
+    private function prepareHttpClientMock()
     {
-        $this->client = $this->getMockBuilder('GuzzleHttp\\ClientInterface')
-            ->setMethods(['request', 'send', 'sendAsync', 'requestAsync', 'getConfig'])
+        $this->client = $this->getMockBuilder('GuzzleHttp\ClientInterface')
+            ->setMethods(
+                [
+                    'createRequest',
+                    'get',
+                    'head',
+                    'delete',
+                    'put',
+                    'patch',
+                    'post',
+                    'options',
+                    'send',
+                    'getDefaultOption',
+                    'setDefaultOption',
+                    'getBaseUrl',
+                    'getEmitter'
+                ]
+            )
             ->disableOriginalConstructor()
             ->getMock();
+    }
 
-
+    private function prepareAuthProviderMock()
+    {
         $this->authProvider = $this->getMockBuilder('\Smartling\AuthApi\AuthApiInterface')
-            ->setMethods(['getAccessToken', 'getTokenType', 'resetToken'])
+            ->setMethods(
+                [
+                    'getAccessToken',
+                    'getTokenType',
+                    'resetToken'
+                ]
+            )
             ->setConstructorArgs([$this->userIdentifier, $this->secretKey, $this->client])
             ->getMock();
 
         $this->authProvider->expects(self::any())->method('getAccessToken')->willReturn('fakeToken');
         $this->authProvider->expects(self::any())->method('getTokenType')->willReturn('Bearer');
         $this->authProvider->expects(self::any())->method('resetToken');
+    }
 
-
-        $this->responseMock = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
+    private function prepareClientResponseMock($setDefaultResponse = true)
+    {
+        $this->responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
+            ->setMethods(
+                [
+                    'getStatusCode',
+                    'getHeaders',
+                    'getBody'
+                ]
+            )
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->responseMock->expects(self::any())
-            ->method('getBody')
-            ->willReturn($this->validResponse);
+        if (true === $setDefaultResponse) {
+            $this->responseMock->expects(self::any())
+                ->method('getBody')
+                ->willReturn($this->validResponse);
+        }
 
-        $this->object = $this->getMockBuilder('Smartling\\File\FileApi')
+        $this->responseMock->expects(self::any())
+            ->method('getStatusCode')
+            ->willReturn(200);
+    }
+
+    private function prepareFileApiMock()
+    {
+        $this->object = $this->getMockBuilder('Smartling\File\FileApi')
             ->setMethods(['readFile'])
             ->setConstructorArgs([
                 $this->projectId,
@@ -105,6 +143,26 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
         $this->object->expects(self::any())
             ->method('readFile')
             ->willReturn($this->streamPlaceholder);
+
+        $this->invokeMethod(
+            $this->object,
+            'setAuth',
+            [
+                $this->authProvider
+            ]
+        );
+    }
+
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+        $this->prepareHttpClientMock();
+        $this->prepareAuthProviderMock();
+        $this->prepareClientResponseMock();
+        $this->prepareFileApiMock();
     }
 
     /**
@@ -184,10 +242,9 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function constructorDataProvider()
     {
-        $mockedClient = $this->getMockBuilder('GuzzleHttp\\ClientInterface')
-            ->setMethods(['request', 'send', 'sendAsync', 'requestAsync', 'getConfig'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->prepareHttpClientMock();
+
+        $mockedClient = $this->client;
 
         return [
             ['product-id', $mockedClient, FileApi::ENDPOINT_URL],
@@ -203,8 +260,8 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
     public function testUploadFile()
     {
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('POST', FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
+            ->method('post')
+            ->with(FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -254,8 +311,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
         $params->setAuthorized(true);
         $params->setLocalesToApprove(['es']);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
-
         $this->object->uploadFile('tests/resources/test.xml', 'test.xml', 'xml', $params);
     }
 
@@ -269,16 +324,12 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testDownloadFile($options, $expected_translated_file)
     {
-        $this->responseMock = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
+        $this->prepareClientResponseMock(false);
         $this->responseMock->expects(self::any())
             ->method('getBody')
             ->willReturn($expected_translated_file);
 
         $endpointUrl = vsprintf('%s/%s/locales/%s/file', [FileApi::ENDPOINT_URL, $this->projectId, 'en-EN']);
-
 
         $params = $options instanceof DownloadFileParameters
             ? $options->exportToArray()
@@ -287,8 +338,8 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
         $params['fileUri'] = 'test.xml';
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('GET', $endpointUrl, [
+            ->method('get')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Authorization' => vsprintf(' %s %s', [
                         $this->authProvider->getTokenType(),
@@ -300,11 +351,9 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
-
         $actual_xml = $this->object->downloadFile('test.xml', 'en-EN', $options);
 
-        self::assertEquals($expected_translated_file, $actual_xml);
+            self::assertEquals($expected_translated_file, $actual_xml);
     }
 
     public function downloadFileParams()
@@ -312,10 +361,16 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 (new DownloadFileParameters())->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO),
-                '<?xml version="1.0"?><response><item key="6"></item></response>',
+                '<?xml version="1.0"?><response><item key="6"></item></response>'
             ],
-            [null, '<?xml version="1.0"?><response><item key="6"></item></response>'],
-            [null, '{"string1":"translation1", "string2":"translation2"}'],
+            [
+                null,
+                '<?xml version="1.0"?><response><item key="6"></item></response>'
+            ],
+            [
+                null,
+                '{"string1":"translation1", "string2":"translation2"}'
+            ],
         ];
     }
 
@@ -324,12 +379,11 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetStatus()
     {
-
         $endpointUrl = vsprintf('%s/%s/locales/%s/file/status', [FileApi::ENDPOINT_URL, $this->projectId, 'en-EN']);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('GET', $endpointUrl, [
+            ->method('get')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -344,8 +398,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
-
         $this->object->getStatus('test.xml', 'en-EN');
     }
 
@@ -358,8 +410,8 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
         $endpointUrl = vsprintf('%s/%s/files/list', [FileApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('GET', $endpointUrl, [
+            ->method('get')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -372,8 +424,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
-
         $this->object->getList();
     }
 
@@ -384,22 +434,20 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidationErrorSendRequest()
     {
-        $response = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->prepareClientResponseMock(false);
 
-        $response->expects(self::any())
+        $this->responseMock->expects(self::any())
             ->method('getStatusCode')
             ->willReturn(400);
-        $response->expects(self::any())
+        $this->responseMock->expects(self::any())
             ->method('getBody')
             ->willReturn($this->responseWithException);
 
         $endpointUrl = vsprintf('%s/%s/context/html', [FileApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('GET', $endpointUrl, [
+            ->method('get')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -410,12 +458,10 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
                 'http_errors' => false,
                 'query' => [],
             ])
-            ->willReturn($response);
+            ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'GET']);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'get']);
     }
 
     /**
@@ -425,22 +471,20 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testBadJsonFormatSendRequest()
     {
-        $response = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->prepareClientResponseMock(false);
 
-        $response->expects(self::any())
+        $this->responseMock->expects(self::any())
             ->method('getStatusCode')
             ->willReturn(200);
-        $response->expects(self::any())
+        $this->responseMock->expects(self::any())
             ->method('getBody')
             ->willReturn(rtrim($this->responseWithException, '}'));
 
         $endpointUrl = vsprintf('%s/%s/context/html', [FileApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('GET', $endpointUrl, [
+            ->method('get')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -451,12 +495,10 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
                 'http_errors' => false,
                 'query' => [],
             ])
-            ->willReturn($response);
+            ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'GET']);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'get']);
     }
 
     /**
@@ -466,22 +508,20 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testBadJsonFormatInErrorMessageSendRequest()
     {
-        $response = $this->getMockBuilder('Psr\\Http\\Message\\ResponseInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->prepareClientResponseMock(false);
 
-        $response->expects(self::any())
+        $this->responseMock->expects(self::any())
             ->method('getStatusCode')
             ->willReturn(401);
-        $response->expects(self::any())
+        $this->responseMock->expects(self::any())
             ->method('getBody')
             ->willReturn(rtrim($this->responseWithException, '}'));
 
         $endpointUrl = vsprintf('%s/%s/context/html', [FileApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('GET', $endpointUrl, [
+            ->method('get')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -492,12 +532,10 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
                 'http_errors' => false,
                 'query' => [],
             ])
-            ->willReturn($response);
+            ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'GET']);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'get']);
     }
 
     /**
@@ -511,18 +549,16 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendRequest($uri, $requestData, $method, $params)
     {
-
         $params['headers']['Authorization'] = vsprintf(' %s %s', [
             $this->authProvider->getTokenType(),
             $this->authProvider->getAccessToken(),
         ]);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with($method, FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $params)
+            ->method(strtolower($method))
+            ->with(FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $params)
             ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
 
         $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $requestData, $method]);
@@ -540,7 +576,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             [
                 'uri',
                 [],
-                'GET',
+                'get',
                 [
                     'headers' => [
                         'Accept' => 'application/json',
@@ -557,7 +593,7 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
                     'boolean_true' => true,
                     'file' => './tests/resources/test.xml',
                 ],
-                'POST',
+                'post',
                 [
                     'headers' => [
                         'Accept' => 'application/json',
@@ -592,12 +628,11 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenameFile()
     {
-
         $endpointUrl = vsprintf('%s/%s/file/rename', [FileApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('POST', $endpointUrl, [
+            ->method('post')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -619,8 +654,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
-
         $this->object->renameFile('test.xml', 'new_test.xml');
     }
 
@@ -632,8 +665,8 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
         $endpointUrl = vsprintf('%s/%s/file/authorized-locales', [FileApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('GET', $endpointUrl, [
+            ->method('get')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -648,8 +681,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
-
         $this->object->getAuthorizedLocales('test.xml');
     }
 
@@ -658,12 +689,10 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteFile()
     {
-
         $endpointUrl = vsprintf('%s/%s/file/delete', [FileApi::ENDPOINT_URL, $this->projectId]);
-
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('POST', $endpointUrl, [
+            ->method('post')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -681,8 +710,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn($this->responseMock);
 
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
-
         $this->object->deleteFile('test.xml');
     }
 
@@ -691,14 +718,12 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testImport()
     {
-
         $locale = 'en-EN';
         $endpointUrl = vsprintf('%s/%s/locales/%s/file/import', [FileApi::ENDPOINT_URL, $this->projectId, $locale]);
 
-
         $this->client->expects(self::once())
-            ->method('request')
-            ->with('POST', $endpointUrl, [
+            ->method('post')
+            ->with($endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Authorization' => vsprintf(' %s %s', [
@@ -712,18 +737,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
                         'name' => 'file',
                         'contents' => $this->streamPlaceholder,
                     ],
-                    /*[
-                        'name'     => 'smartling.client_lib_id',
-                        'contents' =>
-                            json_encode(
-                                [
-                                    'client'  => UploadFileParameters::CLIENT_LIB_ID_SDK,
-                                    'version' => UploadFileParameters::CLIENT_LIB_ID_VERSION,
-                                ],
-                                JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
-                            ),
-                    ],*/
-
                     [
                         'name' => 'fileUri',
                         'contents' => 'test.xml',
@@ -743,8 +756,6 @@ class SmartlingApiTest extends \PHPUnit_Framework_TestCase
                 ],
             ])
             ->willReturn($this->responseMock);
-
-        $this->invokeMethod($this->object, 'setAuth', [$this->authProvider]);
 
         $this->object->import($locale, 'test.xml', 'xml', 'tests/resources/test.xml', 'PUBLISHED', false);
     }

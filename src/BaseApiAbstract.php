@@ -4,6 +4,7 @@ namespace Smartling;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Exceptions\SmartlingApiException;
@@ -269,9 +270,7 @@ abstract class BaseApiAbstract
      */
     private function normalizeUri($uri = '')
     {
-        $endpoint = rtrim($this->getBaseUrl(), '/') . '/' . ltrim($uri, '/');
-
-        return $endpoint;
+        return rtrim($this->getBaseUrl(), '/') . '/' . ltrim($uri, '/');
     }
 
     /**
@@ -304,32 +303,37 @@ abstract class BaseApiAbstract
     {
         // Catch all errors from Smartling and throw appropriate exception.
         if ($responseStatusCode >= 400) {
-            $errorResponse = json_decode($responseBody, true);
-
-            if (!$errorResponse
-                || !is_array($errorResponse)
-                || !array_key_exists('response', $errorResponse)
-                || !is_array($errorResponse['response'])
-                || !array_key_exists('errors', $errorResponse['response'])
-                || empty($errorResponse['response']['errors'])
-            ) {
-                $message = 'Bad response format from Smartling';
-                $this->getLogger()->error($message);
-                throw new SmartlingApiException($message);
-            }
-
-            $error_msg = array_map(
-                function ($a) {
-                    return $a['message'];
-                },
-                $errorResponse['response']['errors']
-            );
-
-            $message = implode(' || ', $error_msg);
-
-            $this->getLogger()->error($message);
-            throw new SmartlingApiException($message, $responseStatusCode);
+            $this->processError($responseStatusCode,$responseBody);
         }
+    }
+
+    private function processError($responseStatusCode, $responseBody)
+    {
+        $errorResponse = json_decode($responseBody, true);
+
+        if (!$errorResponse
+            || !is_array($errorResponse)
+            || !array_key_exists('response', $errorResponse)
+            || !is_array($errorResponse['response'])
+            || !array_key_exists('errors', $errorResponse['response'])
+            || empty($errorResponse['response']['errors'])
+        ) {
+            $message = 'Bad response format from Smartling';
+            $this->getLogger()->error($message);
+            throw new SmartlingApiException($message);
+        }
+
+        $error_msg = array_map(
+            function ($a) {
+                return $a['message'];
+            },
+            $errorResponse['response']['errors']
+        );
+
+        $message = implode(' || ', $error_msg);
+
+        $this->getLogger()->error($message);
+        throw new SmartlingApiException($message, $responseStatusCode);
     }
 
 
@@ -346,10 +350,9 @@ abstract class BaseApiAbstract
      */
     protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
-
         $options = $this->prepareOptions($strategy);
 
-        if (in_array($method, [HttpVerbHelper::HTTP_VERB_GET, HttpVerbHelper::HTTP_VERB_DELETE])) {
+        if (in_array($method, [HttpVerbHelper::HTTP_VERB_GET, HttpVerbHelper::HTTP_VERB_DELETE], true)) {
             $options['query'] = $requestData;
         } else {
             if (self::STRATEGY_AUTH === $strategy) {
@@ -371,7 +374,21 @@ abstract class BaseApiAbstract
 
         $endpoint = $this->normalizeUri($uri);
 
-        $guzzleResponse = $this->getHttpClient()->request($method, $endpoint, $options);
+        if (in_array($method, HttpVerbHelper::$verbs, true)) {
+            /**
+             * @var ResponseInterface $guzzleResponse
+             */
+            $guzzleResponse = $this->getHttpClient()->{$method}($endpoint, $options);
+        } else {
+            $message = vsprintf('Invalid request verb. Got: %s; Expected one of: %s',
+                [
+                    var_export($method, true),
+                    '\'' . implode('\',\'', HttpVerbHelper::$verbs) . '\''
+                ]
+            );
+            $this->getLogger()->critical($message);
+            throw new SmartlingApiException($message);
+        }
 
         $this->getLogger()->debug(
             json_encode(
@@ -391,7 +408,8 @@ abstract class BaseApiAbstract
             )
         );
 
-        $responseBody = (string)$guzzleResponse->getBody();
+
+        $responseBody = (string) $guzzleResponse->getBody();
         $responseStatusCode = $guzzleResponse->getStatusCode();
 
         if (400 <= $responseStatusCode) {
@@ -412,9 +430,7 @@ abstract class BaseApiAbstract
                 || empty($response['response']['code'])
                 || $response['response']['code'] !== 'SUCCESS'
             ) {
-                $message = 'Bad response format from Smartling';
-                $this->getLogger()->error($message);
-                throw new SmartlingApiException($message);
+                $this->processError($responseStatusCode,$responseBody);
             }
 
             return isset($response['response']['data']) ? $response['response']['data'] : true;
