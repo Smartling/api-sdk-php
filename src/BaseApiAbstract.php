@@ -7,7 +7,6 @@ use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Exceptions\SmartlingApiException;
-use Smartling\Helpers\HttpVerbHelper;
 use Smartling\Logger\DevNullLogger;
 
 /**
@@ -17,12 +16,9 @@ use Smartling\Logger\DevNullLogger;
  */
 abstract class BaseApiAbstract
 {
-
-    const STRATEGY_GENERAL = 'general';
-
-    const STRATEGY_DOWNLOAD = 'download';
-
-    const STRATEGY_AUTH = 'auth';
+    const HTTP_METHOD_GET = 'GET';
+    const HTTP_METHOD_POST = 'POST';
+    const HTTP_METHOD_DELETE = 'DELETE';
 
 
     /**
@@ -201,12 +197,12 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param string $strategy
+     * @param bool $doProcessResponseBody
      * @param bool $httpErrors
      *
      * @return array
      */
-    private function prepareOptions($strategy, $httpErrors = false)
+    protected function prepareHeaders($doProcessResponseBody, $httpErrors = false)
     {
         $options = [
             'headers' => [
@@ -215,14 +211,13 @@ abstract class BaseApiAbstract
             'http_errors' => $httpErrors,
         ];
 
-        if (self::STRATEGY_AUTH !== $strategy) {
-            $accessToken = $this->getAuth()->getAccessToken();
-            $tokenType = $this->getAuth()->getTokenType();
-            $options['headers']['Authorization'] =
-                vsprintf(' %s %s', [$tokenType, $accessToken]);
-        }
 
-        if (self::STRATEGY_DOWNLOAD === $strategy) {
+        $accessToken = $this->getAuth()->getAccessToken();
+        $tokenType = $this->getAuth()->getTokenType();
+        $options['headers']['Authorization'] =
+           vsprintf(' %s %s', [$tokenType, $accessToken]);
+
+        if (!$doProcessResponseBody) {
             unset($options['headers']['Accept']);
         }
 
@@ -332,42 +327,72 @@ abstract class BaseApiAbstract
         }
     }
 
+    /**
+     * @param array $options
+     * @param array $requestData
+     * @param string $method
+     *
+     * @return array
+     */
+    protected function mergeRequestData($options, $requestData, $method = self::HTTP_METHOD_GET)
+    {
+        if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE])) {
+            $options['query'] = $requestData;
+            return $options;
+        }
+
+        $options['multipart'] = [];
+
+        // Remove file from params array and add it as a stream.
+        if (!empty($requestData['file'])) {
+            $options['multipart'][] = [
+              'name' => 'file',
+              'contents' => $this->readFile($requestData['file']),
+            ];
+            unset($requestData['file']);
+        }
+
+        //$options = $this->addRequestDataToOptions($options, $requestData);
+        foreach ($requestData as $key => $value) {
+            // Hack to cast FALSE to '0' instead of empty string.
+            if (is_bool($value)) {
+                $value = (int)$value;
+            }
+
+            if (is_array($value)) {
+                foreach ($value as $_item) {
+                    $options['multipart'][] = [
+                      'name' => $key . '[]',
+                      'contents' => (string)$_item,
+                    ];
+                }
+            } else {
+               $options['multipart'][] = [
+                  'name' => $key,
+                  'contents' => (string)$value,
+               ];
+            }
+        }
+
+        return $options;
+    }
 
     /**
      * @param string $uri
      * @param array $requestData
      * @param string $method
-     * @param string $strategy
+     * @param bool $doProcessResponseBody
      *
      * @return  bool true on SUCCESS and empty data
-     *          string on $processResponseBody = false
+     *          string on $doProcessResponseBody = false
      *          array otherwise
      * @throws SmartlingApiException
      */
-    protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
+    protected function sendRequest($uri, array $requestData, $method, $doProcessResponseBody = TRUE)
     {
 
-        $options = $this->prepareOptions($strategy);
-
-        if (in_array($method, [HttpVerbHelper::HTTP_VERB_GET, HttpVerbHelper::HTTP_VERB_DELETE])) {
-            $options['query'] = $requestData;
-        } else {
-            if (self::STRATEGY_AUTH === $strategy) {
-                $options['json'] = $requestData;
-            } else {
-                $options['multipart'] = [];
-
-                // Remove file from params array and add it as a stream.
-                if (!empty($requestData['file'])) {
-                    $options['multipart'][] = [
-                        'name' => 'file',
-                        'contents' => $this->readFile($requestData['file']),
-                    ];
-                    unset($requestData['file']);
-                }
-                $options = $this->addRequestDataToOptions($options, $requestData);
-            }
-        }
+        $options = $this->prepareHeaders($doProcessResponseBody);
+        $options = $this->mergeRequestData($options, $requestData, $method);
 
         $endpoint = $this->normalizeUri($uri);
 
@@ -399,7 +424,7 @@ abstract class BaseApiAbstract
             $this->processErrors($responseStatusCode, $responseBody);
         }
 
-        if (self::STRATEGY_DOWNLOAD === $strategy) {
+        if (!$doProcessResponseBody) {
             return $responseBody;
         } else {
             $response = json_decode($responseBody, true);

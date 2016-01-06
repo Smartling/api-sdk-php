@@ -6,7 +6,6 @@ use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
-use Smartling\Helpers\HttpVerbHelper;
 
 /**
  * Class ProjectApi
@@ -41,6 +40,6 @@ class ProjectApi extends BaseApiAbstract
      */
     public function getProjectDetails()
     {
-        return $this->sendRequest('', [], HttpVerbHelper::HTTP_VERB_GET);
+        return $this->sendRequest('', [], self::HTTP_METHOD_GET);
     }
 }

@@ -5,12 +5,13 @@ namespace Smartling\AuthApi;
 use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Smartling\BaseApiAbstract;
-use Smartling\Helpers\HttpVerbHelper;
 
 class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
 {
 
     const ENDPOINT_URL = 'https://api.smartling.com/auth-api/v2/';
+
+    const TIME_TO_RESFRESH = 2;
 
     /**
      * @var string
@@ -26,6 +27,11 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      * @var array
      */
     private $data;
+
+    /**
+     * @var int
+     */
+    private $requestTime = 0;
 
     /**
      * @return string
@@ -86,7 +92,6 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     public static function create($userIdentifier, $secretKey, $logger = null)
     {
-
         $client = self::initializeHttpClient(self::ENDPOINT_URL);
 
         return new self($userIdentifier, $secretKey, $client, $logger);
@@ -98,7 +103,19 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     public function getAccessToken()
     {
-        $this->data = $this->sendRequest('authenticate', [], HttpVerbHelper::HTTP_VERB_POST);
+        if ($this->isValidToken())
+        {
+            return $this->data['accessToken'];
+        }
+
+        if ($this->isValidRefreshToken())
+        {
+            $this->data = $this->refreshToken();
+        }
+        else
+        {
+            $this->data = $this->authenticate();
+        }
 
         return $this->data['accessToken'];
     }
@@ -111,6 +128,21 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         return isset($this->data['tokenType']) ? $this->data['tokenType'] : '';
     }
 
+    public function getRefreshToken()
+    {
+        return isset($this->data['refreshToken']) ? $this->data['refreshToken'] : '';
+    }
+
+    private function isValidToken()
+    {
+        return isset($this->data['expiresIn']) ? time() + self::TIME_TO_RESFRESH < $this->requestTime + $this->data['expiresIn'] : FALSE;
+    }
+
+    private function isValidRefreshToken()
+    {
+        return isset($this->data['refreshExpiresIn']) ? time() + self::TIME_TO_RESFRESH < $this->requestTime + $this->data['refreshExpiresIn'] : FALSE;
+    }
+
     /**
      * @inheritdoc
      */
@@ -119,11 +151,47 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         $this->data = [];
     }
 
-    protected function sendRequest($uri, array $requestData, $method)
+    /**
+     * @inheritdoc
+     */
+    protected function prepareHeaders($doProcessResponseBody, $httpErrors = false) {
+        $options = [
+          'headers' => [
+            'Accept' => 'application/json',
+          ],
+          'http_errors' => $httpErrors,
+        ];
+
+        return $options;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function mergeRequestData($options, $requestData, $method = self::HTTP_METHOD_GET)
     {
+        $options['json'] = $requestData;
+        return $options;
+    }
+
+
+    protected function authenticate()
+    {
+        $requestData = [];
         $requestData['userIdentifier'] = $this->getUserIdentifier();
         $requestData['userSecret'] = $this->getSecretKey();
 
-        return parent::sendRequest($uri, $requestData, $method, self::STRATEGY_AUTH);
+        $this->requestTime = time();
+
+        return $this->sendRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
+    }
+
+    protected function refreshToken()
+    {
+        $requestData['refreshToken'] = $this->getRefreshToken();
+
+        $this->requestTime = time();
+
+        return $this->sendRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
     }
 }
