@@ -13,7 +13,7 @@
   "authors": [],
   "require": {
     "psr/log": "~1.0",
-    "php": ">=5.5.0",
+    "php": ">=5.4.0",
     "guzzlehttp/guzzle": "~5"
   },
   "require-dev": {
