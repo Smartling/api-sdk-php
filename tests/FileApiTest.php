@@ -119,7 +119,7 @@ class SmartlingApiTest extends ApiTestAbstract
                             JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
                         ),
                     'authorize' => '0',
-                    'localeIdsToAuthorize' => ['es'],
+                    'localeIdsToAuthorize[]' => ['es'],
                     'file' => $this->streamPlaceholder,
                     'fileUri' => 'test.xml',
                     'fileType' => 'xml'
