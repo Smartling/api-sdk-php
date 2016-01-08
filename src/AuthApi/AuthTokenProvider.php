@@ -5,7 +5,6 @@ namespace Smartling\AuthApi;
 use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Smartling\BaseApiAbstract;
-use Smartling\Helpers\HttpVerbHelper;
 
 /**
  * Class AuthTokenProvider
@@ -101,7 +100,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     public function getAccessToken()
     {
-        $this->data = $this->sendRequest('authenticate', [], HttpVerbHelper::HTTP_VERB_POST);
+        $this->data = $this->sendRequest('authenticate', [], self::HTTP_METHOD_POST);
 
         return $this->data['accessToken'];
     }

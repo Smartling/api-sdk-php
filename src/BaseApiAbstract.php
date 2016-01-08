@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Exceptions\SmartlingApiException;
-use Smartling\Helpers\HttpVerbHelper;
 use Smartling\Logger\DevNullLogger;
 
 /**
@@ -27,6 +26,12 @@ abstract class BaseApiAbstract
     const STRATEGY_DOWNLOAD = 'download';
 
     const STRATEGY_AUTH = 'auth';
+
+    const HTTP_METHOD_GET = 'get';
+
+    const HTTP_METHOD_POST = 'post';
+
+    const HTTP_METHOD_DELETE = 'delete';
 
     /**
      * Project Id in Smartling dashboard
@@ -345,7 +350,7 @@ abstract class BaseApiAbstract
     {
         $options = $this->prepareOptions($strategy);
 
-        if (in_array($method, [HttpVerbHelper::HTTP_VERB_GET, HttpVerbHelper::HTTP_VERB_DELETE], true)) {
+        if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
             $options['query'] = $requestData;
         } else {
             if (self::STRATEGY_AUTH === $strategy) {

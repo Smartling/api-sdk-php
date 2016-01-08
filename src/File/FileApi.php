@@ -10,7 +10,6 @@ use Smartling\File\Params\DownloadFileParameters;
 use Smartling\File\Params\ListFilesParameters;
 use Smartling\File\Params\ParameterInterface;
 use Smartling\File\Params\UploadFileParameters;
-use Smartling\Helpers\HttpVerbHelper;
 
 
 /**
@@ -80,7 +79,7 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $file_name;
         $params['fileType'] = $file_type;
 
-        return $this->sendRequest('file', $params, HttpVerbHelper::HTTP_VERB_POST);
+        return $this->sendRequest('file', $params, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -118,8 +117,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest("locales/{$locale}/file", $params, HttpVerbHelper::HTTP_VERB_GET,
-            self::STRATEGY_DOWNLOAD);
+        return $this->sendRequest("locales/{$locale}/file", $params, self::HTTP_METHOD_GET, self::STRATEGY_DOWNLOAD);
     }
 
     /**
@@ -142,7 +140,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest("locales/$locale/file/status", $params, HttpVerbHelper::HTTP_VERB_GET);
+        return $this->sendRequest("locales/$locale/file/status", $params, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -179,7 +177,7 @@ class FileApi extends BaseApiAbstract
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
 
-        return $this->sendRequest('files/list', $params, HttpVerbHelper::HTTP_VERB_GET);
+        return $this->sendRequest('files/list', $params, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -206,7 +204,7 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
         $params['newFileUri'] = $newFileUri;
 
-        return $this->sendRequest('file/rename', $params, HttpVerbHelper::HTTP_VERB_POST);
+        return $this->sendRequest('file/rename', $params, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -230,7 +228,7 @@ class FileApi extends BaseApiAbstract
 
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/delete', $params, HttpVerbHelper::HTTP_VERB_POST);
+        return $this->sendRequest('file/delete', $params, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -271,7 +269,7 @@ class FileApi extends BaseApiAbstract
         $params['translationState'] = $translationState;
         $params['overwrite'] = $overwrite;
 
-        return $this->sendRequest("/locales/$locale/file/import", $params, HttpVerbHelper::HTTP_VERB_POST);
+        return $this->sendRequest("/locales/$locale/file/import", $params, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -289,7 +287,7 @@ class FileApi extends BaseApiAbstract
 
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/authorized-locales', $params, HttpVerbHelper::HTTP_VERB_GET);
+        return $this->sendRequest('file/authorized-locales', $params, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -307,7 +305,7 @@ class FileApi extends BaseApiAbstract
 
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/status', $params, HttpVerbHelper::HTTP_VERB_GET);
+        return $this->sendRequest('file/status', $params, self::HTTP_METHOD_GET);
     }
 
 
@@ -326,6 +324,6 @@ class FileApi extends BaseApiAbstract
 
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/last-modified', $params, HttpVerbHelper::HTTP_VERB_GET);
+        return $this->sendRequest('file/last-modified', $params, self::HTTP_METHOD_GET);
     }
 }
