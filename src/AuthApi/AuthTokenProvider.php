@@ -7,6 +7,10 @@ use Psr\Log\LoggerInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Helpers\HttpVerbHelper;
 
+/**
+ * Class AuthTokenProvider
+ * @package Smartling\AuthApi
+ */
 class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
 {
 
@@ -86,7 +90,6 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     public static function create($userIdentifier, $secretKey, $logger = null)
     {
-
         $client = self::initializeHttpClient(self::ENDPOINT_URL);
 
         return new self($userIdentifier, $secretKey, $client, $logger);
@@ -119,7 +122,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         $this->data = [];
     }
 
-    protected function sendRequest($uri, array $requestData, $method)
+    protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
         $requestData['userIdentifier'] = $this->getUserIdentifier();
         $requestData['userSecret'] = $this->getSecretKey();

@@ -24,5 +24,10 @@
       "Smartling\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Smartling\\Tests\\": "tests/"
+    }
+  },
   "minimum-stability": "dev"
 }

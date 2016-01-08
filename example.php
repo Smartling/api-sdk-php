@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 /**
  * This file contains examples of Smartling API 2.x usage.
  *
@@ -51,7 +52,9 @@ $translationState = 'PUBLISHED';
 $locale = 'ru-RU';
 $locales_array = [$locale];
 
+
 resetFiles($userIdentifier, $userSecretKey, $projectId, [$fileName, $newFileName]);
+
 
 /**
  * Upload file example
@@ -304,12 +307,12 @@ try {
 function resetFiles($userIdentifier, $userSecretKey, $projectId, $files = [])
 {
     $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
-
     foreach ($files as $file) {
         try {
             $fileApi = \Smartling\File\FileApi::create($authProvider, $projectId);
             $fileApi->deleteFile($file);
         } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+            // echo $e->getMessage() . PHP_EOL;
         }
     }
 }

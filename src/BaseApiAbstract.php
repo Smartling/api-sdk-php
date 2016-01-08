@@ -4,8 +4,11 @@ namespace Smartling;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Helpers\HttpVerbHelper;
@@ -24,7 +27,6 @@ abstract class BaseApiAbstract
     const STRATEGY_DOWNLOAD = 'download';
 
     const STRATEGY_AUTH = 'auth';
-
 
     /**
      * Project Id in Smartling dashboard
@@ -213,7 +215,7 @@ abstract class BaseApiAbstract
             'headers' => [
                 'Accept' => 'application/json',
             ],
-            'http_errors' => $httpErrors,
+            'exceptions' => $httpErrors,
         ];
 
         if (self::STRATEGY_AUTH !== $strategy) {
@@ -238,29 +240,18 @@ abstract class BaseApiAbstract
      */
     private function addRequestDataToOptions(array $options, array $requestData = [])
     {
-
+        $opts = [];
         foreach ($requestData as $key => $value) {
             // Hack to cast FALSE to '0' instead of empty string.
             if (is_bool($value)) {
                 $value = (int)$value;
             }
-
-            if (is_array($value)) {
-                foreach ($value as $_item) {
-                    $options['multipart'][] = [
-                        'name' => $key . '[]',
-                        'contents' => (string)$_item,
-                    ];
-                }
-            } else {
-                $options['multipart'][] = [
-                    'name' => $key,
-                    'contents' => (string)$value,
-                ];
+            if ('file' === $key) {
+                $value = $this->readFile($value);
             }
+            $opts[$key] = $value;
         }
-
-        return $options;
+        return $opts;
     }
 
     /**
@@ -274,13 +265,13 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param int $responseStatusCode
+     * @param ResponseInterface $response
      * @throws SmartlingApiException
      */
-    private function checkAuthenticationError($responseStatusCode)
+    private function checkAuthenticationError(ResponseInterface $response)
     {
         //Special handling for 401 error - authentication error => expire token
-        if (401 === (int)$responseStatusCode) {
+        if (401 === (int)$response->getStatusCode()) {
             if (!($this->getAuth() instanceof AuthApiInterface)) {
                 $type = gettype($this->getAuth());
                 if ('object' === $type) {
@@ -294,48 +285,97 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param string $responseStatusCode
-     * @param string $responseBody
-     *
+     * @param ResponseInterface $response
      * @throws SmartlingApiException
      */
-    private function processErrors($responseStatusCode, $responseBody)
+    private function processErrors(ResponseInterface $response)
     {
         // Catch all errors from Smartling and throw appropriate exception.
-        if ($responseStatusCode >= 400) {
-            $this->processError($responseStatusCode,$responseBody);
+        if (400 <= (int)$response->getStatusCode()) {
+            $this->processError($response);
         }
     }
 
-    private function processError($responseStatusCode, $responseBody)
+    /**
+     * @param ResponseInterface $response
+     * @throws SmartlingApiException
+     */
+    private function processError($response)
     {
-        $errorResponse = json_decode($responseBody, true);
+        try {
+            $json = $response->json();
 
-        if (!$errorResponse
-            || !is_array($errorResponse)
-            || !array_key_exists('response', $errorResponse)
-            || !is_array($errorResponse['response'])
-            || !array_key_exists('errors', $errorResponse['response'])
-            || empty($errorResponse['response']['errors'])
-        ) {
-            $message = 'Bad response format from Smartling';
+            if (!array_key_exists('response', $json)
+                || !is_array($json['response'])
+                || !array_key_exists('errors', $json['response'])
+                || empty($json['response']['errors'])
+            ) {
+                $message = 'Bad response format from Smartling';
+                $this->getLogger()->error($message);
+                throw new SmartlingApiException($message);
+            }
+
+            $error_msg = array_map(
+                function ($a) {
+                    return $a['message'];
+                },
+                $json['response']['errors']
+            );
+
+            $message = implode(' || ', $error_msg);
+
+            $this->getLogger()->error($message);
+            throw new SmartlingApiException($message, $response->getStatusCode());
+
+        } catch (RuntimeException $e) {
+            $message = vsprintf('Bad response format from Smartling: %s', [$response->getBody()]);
             $this->getLogger()->error($message);
             throw new SmartlingApiException($message);
         }
-
-        $error_msg = array_map(
-            function ($a) {
-                return $a['message'];
-            },
-            $errorResponse['response']['errors']
-        );
-
-        $message = implode(' || ', $error_msg);
-
-        $this->getLogger()->error($message);
-        throw new SmartlingApiException($message, $responseStatusCode);
     }
 
+    /**
+     * @param string $uri
+     * @param array $requestData
+     * @param string $method
+     * @param string $strategy
+     * @return RequestInterface
+     */
+    private function prepareHttpRequest($uri, array $requestData, $method, $strategy)
+    {
+        $options = $this->prepareOptions($strategy);
+
+        if (in_array($method, [HttpVerbHelper::HTTP_VERB_GET, HttpVerbHelper::HTTP_VERB_DELETE], true)) {
+            $options['query'] = $requestData;
+        } else {
+            if (self::STRATEGY_AUTH === $strategy) {
+                $options['json'] = $requestData;
+            } else {
+                $options['body'] = $this->addRequestDataToOptions($options, $requestData);
+            }
+        }
+
+        $endpoint = $this->normalizeUri($uri);
+
+        $options['exceptions'] = false;
+
+        $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
+
+        $this->getLogger()->debug(
+            json_encode(
+                [
+                    'request' => [
+                        'endpoint' => $endpoint,
+                        'method' => $method,
+                        'requestData' => $options,
+                    ],
+                ],
+                JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT
+            )
+        );
+
+        return $clientRequest;
+    }
 
     /**
      * @param string $uri
@@ -350,90 +390,68 @@ abstract class BaseApiAbstract
      */
     protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
-        $options = $this->prepareOptions($strategy);
+        $request = $this->prepareHttpRequest($uri, $requestData, $method, $strategy);
 
-        if (in_array($method, [HttpVerbHelper::HTTP_VERB_GET, HttpVerbHelper::HTTP_VERB_DELETE], true)) {
-            $options['query'] = $requestData;
-        } else {
-            if (self::STRATEGY_AUTH === $strategy) {
-                $options['json'] = $requestData;
-            } else {
-                $options['multipart'] = [];
-
-                // Remove file from params array and add it as a stream.
-                if (!empty($requestData['file'])) {
-                    $options['multipart'][] = [
-                        'name' => 'file',
-                        'contents' => $this->readFile($requestData['file']),
-                    ];
-                    unset($requestData['file']);
-                }
-                $options = $this->addRequestDataToOptions($options, $requestData);
-            }
-        }
-
-        $endpoint = $this->normalizeUri($uri);
-
-        if (in_array($method, HttpVerbHelper::$verbs, true)) {
-            /**
-             * @var ResponseInterface $guzzleResponse
-             */
-            $guzzleResponse = $this->getHttpClient()->{$method}($endpoint, $options);
-        } else {
-            $message = vsprintf('Invalid request verb. Got: %s; Expected one of: %s',
-                [
-                    var_export($method, true),
-                    '\'' . implode('\',\'', HttpVerbHelper::$verbs) . '\''
-                ]
-            );
-            $this->getLogger()->critical($message);
-            throw new SmartlingApiException($message);
+        try {
+            $response = $this->getHttpClient()->send($request);
+        } catch (RequestException $e) {
+            $message = vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
+            $this->getLogger()->error($message);
+            throw new SmartlingApiException($message, 0, $e);
+        } catch (\LogicException $e) {
+            $message = vsprintf('Guzzle:LogicException: %s', [$e->getMessage()]);
+            $this->getLogger()->error($message);
+            throw new SmartlingApiException($message, 0, $e);
+        } catch (\Exception $e) {
+            $message = vsprintf('Guzzle:Exception: %s', [$e->getMessage()]);
+            $this->getLogger()->error($message);
+            throw new SmartlingApiException($message, 0, $e);
         }
 
         $this->getLogger()->debug(
             json_encode(
                 [
-                    'request' => [
-                        'endpoint' => $endpoint,
-                        'method' => $method,
-                        'requestData' => $options,
-                    ],
                     'response' => [
-                        'statusCode' => $guzzleResponse->getStatusCode(),
-                        'headers' => $guzzleResponse->getHeaders(),
-                        'body' => (string)$guzzleResponse->getBody(),
+                        'statusCode' => $response->getStatusCode(),
+                        'headers' => $response->getHeaders(),
+                        'body' => (string)$response->getBody(),
                     ],
                 ],
                 JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT
             )
         );
 
-
-        $responseBody = (string) $guzzleResponse->getBody();
-        $responseStatusCode = $guzzleResponse->getStatusCode();
-
-        if (400 <= $responseStatusCode) {
-            $this->checkAuthenticationError($responseStatusCode);
-            $this->processErrors($responseStatusCode, $responseBody);
+        if (400 <= (int)$response->getStatusCode()) {
+            $this->checkAuthenticationError($response);
+            $this->processErrors($response);
         }
 
-        if (self::STRATEGY_DOWNLOAD === $strategy) {
-            return $responseBody;
-        } else {
-            $response = json_decode($responseBody, true);
-
-            // Throw exception if json is not valid.
-            if (!$response
-                || !is_array($response)
-                || !array_key_exists('response', $response)
-                || !is_array($response['response'])
-                || empty($response['response']['code'])
-                || $response['response']['code'] !== 'SUCCESS'
-            ) {
-                $this->processError($responseStatusCode,$responseBody);
+        switch ($strategy) {
+            case self::STRATEGY_DOWNLOAD: {
+                return $response->getBody();
+                break;
             }
+            case self::STRATEGY_AUTH:
+            case self::STRATEGY_GENERAL:
+            default: {
 
-            return isset($response['response']['data']) ? $response['response']['data'] : true;
+                try {
+                    $json = $response->json();
+
+                    if (!array_key_exists('response', $json)
+                        || !is_array($json['response'])
+                        || empty($json['response']['code'])
+                        || $json['response']['code'] !== 'SUCCESS'
+                    ) {
+                        $this->processError($response);
+                    }
+
+                    return isset($json['response']['data']) ? $json['response']['data'] : true;
+
+                } catch (RuntimeException $e) {
+                    $this->processError($response);
+                }
+            }
         }
     }
 }
