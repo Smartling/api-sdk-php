@@ -309,7 +309,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->willReturn($this->responseWithException);
         $this->responseMock->expects(self::any())
             ->method('json')
-            ->willReturn(json_decode($this->responseWithException, JSON_OBJECT_AS_ARRAY));
+            ->willReturn(json_decode($this->responseWithException, self::JSON_OBJECT_AS_ARRAY));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',

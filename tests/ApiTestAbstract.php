@@ -15,6 +15,8 @@ use Smartling\BaseApiAbstract;
  */
 abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
 {
+    const JSON_OBJECT_AS_ARRAY = 1;
+
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|BaseApiAbstract
      */
@@ -238,7 +240,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
                 ->willReturn(
                     json_decode(
                         $this->validResponse,
-                        JSON_OBJECT_AS_ARRAY
+                        self::JSON_OBJECT_AS_ARRAY
                     )
                 );
 
