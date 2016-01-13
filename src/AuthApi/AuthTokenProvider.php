@@ -133,14 +133,22 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         return isset($this->data['refreshToken']) ? $this->data['refreshToken'] : '';
     }
 
+    private function getTokenExpirationTime() {
+        return isset($this->data['expiresIn']) ? $this->data['expiresIn'] : 0;
+    }
+
     private function isValidToken()
     {
-        return isset($this->data['expiresIn']) ? time() + self::TIME_TO_RESFRESH < $this->requestTime + $this->data['expiresIn'] : FALSE;
+        return time() + self::TIME_TO_RESFRESH < $this->requestTime + $this->getTokenExpirationTime();
+    }
+
+    private function getRefreshTokenExpirationTime() {
+        return isset($this->data['refreshExpiresIn']) ? $this->data['refreshExpiresIn'] : 0;
     }
 
     private function isValidRefreshToken()
     {
-        return isset($this->data['refreshExpiresIn']) ? time() + self::TIME_TO_RESFRESH < $this->requestTime + $this->data['refreshExpiresIn'] : FALSE;
+        return time() + self::TIME_TO_RESFRESH < $this->requestTime + $this->getRefreshTokenExpirationTime();
     }
 
     /**

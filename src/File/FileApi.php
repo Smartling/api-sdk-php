@@ -22,6 +22,82 @@ class FileApi extends BaseApiAbstract
 
     const ENDPOINT_URL = 'https://api.smartling.com/files-api/v2/projects';
 
+    private $isDownload = FALSE;
+
+
+    /**
+     * @param bool $httpErrors
+     *
+     * @return array
+     */
+    protected function prepareHeaders($httpErrors = false)
+    {
+        $options = parent::prepareHeaders($httpErrors);
+
+        if ($this->isDownload)
+        {
+            unset($options['headers']['Accept']);
+        }
+
+        return $options;
+    }
+
+    protected function processResponse($responseBody) {
+        if ($this->isDownload)
+        {
+            return $responseBody;
+        }
+        return parent::processResponse($responseBody);
+    }
+
+    /**
+     * OOP wrapper for fopen() function.
+     *
+     * @param string $realPath
+     *   Real path for file.
+     *
+     * @return resource
+     *
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    protected function readFile($realPath)
+    {
+        $stream = @fopen($realPath, 'r');
+
+        if (!$stream) {
+            throw new SmartlingApiException("File $realPath was not able to be read.");
+        } else {
+            return $stream;
+        }
+    }
+
+    /**
+     * @param array $options
+     * @param array $requestData
+     * @param string $method
+     *
+     * @return array
+     */
+    protected function mergeRequestData($options, $requestData, $method = self::HTTP_METHOD_GET)
+    {
+        if (!in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE])) {
+            // Remove file from params array and add it as a stream.
+            if (!empty($requestData['file'])) {
+                $options['multipart'] = [];
+
+                $options['multipart'][] = [
+                  'name' => 'file',
+                  'contents' => $this->readFile($requestData['file']),
+                ];
+                unset($requestData['file']);
+            }
+        }
+        return parent::mergeRequestData($options, $requestData, $method);
+    }
+
+
+
+
     /**
      * @param AuthApiInterface $authProvider
      * @param string $projectId
@@ -114,6 +190,8 @@ class FileApi extends BaseApiAbstract
      */
     public function downloadFile($fileUri, $locale = '', DownloadFileParameters $params = null)
     {
+        $this->isDownload = TRUE;
+
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 

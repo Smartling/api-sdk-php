@@ -176,33 +176,11 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * OOP wrapper for fopen() function.
-     *
-     * @param string $realPath
-     *   Real path for file.
-     *
-     * @return resource
-     *
-     * @throws \Smartling\Exceptions\SmartlingApiException
-     */
-    protected function readFile($realPath)
-    {
-        $stream = @fopen($realPath, 'r');
-
-        if (!$stream) {
-            throw new SmartlingApiException("File $realPath was not able to be read.");
-        } else {
-            return $stream;
-        }
-    }
-
-    /**
-     * @param bool $doProcessResponseBody
      * @param bool $httpErrors
      *
      * @return array
      */
-    protected function prepareHeaders($doProcessResponseBody, $httpErrors = false)
+    protected function prepareHeaders($httpErrors = false)
     {
         $options = [
             'headers' => [
@@ -216,43 +194,6 @@ abstract class BaseApiAbstract
         $tokenType = $this->getAuth()->getTokenType();
         $options['headers']['Authorization'] =
            vsprintf(' %s %s', [$tokenType, $accessToken]);
-
-        if (!$doProcessResponseBody) {
-            unset($options['headers']['Accept']);
-        }
-
-        return $options;
-    }
-
-    /**
-     * @param array $options
-     * @param array $requestData
-     *
-     * @return array
-     */
-    private function addRequestDataToOptions(array $options, array $requestData = [])
-    {
-
-        foreach ($requestData as $key => $value) {
-            // Hack to cast FALSE to '0' instead of empty string.
-            if (is_bool($value)) {
-                $value = (int)$value;
-            }
-
-            if (is_array($value)) {
-                foreach ($value as $_item) {
-                    $options['multipart'][] = [
-                        'name' => $key . '[]',
-                        'contents' => (string)$_item,
-                    ];
-                }
-            } else {
-                $options['multipart'][] = [
-                    'name' => $key,
-                    'contents' => (string)$value,
-                ];
-            }
-        }
 
         return $options;
     }
@@ -341,18 +282,11 @@ abstract class BaseApiAbstract
             return $options;
         }
 
-        $options['multipart'] = [];
-
-        // Remove file from params array and add it as a stream.
-        if (!empty($requestData['file'])) {
-            $options['multipart'][] = [
-              'name' => 'file',
-              'contents' => $this->readFile($requestData['file']),
-            ];
-            unset($requestData['file']);
+        if (!isset($options['multipart']))
+        {
+            $options['multipart'] = [];
         }
 
-        //$options = $this->addRequestDataToOptions($options, $requestData);
         foreach ($requestData as $key => $value) {
             // Hack to cast FALSE to '0' instead of empty string.
             if (is_bool($value)) {
@@ -377,21 +311,38 @@ abstract class BaseApiAbstract
         return $options;
     }
 
+    protected function processResponse($responseBody) {
+        $response = json_decode($responseBody, true);
+
+        // Throw exception if json is not valid.
+        if (!$response
+          || !is_array($response)
+          || !array_key_exists('response', $response)
+          || !is_array($response['response'])
+          || empty($response['response']['code'])
+          || $response['response']['code'] !== 'SUCCESS'
+        ) {
+            $message = 'Bad response format from Smartling';
+            $this->getLogger()->error($message);
+            throw new SmartlingApiException($message);
+        }
+
+        return isset($response['response']['data']) ? $response['response']['data'] : true;
+    }
     /**
      * @param string $uri
      * @param array $requestData
      * @param string $method
-     * @param bool $doProcessResponseBody
      *
      * @return  bool true on SUCCESS and empty data
      *          string on $doProcessResponseBody = false
      *          array otherwise
      * @throws SmartlingApiException
      */
-    protected function sendRequest($uri, array $requestData, $method, $doProcessResponseBody = TRUE)
+    protected function sendRequest($uri, array $requestData, $method)
     {
 
-        $options = $this->prepareHeaders($doProcessResponseBody);
+        $options = $this->prepareHeaders();
         $options = $this->mergeRequestData($options, $requestData, $method);
 
         $endpoint = $this->normalizeUri($uri);
@@ -424,25 +375,6 @@ abstract class BaseApiAbstract
             $this->processErrors($responseStatusCode, $responseBody);
         }
 
-        if (!$doProcessResponseBody) {
-            return $responseBody;
-        } else {
-            $response = json_decode($responseBody, true);
-
-            // Throw exception if json is not valid.
-            if (!$response
-                || !is_array($response)
-                || !array_key_exists('response', $response)
-                || !is_array($response['response'])
-                || empty($response['response']['code'])
-                || $response['response']['code'] !== 'SUCCESS'
-            ) {
-                $message = 'Bad response format from Smartling';
-                $this->getLogger()->error($message);
-                throw new SmartlingApiException($message);
-            }
-
-            return isset($response['response']['data']) ? $response['response']['data'] : true;
-        }
+        return $this->processResponse($responseBody);
     }
 }
