@@ -195,7 +195,9 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest("locales/{$locale}/file", $params, self::HTTP_METHOD_GET, FALSE);
+        $response = $this->sendRequest("locales/{$locale}/file", $params, self::HTTP_METHOD_GET, FALSE);
+        $this->isDownload = FALSE;
+        return $response;
     }
 
     /**
