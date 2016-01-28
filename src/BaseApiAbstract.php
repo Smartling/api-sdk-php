@@ -366,13 +366,24 @@ abstract class BaseApiAbstract
 
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
 
+        // Dump full request data to log except sensetive data
+        $logRequestData = $options;
+        if (isset($logRequestData['headers']['Authorization']))
+        {
+            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0, 5) . '*****';
+        }
+        if (isset($logRequestData['json']['userIdentifier']))
+        {
+            $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0, 5) . '*****';
+            $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
+        }
         $this->getLogger()->debug(
             json_encode(
                 [
                     'request' => [
                         'endpoint' => $endpoint,
                         'method' => $method,
-                        'requestData' => $options,
+                        'requestData' => $logRequestData,
                     ],
                 ],
                 JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT
@@ -413,13 +424,17 @@ abstract class BaseApiAbstract
             throw new SmartlingApiException($message, 0, $e);
         }
 
+        // Dump full response to log except sensetive data
+        $logResponseData = (string)$response->getBody();
+        $logResponseData = preg_replace('/(accessToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
+        $logResponseData = preg_replace('/(refreshToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
         $this->getLogger()->debug(
             json_encode(
                 [
                     'response' => [
                         'statusCode' => $response->getStatusCode(),
                         'headers' => $response->getHeaders(),
-                        'body' => (string)$response->getBody(),
+                        'body' => $logResponseData,
                     ],
                 ],
                 JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT
