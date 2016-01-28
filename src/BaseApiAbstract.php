@@ -370,7 +370,7 @@ abstract class BaseApiAbstract
         $logRequestData = $options;
         if (isset($logRequestData['headers']['Authorization']))
         {
-            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0, 5) . '*****';
+            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0, 12) . '*****';
         }
         if (isset($logRequestData['json']['userIdentifier']))
         {
