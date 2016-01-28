@@ -227,7 +227,7 @@ abstract class BaseApiAbstract
             $accessToken = $this->getAuth()->getAccessToken();
             $tokenType = $this->getAuth()->getTokenType();
             $options['headers']['Authorization'] =
-                vsprintf(' %s %s', [$tokenType, $accessToken]);
+                vsprintf('%s %s', [$tokenType, $accessToken]);
         }
 
         if (self::STRATEGY_DOWNLOAD === $strategy) {
