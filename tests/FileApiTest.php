@@ -103,7 +103,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('post', FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -176,7 +176,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->method('createRequest')
             ->with('get', $endpointUrl, [
                 'headers' => [
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -235,7 +235,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -274,7 +274,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -325,7 +325,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -377,7 +377,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -429,7 +429,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -459,7 +459,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testSendRequest($uri, $requestData, $method, $params)
     {
-        $params['headers']['Authorization'] = vsprintf(' %s %s', [
+        $params['headers']['Authorization'] = vsprintf('%s %s', [
             $this->authProvider->getTokenType(),
             $this->authProvider->getAccessToken(),
         ]);
@@ -546,7 +546,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -586,7 +586,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -619,7 +619,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -661,7 +661,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf(' %s %s', [
+                    'Authorization' => vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
