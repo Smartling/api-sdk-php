@@ -368,13 +368,13 @@ abstract class BaseApiAbstract
 
         // Dump full request data to log except sensetive data
         $logRequestData = $options;
-        if (isset($logRequestData['headers']['Authorization']))
-        {
-            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0, 12) . '*****';
+        if (isset($logRequestData['headers']['Authorization'])) {
+            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0,
+                    12) . '*****';
         }
-        if (isset($logRequestData['json']['userIdentifier']))
-        {
-            $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0, 5) . '*****';
+        if (isset($logRequestData['json']['userIdentifier'])) {
+            $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0,
+                    5) . '*****';
             $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
         }
 
