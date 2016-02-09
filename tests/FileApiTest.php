@@ -119,7 +119,7 @@ class SmartlingApiTest extends ApiTestAbstract
                             JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
                         ),
                     'authorize' => '0',
-                    'localeIdsToAuthorize[]' => ['es'],
+                    'localeIdsToAuthorize[]' => 'es',
                     'file' => $this->streamPlaceholder,
                     'fileUri' => 'test.xml',
                     'fileType' => 'xml'
@@ -135,9 +135,36 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $params = new UploadFileParameters();
         $params->setAuthorized(true);
-        $params->setLocalesToApprove(['es']);
+        $params->setLocalesToApprove('es');
 
         $this->object->uploadFile('tests/resources/test.xml', 'test.xml', 'xml', $params);
+    }
+
+
+    /**
+     * Tests AutoAuthorize logic
+     */
+    public function testFileUploadParams()
+    {
+        $fileUploadParams = new UploadFileParameters();
+
+        $fileUploadParams->setAuthorized(false);
+        $exportedSettings = $fileUploadParams->exportToArray();
+        self::assertEquals($exportedSettings['authorize'], false);
+
+        $fileUploadParams->setAuthorized(true);
+        $exportedSettings = $fileUploadParams->exportToArray();
+        self::assertEquals($exportedSettings['authorize'], true);
+
+        $fileUploadParams->setLocalesToApprove('locale');
+
+        $fileUploadParams->setAuthorized(false);
+        $exportedSettings = $fileUploadParams->exportToArray();
+        self::assertEquals($exportedSettings['authorize'], false);
+
+        $fileUploadParams->setAuthorized(true);
+        $exportedSettings = $fileUploadParams->exportToArray();
+        self::assertEquals($exportedSettings['authorize'], false);
     }
 
     /**

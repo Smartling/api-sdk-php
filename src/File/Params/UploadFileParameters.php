@@ -15,6 +15,7 @@ class UploadFileParameters extends BaseParameters
 
     public function __construct($clientLibId = self::CLIENT_LIB_ID_SDK, $clientLibVersion = self::CLIENT_LIB_ID_VERSION)
     {
+        $this->setAuthorized(false);
         $this->setClientLibId($clientLibId, $clientLibVersion);
     }
 
@@ -83,7 +84,9 @@ class UploadFileParameters extends BaseParameters
     public function exportToArray()
     {
         $params = $this->params;
-        $params['authorize'] = (empty($params['localeIdsToAuthorize[]'])) ?: false;
+        $params['authorize'] = array_key_exists('localeIdsToAuthorize[]', $params)
+            ? false
+            : (bool)$params['authorize'];
 
         return $params;
     }
