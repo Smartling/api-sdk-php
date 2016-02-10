@@ -20,6 +20,9 @@ abstract class BaseApiAbstract
     const HTTP_METHOD_POST = 'POST';
     const HTTP_METHOD_DELETE = 'DELETE';
 
+    const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
+
+    const CLIENT_LIB_ID_VERSION = '2.0.0';
 
     /**
      * Project Id in Smartling dashboard
@@ -169,6 +172,18 @@ abstract class BaseApiAbstract
             [
                 'base_uri' => $serviceUrl,
                 'debug' => $debug,
+                'defaults' => [
+                    'headers' => [
+                        'User-Agent' => vsprintf(
+                            '%s/%s %s',
+                            [
+                                self::CLIENT_LIB_ID_SDK,
+                                self::CLIENT_LIB_ID_VERSION,
+                                Utils::getDefaultUserAgent()
+                            ]
+                        ),
+                    ],
+                ]
             ]
         );
 
