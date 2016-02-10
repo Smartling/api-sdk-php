@@ -176,7 +176,7 @@ class SmartlingApiTest extends ApiTestAbstract
      * @param DownloadFileParameters|null $options
      * @param string $expected_translated_file
      */
-    public function testDownloadFile($options, $expected_translated_file)
+    public function testDownloadFile($options, $locale, $expected_translated_file)
     {
         $this->prepareClientResponseMock(false);
 
@@ -189,7 +189,7 @@ class SmartlingApiTest extends ApiTestAbstract
             [
                 FileApi::ENDPOINT_URL,
                 $this->projectId,
-                'en-EN'
+                $locale
             ]
         );
 
@@ -220,7 +220,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
-        $actual_xml = $this->object->downloadFile('test.xml', 'en-EN', $options);
+        $actual_xml = $this->object->downloadFile('test.xml', $locale, $options);
 
         self::assertEquals($expected_translated_file, $actual_xml);
     }
@@ -230,16 +230,58 @@ class SmartlingApiTest extends ApiTestAbstract
         return [
             [
                 (new DownloadFileParameters())->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO),
+                'en-EN',
                 '<?xml version="1.0"?><response><item key="6"></item></response>'
             ],
             [
                 null,
+                'en-EN',
                 '<?xml version="1.0"?><response><item key="6"></item></response>'
             ],
             [
                 null,
+                'en',
                 '{"string1":"translation1", "string2":"translation2"}'
             ],
+        ];
+    }
+
+    /**
+     * @covers       \Smartling\File\FileApi::downloadFile
+     * @dataProvider downloadFileLocaleCheckSuccessParams
+     * @expectedException Smartling\Exceptions\SmartlingApiException
+     *
+     * @param $options
+     * @param $locale
+     */
+    public function testDownloadFileLocaleCheckFails($options, $locale)
+    {
+        $this->object->downloadFile('test.xml', $locale, $options);
+    }
+
+    public function downloadFileLocaleCheckSuccessParams()
+    {
+        return [
+            [
+                (new DownloadFileParameters())->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO),
+                'e',
+            ],
+            [
+                (new DownloadFileParameters())->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO),
+                '',
+            ],
+            [
+                (new DownloadFileParameters())->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO),
+                [],
+            ],
+            [
+                (new DownloadFileParameters())->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO),
+                null,
+            ],
+            [
+                (new DownloadFileParameters())->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO),
+                (object)['foo'],
+            ]
         ];
     }
 

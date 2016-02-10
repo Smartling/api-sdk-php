@@ -114,6 +114,17 @@ class FileApi extends BaseApiAbstract
      */
     public function downloadFile($fileUri, $locale = '', DownloadFileParameters $params = null)
     {
+        if ((!is_string($locale)) || strlen($locale) < 2) {
+            $message = vsprintf(
+                'Invalid locale value got. Expected a string of at least 2 chars length, but got: %s',
+                [
+                    '' === $locale ? 'Empty string' : var_export($locale, true)
+                ]
+            );
+
+            throw new SmartlingApiException($message);
+        }
+
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
