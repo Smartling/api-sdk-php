@@ -7,6 +7,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Utils;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
@@ -20,6 +21,10 @@ use Smartling\Logger\DevNullLogger;
  */
 abstract class BaseApiAbstract
 {
+
+    const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
+
+    const CLIENT_LIB_ID_VERSION = '2.0.0';
 
     const STRATEGY_GENERAL = 'general';
 
@@ -181,6 +186,18 @@ abstract class BaseApiAbstract
             [
                 'base_uri' => $serviceUrl,
                 'debug' => $debug,
+                'defaults' => [
+                    'headers' => [
+                        'User-Agent' => vsprintf(
+                            '%s/%s %s',
+                            [
+                                self::CLIENT_LIB_ID_SDK,
+                                self::CLIENT_LIB_ID_VERSION,
+                                Utils::getDefaultUserAgent()
+                            ]
+                        ),
+                    ],
+                ]
             ]
         );
 
@@ -365,6 +382,7 @@ abstract class BaseApiAbstract
         $options['exceptions'] = false;
 
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
+
 
         // Dump full request data to log except sensetive data
         $logRequestData = $options;
