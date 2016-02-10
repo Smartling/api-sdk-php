@@ -2,6 +2,7 @@
 
 namespace Smartling\Tests;
 
+use Smartling\BaseApiAbstract;
 use Smartling\File\FileApi;
 use Smartling\File\Params\DownloadFileParameters;
 use Smartling\File\Params\UploadFileParameters;
@@ -113,8 +114,8 @@ class SmartlingApiTest extends ApiTestAbstract
                     'smartling.client_lib_id' =>
                         json_encode(
                             [
-                                'client' => UploadFileParameters::CLIENT_LIB_ID_SDK,
-                                'version' => UploadFileParameters::CLIENT_LIB_ID_VERSION,
+                                'client' => BaseApiAbstract::CLIENT_LIB_ID_SDK,
+                                'version' => BaseApiAbstract::CLIENT_LIB_ID_VERSION,
                             ],
                             JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
                         ),
