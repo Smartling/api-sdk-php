@@ -286,6 +286,84 @@ class SmartlingApiTest extends ApiTestAbstract
     }
 
     /**
+     * @covers \Smartling\File\FileApi::lastModified
+     */
+    public function testLastModified()
+    {
+        $endpointUrl = vsprintf(
+            '%s/%s/file/last-modified',
+            [
+                FileApi::ENDPOINT_URL,
+                $this->projectId
+            ]
+        );
+
+        $this->client
+            ->expects(self::any())
+            ->method('createRequest')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [
+                    'fileUri' => 'test.xml',
+                ],
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->lastModified('test.xml');
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::getStatusForAllLocales
+     */
+    public function textGetStatusForAllLocales()
+    {
+        $endpointUrl = vsprintf(
+            '%s/%s/file/status',
+            [
+                FileApi::ENDPOINT_URL,
+                $this->projectId
+            ]
+        );
+
+        $this->client
+            ->expects(self::any())
+            ->method('createRequest')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [
+                    'fileUri' => 'test.xml',
+                ],
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->getStatusForAllLocales('test.xml');
+    }
+
+    /**
      * @covers \Smartling\File\FileApi::getStatus
      */
     public function testGetStatus()

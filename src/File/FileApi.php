@@ -83,6 +83,46 @@ class FileApi extends BaseApiAbstract
     }
 
     /**
+     * Requests last-modified value for all locales for file
+     * @param string $fileUri
+     *   Value that uniquely identifies the uploaded file. This ID can be used to
+     *   request the file back.
+     * @return array
+     *   Data about uploaded file.
+     *
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     *
+     * @see http://docs.smartling.com/pages/API/v2/FileAPI/Last-Modified/All-Locales/
+     */
+    public function lastModified($fileUri)
+    {
+        $params['fileUri'] = $fileUri;
+
+        $result = $this->sendRequest('file/last-modified', $params, self::HTTP_METHOD_GET);
+
+        /** @noinspection OffsetOperationsInspection */
+        if (is_array($result) && array_key_exists('items', $result) && is_array($result['items']))
+        {
+            /** @noinspection OffsetOperationsInspection */
+            foreach ($result['items'] as &$item)
+            {
+
+                $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, $item['lastModified']);
+
+                if (!($date instanceof \DateTime))
+                {
+                    $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, '1970-01-01T00:00:00Z');
+                }
+
+                $item['lastModified'] = $date;
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
      * Downloads the requested file from Smartling.
      *
      * It is important to check the HTTP response status code. If Smartling finds
@@ -152,6 +192,27 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
 
         return $this->sendRequest("locales/$locale/file/status", $params, self::HTTP_METHOD_GET);
+    }
+
+    /**
+     * Retrieves status about file translation progress for all locales.
+     *
+     * @param string $fileUri
+     *   Value that uniquely identifies the file.
+     * @param ParameterInterface $params
+     *   Additional parameters that might be added later
+     *
+     * @return array Data about request file.
+     * Data about request file.
+     * @throws SmartlingApiException
+     * @see http://docs.smartling.com/pages/API/v2/FileAPI/Status/All-Locales/
+     */
+    public function getStatusForAllLocales($fileUri, ParameterInterface $params = null)
+    {
+        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params['fileUri'] = $fileUri;
+
+        return $this->sendRequest("/file/status", $params, self::HTTP_METHOD_GET);
     }
 
     /**

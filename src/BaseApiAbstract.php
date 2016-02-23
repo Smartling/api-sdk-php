@@ -39,6 +39,10 @@ abstract class BaseApiAbstract
     const HTTP_METHOD_DELETE = 'delete';
 
     /**
+     * PHP equivalent to 'YYYY-MM-DDThh:mm:ssZ'
+     */
+    const PATTERN_DATE_TIME_ISO_8601='Y-m-d\TH:i:s\Z';
+    /**
      * Project Id in Smartling dashboard
      *
      * @var string
@@ -327,7 +331,8 @@ abstract class BaseApiAbstract
         try {
             $json = $response->json();
 
-            if (!array_key_exists('response', $json)
+            if (is_null($json)
+                || !array_key_exists('response', $json)
                 || !is_array($json['response'])
                 || !array_key_exists('errors', $json['response'])
                 || empty($json['response']['errors'])

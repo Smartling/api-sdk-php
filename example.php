@@ -32,6 +32,7 @@ if (!file_exists($autoloader) || !is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 } else {
+    /** @noinspection UntrustedInclusionInspection */
     require_once 'vendor/autoload.php';
 }
 
@@ -47,7 +48,7 @@ $fileType = 'xml';
 $newFileName = 'new_test_file.xml';
 $retrievalType = 'pseudo';
 $content = file_get_contents(realpath($fileUri));
-$fileContentUri = "testing_content.xml";
+$fileContentUri = 'testing_content.xml';
 $translationState = 'PUBLISHED';
 $locale = 'ru-RU';
 $locales_array = [$locale];
@@ -59,6 +60,7 @@ resetFiles($userIdentifier, $userSecretKey, $projectId, [$fileName, $newFileName
 /**
  * Upload file example
  */
+
 try {
     echo '::: File Upload Example :::' . PHP_EOL;
 
@@ -85,6 +87,34 @@ try {
     );
 }
 
+/**
+ * Last Modified file example
+ */
+try {
+    echo '::: Last Modified Example :::' . PHP_EOL;
+
+    $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
+
+    $fileApi = \Smartling\File\FileApi::create($authProvider, $projectId);
+
+    $result = $fileApi->lastModified($fileName);
+
+    echo 'Last Modified result:' . PHP_EOL;
+    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+
+} catch (\Smartling\Exceptions\SmartlingApiException $e) {
+    $messageTemplate = 'Error happened while getting last modified.' . PHP_EOL
+        . 'Response code: %s' . PHP_EOL
+        . 'Response message: %s' . PHP_EOL;
+
+    echo vsprintf(
+        $messageTemplate,
+        [
+            $e->getCode(),
+            $e->getMessage(),
+        ]
+    );
+}
 
 /**
  * Download file example
@@ -146,6 +176,38 @@ try {
         ]
     );
 }
+
+
+/**
+ * Getting file status for all locales example example
+ */
+try {
+    echo '::: Get File Status For All Locales Example :::' . PHP_EOL;
+
+    $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
+
+    $fileApi = \Smartling\File\FileApi::create($authProvider, $projectId);
+
+    $result = $fileApi->getStatusForAllLocales($fileName);
+
+    echo 'Get File Status For All Locales result:' . PHP_EOL;
+    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+
+} catch (\Smartling\Exceptions\SmartlingApiException $e) {
+    $messageTemplate = 'Error happened while getting file status for all locales.' . PHP_EOL
+        . 'Response code: %s' . PHP_EOL
+        . 'Response message: %s' . PHP_EOL;
+
+    echo vsprintf(
+        $messageTemplate,
+        [
+            $e->getCode(),
+            $e->getMessage(),
+        ]
+    );
+}
+
+
 
 /**
  * Getting Authorized locales for file
@@ -298,13 +360,14 @@ try {
     );
 }
 
-/**
+/** @noinspection MoreThanThreeArgumentsInspection
+ *
  * @param string $userIdentifier
  * @param string $userSecretKey
  * @param string $projectId
  * @param array $files
  */
-function resetFiles($userIdentifier, $userSecretKey, $projectId, $files = [])
+function resetFiles($userIdentifier, $userSecretKey, $projectId, array $files = [])
 {
     $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
     foreach ($files as $file) {
