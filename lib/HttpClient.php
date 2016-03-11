@@ -123,6 +123,8 @@ class HttpClient {
       curl_setopt($ch, CURLOPT_USERAGENT, $user_agent );
       curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->_connectionTimeout);
       curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 1000 * $this->_connectionTimeout);
+      curl_setopt($ch, CURLOPT_TIMEOUT, $this->_connectionTimeout);
+      curl_setopt($ch, CURLOPT_TIMEOUT_MS, 1000 * $this->_connectionTimeout);
 
       $mr = $maxredirect === null ? 5 : intval($maxredirect);
 
