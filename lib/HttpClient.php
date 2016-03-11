@@ -74,12 +74,16 @@ class HttpClient {
      */
     protected $_errormsg;
 
+    protected $_connectionTimeout = 0;
+
     /**
      *
      * @param string $uri
      * @param int $port
+     * @param int $connectionTimeout
      */
-    public function __construct($uri, $port = 80) {
+    public function __construct($uri, $port = 80, $connectionTimeout = 0) {
+        $this->_connectionTimeout = (int) $connectionTimeout;
         $this->_uri = $uri;
         $this->setMethod(self::REQUEST_TYPE_GET);
     }
@@ -117,6 +121,8 @@ class HttpClient {
       $user_agent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.5)".
                     " Gecko/20041107 Firefox/1.0";
       curl_setopt($ch, CURLOPT_USERAGENT, $user_agent );
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->_connectionTimeout);
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 1000 * $this->_connectionTimeout);
 
       $mr = $maxredirect === null ? 5 : intval($maxredirect);
 

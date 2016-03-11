@@ -31,11 +31,18 @@ class SmartlingAPI {
 
   /**
    *
+   * @var int
+   */
+  protected $_connectionTimeoutSeconds = 0; // infinite
+
+  /**
+   *
    * @var null | string
    */
   protected $_response = null;
 
-  public function __construct($baseUrl, $apiKey, $projectId, $mode = self::SANDBOX_MODE) {
+  public function __construct($baseUrl, $apiKey, $projectId, $mode = self::SANDBOX_MODE, $connectionTimeout = 30) {
+    $this->_connectionTimeoutSeconds = (int) $connectionTimeout;
     $this->_apiKey = $apiKey;
     $this->_projectId = $projectId;
     if ($mode == self::PRODUCTION_MODE) {
@@ -182,7 +189,7 @@ class SmartlingAPI {
    * @return string
    */
   protected function sendRequest($uri, $requestData, $method, $needUploadFile = false, $needUploadContent = false) {
-    $connection = new HttpClient($this->_baseUrl . "/" . $uri, 443);
+    $connection = new HttpClient($this->_baseUrl . "/" . $uri, 443, $this->_connectionTimeoutSeconds);
 
     $data['apiKey'] = $this->_apiKey;
     $data['projectId'] = $this->_projectId;
