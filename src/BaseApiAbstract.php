@@ -409,39 +409,9 @@ abstract class BaseApiAbstract
             ],
         ];
 
-        $serialized = json_encode($toLog, JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT);
+        $serialized = var_export($toLog, true);
 
-        if (false === $serialized) {
-            $jsonErrors = [
-                0 => 'JSON_ERROR_NONE',
-                1 => 'JSON_ERROR_DEPTH',
-                2 => 'JSON_ERROR_STATE_MISMATCH',
-                3 => 'JSON_ERROR_CTRL_CHAR',
-                4 => 'JSON_ERROR_SYNTAX',
-                5 => 'JSON_ERROR_UTF8',
-                6 => 'JSON_ERROR_RECURSION',
-                7 => 'JSON_ERROR_INF_OR_NAN',
-                8 => 'JSON_ERROR_UNSUPPORTED_TYPE',
-            ];
-
-            $jsonErrNum = json_last_error();
-            $jsonErrMsg = json_last_error_msg();
-
-            $this->getLogger()
-                ->debug(
-                    vsprintf(
-                        'Error while serializing to json %s(%s) with message: %s. Original Data: %s',
-                        [
-                            $jsonErrors[$jsonErrNum],
-                            $jsonErrNum,
-                            $jsonErrMsg,
-                            var_export($toLog, true)
-                        ]
-                    )
-                );
-        } else {
-            $this->getLogger()->debug($serialized);
-        }
+        $this->getLogger()->debug($serialized);
 
         return $clientRequest;
     }
