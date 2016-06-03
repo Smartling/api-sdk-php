@@ -15,6 +15,12 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
 
     const ENDPOINT_URL = 'https://api.smartling.com/auth-api/v2/';
 
+    const RESPONSE_KEY_ACCESS_TOKEN = 'accessToken';
+    const RESPONSE_KEY_ACCESS_TOKEN_TTL = 'expiresIn';
+    const RESPONSE_KEY_REFRESH_TOKEN = 'refreshToken';
+    const RESPONSE_KEY_REFRESH_TOKEN_TTL = 'refreshExpiresIn';
+    const RESPONSE_KEY_TOKEN_TYPE = 'tokenType';
+
     /**
      * @var string
      */
@@ -28,7 +34,12 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     /**
      * @var array
      */
-    private $data;
+    private $data = [];
+
+    /**
+     * @var int
+     */
+    private $requestTimestamp = 0;
 
     /**
      * @return string
@@ -94,15 +105,75 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         return new self($userIdentifier, $secretKey, $client, $logger);
     }
 
+    /**
+     * Checks if token exists
+     */
+    private function tokenExists()
+    {
+        return is_array($this->data) && array_key_exists(self::RESPONSE_KEY_ACCESS_TOKEN, $this->data);
+    }
+
+    /**
+     * Checks if token is expired
+     */
+    private function tokenExpired()
+    {
+        return $this->tokenExists() &&
+        time() > $this->requestTimestamp + $this->data[self::RESPONSE_KEY_ACCESS_TOKEN_TTL];
+    }
+
+    /**
+     * Sends /authenticate request
+     */
+    private function authenticate()
+    {
+        $requestData = [
+            'userIdentifier' => $this->getUserIdentifier(),
+            'userSecret' => $this->getSecretKey()
+        ];
+
+        $this->requestTimestamp = time();
+
+        return $this->sendRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
+    }
+
+    /**
+     * Renews tokens
+     */
+    private function tokenRenew()
+    {
+        if ($this->tokenExists() && $this->tokenCanBeRenewed()) {
+            $requestData = [
+                'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
+            ];
+            return $this->sendRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
+        } else {
+            return $this->authenticate();
+        }
+    }
+
+    /**
+     * Checks if token can be renewed
+     */
+    private function tokenCanBeRenewed()
+    {
+        return $this->tokenExists() &&
+        time() > $this->requestTimestamp + $this->data[self::RESPONSE_KEY_REFRESH_TOKEN_TTL];
+    }
 
     /**
      * @inheritdoc
      */
     public function getAccessToken()
     {
-        $this->data = $this->sendRequest('authenticate', [], self::HTTP_METHOD_POST);
-
-        return $this->data['accessToken'];
+        if (!$this->tokenExists()) {
+            $this->requestTimestamp = time();
+            $this->data = $this->authenticate();
+        }
+        if ($this->tokenExpired()) {
+            $this->tokenRenew();
+        }
+        return $this->data[self::RESPONSE_KEY_ACCESS_TOKEN];
     }
 
     /**
@@ -110,7 +181,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     public function getTokenType()
     {
-        return isset($this->data['tokenType']) ? $this->data['tokenType'] : '';
+        return $this->tokenExists() ? $this->data[self::RESPONSE_KEY_TOKEN_TYPE] : '';
     }
 
     /**
@@ -123,9 +194,6 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
 
     protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
-        $requestData['userIdentifier'] = $this->getUserIdentifier();
-        $requestData['userSecret'] = $this->getSecretKey();
-
         return parent::sendRequest($uri, $requestData, $method, self::STRATEGY_AUTH);
     }
 }
