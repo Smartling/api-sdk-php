@@ -38,6 +38,42 @@ abstract class BaseApiAbstract
 
     const HTTP_METHOD_DELETE = 'delete';
 
+    private static $currentClientId = self::CLIENT_LIB_ID_SDK;
+
+    private static $currentClientVersion = self::CLIENT_LIB_ID_VERSION;
+
+    /**
+     * @return string
+     */
+    public static function getCurrentClientId()
+    {
+        return self::$currentClientId;
+    }
+
+    /**
+     * @param string $currentClientId
+     */
+    public static function setCurrentClientId($currentClientId)
+    {
+        self::$currentClientId = $currentClientId;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getCurrentClientVersion()
+    {
+        return self::$currentClientVersion;
+    }
+
+    /**
+     * @param string $currentClientVersion
+     */
+    public static function setCurrentClientVersion($currentClientVersion)
+    {
+        self::$currentClientVersion = $currentClientVersion;
+    }
+
     /**
      * PHP equivalent to 'YYYY-MM-DDThh:mm:ssZ'
      */
@@ -195,8 +231,8 @@ abstract class BaseApiAbstract
                         'User-Agent' => vsprintf(
                             '%s/%s %s',
                             [
-                                self::CLIENT_LIB_ID_SDK,
-                                self::CLIENT_LIB_ID_VERSION,
+                                self::getCurrentClientId(),
+                                self::getCurrentClientVersion(),
                                 Utils::getDefaultUserAgent()
                             ]
                         ),
