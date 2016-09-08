@@ -442,7 +442,7 @@ class SmartlingApiTest extends ApiTestAbstract
 
 
     /**
-     * @covers \Smartling\File\FileApi::getEctendedList
+     * @covers \Smartling\File\FileApi::getExtendedList
      */
     public function testGetExtendedList()
     {
