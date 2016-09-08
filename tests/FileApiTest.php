@@ -440,6 +440,47 @@ class SmartlingApiTest extends ApiTestAbstract
         $this->object->getList();
     }
 
+
+    /**
+     * @covers \Smartling\File\FileApi::getEctendedList
+     */
+    public function testGetExtendedList()
+    {
+        $locale = 'nl-NL';
+        $endpointUrl = vsprintf(
+            '%s/%s/locales/%s/files/list',
+            [
+                FileApi::ENDPOINT_URL,
+                $this->projectId,
+                $locale
+            ]
+        );
+
+        $this->client
+            ->expects(self::any())
+            ->method('createRequest')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [],
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->getExtendedList($locale);
+    }
+
+
     /**
      * @covers \Smartling\File\FileApi::sendRequest
      * @expectedException \Smartling\Exceptions\SmartlingApiException

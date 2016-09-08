@@ -8,6 +8,7 @@ use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\Params\DownloadFileParameters;
 use Smartling\File\Params\ListFilesParameters;
+use Smartling\File\Params\ExtendedListFilesParameters;
 use Smartling\File\Params\ParameterInterface;
 use Smartling\File\Params\UploadFileParameters;
 
@@ -251,6 +252,21 @@ class FileApi extends BaseApiAbstract
 
         return $this->sendRequest('files/list', $params, self::HTTP_METHOD_GET);
     }
+
+    /**
+     * @param string $locale
+     * @param ExtendedListFilesParameters|null $params
+     *   same as ListFilesParameters, but with a new property 'status' which for now
+     *   can only be of a value 'COMPLETED'
+     * @return bool
+     */
+    public function getExtendedList($locale, ExtendedListFilesParameters $params = null)
+    {
+        $params = (is_null($params)) ? [] : $params->exportToArray();
+
+        return $this->sendRequest("locales/$locale/files/list", $params, self::HTTP_METHOD_GET);
+    }
+
 
     /**
      * Renames an uploaded file by changing the fileUri.
