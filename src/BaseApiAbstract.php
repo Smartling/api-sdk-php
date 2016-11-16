@@ -7,6 +7,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Post\PostBody;
 use GuzzleHttp\Query;
 use GuzzleHttp\Utils;
 use Psr\Log\LoggerInterface;
@@ -428,7 +429,11 @@ abstract class BaseApiAbstract
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
 
         if (self::STRATEGY_UPLOAD === $strategy) {
-            $clientRequest->getBody()->setAggregator(Query::phpAggregator(false));
+            $body = $clientRequest->getBody();
+            if ($body instanceof PostBody) {
+                $body->setAggregator(Query::phpAggregator(false));
+            }
+
         }
         // Dump full request data to log except sensetive data
         $logRequestData = $options;

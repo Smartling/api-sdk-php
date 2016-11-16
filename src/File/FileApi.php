@@ -80,7 +80,7 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $file_name;
         $params['fileType'] = $file_type;
 
-        return $this->sendRequest('file', $params, self::HTTP_METHOD_POST);
+        return $this->sendRequest('file', $params, self::HTTP_METHOD_POST, self::STRATEGY_UPLOAD);
     }
 
     /**
