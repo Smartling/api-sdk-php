@@ -119,11 +119,12 @@ class SmartlingApiTest extends ApiTestAbstract
                             ],
                             JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
                         ),
-                    'authorize' => '0',
-                    'localeIdsToAuthorize[]' => 'es',
+                    'authorize' => 0,
+
                     'file' => $this->streamPlaceholder,
                     'fileUri' => 'test.xml',
-                    'fileType' => 'xml'
+                    'fileType' => 'xml',
+                    'localeIdsToAuthorize' => ['es'],
                 ],
             ])
             ->willReturn($this->requestMock);

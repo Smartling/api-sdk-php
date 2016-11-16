@@ -7,6 +7,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Query;
 use GuzzleHttp\Utils;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -29,6 +30,8 @@ abstract class BaseApiAbstract
     const STRATEGY_GENERAL = 'general';
 
     const STRATEGY_DOWNLOAD = 'download';
+
+    const STRATEGY_UPLOAD = 'upload';
 
     const STRATEGY_AUTH = 'auth';
 
@@ -77,7 +80,7 @@ abstract class BaseApiAbstract
     /**
      * PHP equivalent to 'YYYY-MM-DDThh:mm:ssZ'
      */
-    const PATTERN_DATE_TIME_ISO_8601='Y-m-d\TH:i:s\Z';
+    const PATTERN_DATE_TIME_ISO_8601 = 'Y-m-d\TH:i:s\Z';
     /**
      * Project Id in Smartling dashboard
      *
@@ -424,7 +427,9 @@ abstract class BaseApiAbstract
 
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
 
-
+        if (self::STRATEGY_UPLOAD === $strategy) {
+            $clientRequest->getBody()->setAggregator(Query::phpAggregator(false));
+        }
         // Dump full request data to log except sensetive data
         $logRequestData = $options;
         if (isset($logRequestData['headers']['Authorization'])) {
@@ -512,6 +517,7 @@ abstract class BaseApiAbstract
             }
             case self::STRATEGY_AUTH:
             case self::STRATEGY_GENERAL:
+            case self::STRATEGY_UPLOAD:
             default: {
 
                 try {

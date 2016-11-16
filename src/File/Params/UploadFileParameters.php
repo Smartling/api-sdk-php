@@ -74,7 +74,10 @@ class UploadFileParameters extends BaseParameters
      */
     public function setLocalesToApprove($locales_to_approve)
     {
-        $this->set('localeIdsToAuthorize[]', $locales_to_approve);
+        if (is_string($locales_to_approve)) {
+            $locales_to_approve = [$locales_to_approve];
+        }
+        $this->set('localeIdsToAuthorize', $locales_to_approve);
 
         return $this;
     }
@@ -85,7 +88,8 @@ class UploadFileParameters extends BaseParameters
     public function exportToArray()
     {
         $params = $this->params;
-        $params['authorize'] = array_key_exists('localeIdsToAuthorize[]', $params)
+
+        $params['authorize'] = array_key_exists('localeIdsToAuthorize', $params)
             ? false
             : (bool)$params['authorize'];
 
