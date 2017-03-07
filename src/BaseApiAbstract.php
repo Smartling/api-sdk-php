@@ -5,11 +5,8 @@ namespace Smartling;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Post\PostBody;
-use GuzzleHttp\Query;
-use GuzzleHttp\Utils;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
@@ -237,7 +234,7 @@ abstract class BaseApiAbstract
                             [
                                 self::getCurrentClientId(),
                                 self::getCurrentClientVersion(),
-                                Utils::getDefaultUserAgent()
+                                GuzzleHttp\default_user_agent()
                             ]
                         ),
                     ],
@@ -299,12 +296,11 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param array $options
      * @param array $requestData
      *
      * @return array
      */
-    private function addRequestDataToOptions(array $options, array $requestData = [])
+    private function addRequestDataToOptions(array $requestData = [])
     {
         $opts = [];
         foreach ($requestData as $key => $value) {
@@ -315,6 +311,7 @@ abstract class BaseApiAbstract
             if ('file' === $key) {
                 $value = $this->readFile($value);
             }
+
             $opts[$key] = $value;
         }
         return $opts;
@@ -331,10 +328,10 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param Response $response
      * @throws SmartlingApiException
      */
-    private function checkAuthenticationError(ResponseInterface $response)
+    private function checkAuthenticationError(Response $response)
     {
         //Special handling for 401 error - authentication error => expire token
         if (401 === (int)$response->getStatusCode()) {
@@ -351,10 +348,10 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param Response $response
      * @throws SmartlingApiException
      */
-    private function processErrors(ResponseInterface $response)
+    private function processErrors(Response $response)
     {
         // Catch all errors from Smartling and throw appropriate exception.
         if (400 <= (int)$response->getStatusCode()) {
@@ -363,13 +360,13 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param Response $response
      * @throws SmartlingApiException
      */
-    private function processError($response)
+    private function processError(Response $response)
     {
         try {
-            $json = $response->json();
+            $json = json_decode($response->getBody(), true);
 
             if (is_null($json)
                 || !array_key_exists('response', $json)
@@ -402,64 +399,53 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param string $uri
+     * @param array $options
      * @param array $requestData
      * @param string $method
-     * @param string $strategy
-     * @return RequestInterface
+     *
+     * @return array
      */
-    private function prepareHttpRequest($uri, array $requestData, $method, $strategy)
+    protected function mergeRequestData($options, $requestData, $method = self::HTTP_METHOD_GET, $strategy)
     {
-        $options = $this->prepareOptions($strategy);
-
         if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
             $options['query'] = $requestData;
         } else {
             if (self::STRATEGY_AUTH === $strategy) {
                 $options['json'] = $requestData;
             } else {
-                $options['body'] = $this->addRequestDataToOptions($options, $requestData);
+                if (!isset($options['multipart']))
+                {
+                    $options['multipart'] = [];
+                }
+
+                foreach ($requestData as $key => $value) {
+                    // Hack to cast FALSE to '0' instead of empty string.
+                    if (is_bool($value)) {
+                        $value = (int) $value;
+                    }
+
+                    if ('file' === $key) {
+                        $value = $this->readFile($value);
+                    }
+
+                    if (is_array($value)) {
+                        foreach ($value as $_item) {
+                            $options['multipart'][] = [
+                                'name' => $key . '[]',
+                                'contents' => (string)$_item,
+                            ];
+                        }
+                    } else {
+                        $options['multipart'][] = [
+                            'name' => $key,
+                            'contents' => $value,
+                        ];
+                    }
+                }
             }
         }
 
-        $endpoint = $this->normalizeUri($uri);
-
-        $options['exceptions'] = false;
-
-        $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
-
-        if (self::STRATEGY_UPLOAD === $strategy) {
-            $body = $clientRequest->getBody();
-            if ($body instanceof PostBody) {
-                $body->setAggregator(Query::phpAggregator(false));
-            }
-
-        }
-        // Dump full request data to log except sensetive data
-        $logRequestData = $options;
-        if (isset($logRequestData['headers']['Authorization'])) {
-            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0,
-                    12) . '*****';
-        }
-        if (isset($logRequestData['json']['userIdentifier'])) {
-            $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0,
-                    5) . '*****';
-            $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
-        }
-
-        $toLog = [
-            'request' => [
-                'endpoint' => $endpoint,
-                'method' => $method,
-                'requestData' => $logRequestData,
-            ],
-        ];
-
-        $serialized = var_export($toLog, true);
-
-        $this->getLogger()->debug($serialized);
-
-        return $clientRequest;
+        return $options;
     }
 
     /**
@@ -475,10 +461,14 @@ abstract class BaseApiAbstract
      */
     protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
-        $request = $this->prepareHttpRequest($uri, $requestData, $method, $strategy);
+        $options = $this->prepareOptions($strategy);
+        $options = $this->mergeRequestData($options, $requestData, $method, $strategy);
+        $endpoint = $this->normalizeUri($uri);
+
+        $options['exceptions'] = false;
 
         try {
-            $response = $this->getHttpClient()->send($request);
+            $response = $this->getHttpClient()->request($method, $endpoint, $options);
         } catch (RequestException $e) {
             $message = vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
             $this->getLogger()->error($message);
@@ -526,7 +516,7 @@ abstract class BaseApiAbstract
             default: {
 
                 try {
-                    $json = $response->json();
+                    $json = json_decode($response->getBody(), true);
 
                     if (!array_key_exists('response', $json)
                         || !is_array($json['response'])
