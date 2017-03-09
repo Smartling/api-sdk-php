@@ -296,28 +296,6 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param array $requestData
-     *
-     * @return array
-     */
-    private function addRequestDataToOptions(array $requestData = [])
-    {
-        $opts = [];
-        foreach ($requestData as $key => $value) {
-            // Hack to cast FALSE to '0' instead of empty string.
-            if (is_bool($value)) {
-                $value = (int)$value;
-            }
-            if ('file' === $key) {
-                $value = $this->readFile($value);
-            }
-
-            $opts[$key] = $value;
-        }
-        return $opts;
-    }
-
-    /**
      * @param string $uri
      *
      * @return string
@@ -405,7 +383,7 @@ abstract class BaseApiAbstract
      *
      * @return array
      */
-    protected function mergeRequestData($options, $requestData, $method = self::HTTP_METHOD_GET, $strategy)
+    protected function prepareRequestData($options, $requestData, $method = self::HTTP_METHOD_GET, $strategy)
     {
         if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
             $options['query'] = $requestData;
@@ -462,7 +440,7 @@ abstract class BaseApiAbstract
     protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
         $options = $this->prepareOptions($strategy);
-        $options = $this->mergeRequestData($options, $requestData, $method, $strategy);
+        $options = $this->prepareRequestData($options, $requestData, $method, $strategy);
         $endpoint = $this->normalizeUri($uri);
 
         $options['exceptions'] = false;
