@@ -21,34 +21,18 @@ class ProjectApiTest extends ApiTestAbstract
             ]
         );
 
-//        $this->client
-//            ->expects(self::any())
-//            ->method('createRequest')
-//            ->with('get', $endpointUrl, [
-//                'headers' => [
-//                    'Accept' => 'application/json',
-//                    'Authorization' => vsprintf('%s %s', [
-//                        $this->authProvider->getTokenType(),
-//                        $this->authProvider->getAccessToken(),
-//                    ]),
-//                ],
-//                'exceptions' => false,
-//                'query' => [],
-//            ])
-//            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::any())
+        $this->client->expects($this->any())
             ->method('request')
             ->with('get', $endpointUrl, [
-              'headers' => [
-                'Accept' => 'application/json',
-                'Authorization' => vsprintf('%s %s', [
-                  $this->authProvider->getTokenType(),
-                  $this->authProvider->getAccessToken(),
-                ]),
-              ],
-              'exceptions' => false,
-              'query' => [],
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [],
             ])
             ->willReturn($this->responseMock);
 
