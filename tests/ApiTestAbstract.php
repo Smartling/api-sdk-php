@@ -121,6 +121,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
         'post',
         'options',
         'send',
+        'request',
         'getDefaultOption',
         'setDefaultOption',
         'getBaseUrl'
@@ -181,18 +182,18 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
 
     protected function prepareHttpClientMock()
     {
-        $this->requestMock = $this->getMockBuilder('GuzzleHttp\Message\RequestInterface')
-            ->setMethods(
-                array_merge(
-                    self::$requestInterfaceMethods,
-                    self::$hasEmitterInterfaceMethods,
-                    self::$messageInterfaceMethods
-                )
-            )
-            ->disableOriginalConstructor()
-            ->getMock();
+//        $this->requestMock = $this->getMockBuilder('GuzzleHttp\Message\RequestInterface')
+//            ->setMethods(
+//                array_merge(
+//                    self::$requestInterfaceMethods,
+//                    self::$hasEmitterInterfaceMethods,
+//                    self::$messageInterfaceMethods
+//                )
+//            )
+//            ->disableOriginalConstructor()
+//            ->getMock();
 
-        $this->client = $this->getMockBuilder('GuzzleHttp\ClientInterface')
+        $this->client = $this->getMockBuilder('GuzzleHttp\Client')
             ->setMethods(
                 array_merge(
                     self::$clientInterfaceMethods,
@@ -223,7 +224,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
 
     protected function prepareClientResponseMock($setDefaultResponse = true)
     {
-        $this->responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
+        $this->responseMock = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
             ->setMethods(
                 array_merge(
                     self::$responseInterfaceMethods,
@@ -234,16 +235,6 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         if (true === $setDefaultResponse) {
-            $this->responseMock
-                ->expects(self::any())
-                ->method('json')
-                ->willReturn(
-                    json_decode(
-                        $this->validResponse,
-                        self::JSON_OBJECT_AS_ARRAY
-                    )
-                );
-
             $this->responseMock->expects(self::any())
                 ->method('getBody')
                 ->willReturn($this->validResponse);

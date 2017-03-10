@@ -98,41 +98,51 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testUploadFile()
     {
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('post', FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'body' => [
-                    'smartling.client_lib_id' =>
-                        json_encode(
-                            [
-                                'client' => BaseApiAbstract::CLIENT_LIB_ID_SDK,
-                                'version' => BaseApiAbstract::CLIENT_LIB_ID_VERSION,
-                            ],
-                            JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
-                        ),
-                    'authorize' => 0,
-
-                    'file' => $this->streamPlaceholder,
-                    'fileUri' => 'test.xml',
-                    'fileType' => 'xml',
-                    'localeIdsToAuthorize' => ['es'],
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with()
+//            ->willReturn($this->requestMock);
 
         $this->client
             ->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('post', FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'multipart' => [
+                [
+                  'name' => 'authorize',
+                  'contents' => 0,
+                ],
+                [
+                  'name' => 'smartling.client_lib_id',
+                  'contents' => '{"client":"smartling-api-sdk-php","version":"2.0.0"}',
+                ],
+                [
+                  'name' => 'localeIdsToAuthorize[]',
+                  'contents' => 'es',
+                ],
+                [
+                  'name' => 'file',
+                  'contents' => $this->streamPlaceholder,
+                ],
+                [
+                  'name' => 'fileUri',
+                  'contents' => 'test.xml',
+                ],
+                [
+                  'name' => 'fileType',
+                  'contents' => 'xml',
+                ],
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $params = new UploadFileParameters();
@@ -200,25 +210,34 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $params['fileUri'] = 'test.xml';
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => $params,
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => $params,
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client
             ->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => $params,
+            ])
             ->willReturn($this->responseMock);
 
         $actual_xml = $this->object->downloadFile('test.xml', $locale, $options);
@@ -299,27 +318,39 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [
-                    'fileUri' => 'test.xml',
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [
+//                    'fileUri' => 'test.xml',
+//                ],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [
+                'fileUri' => 'test.xml',
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->lastModified('test.xml');
@@ -338,27 +369,39 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [
-                    'fileUri' => 'test.xml',
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [
+//                    'fileUri' => 'test.xml',
+//                ],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
             ->method('send')
-            ->with($this->requestMock)
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [
+                'fileUri' => 'test.xml',
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->getStatusForAllLocales('test.xml');
@@ -378,27 +421,39 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [
-                    'fileUri' => 'test.xml',
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [
+//                    'fileUri' => 'test.xml',
+//                ],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [
+                'fileUri' => 'test.xml',
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->getStatus('test.xml', 'en-EN');
@@ -417,25 +472,35 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->getList();
@@ -457,25 +522,35 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->getExtendedList($locale);
@@ -498,8 +573,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn($this->responseWithException);
         $this->responseMock->expects(self::any())
-            ->method('json')
-            ->willReturn(json_decode($this->responseWithException, self::JSON_OBJECT_AS_ARRAY));
+          ->method('json')
+          ->willReturn(json_decode($this->responseWithException, self::JSON_OBJECT_AS_ARRAY));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -509,25 +584,35 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [],
+            ])
             ->willReturn($this->responseMock);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
@@ -550,8 +635,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn(rtrim($this->responseWithException, '}'));
         $this->responseMock->expects(self::any())
-            ->method('json')
-            ->willThrowException(new \RuntimeException(''));
+          ->method('json')
+          ->willThrowException(new \RuntimeException(''));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -561,25 +646,35 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [],
+            ])
             ->willReturn($this->responseMock);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
@@ -613,25 +708,35 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [],
+            ])
             ->willReturn($this->responseMock);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
@@ -654,16 +759,16 @@ class SmartlingApiTest extends ApiTestAbstract
             $this->authProvider->getAccessToken(),
         ]);
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with($method, FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $params)
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with($method, FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $params)
+//            ->willReturn($this->requestMock);
 
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with($method, FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $params)
             ->willReturn($this->responseMock);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
@@ -706,11 +811,23 @@ class SmartlingApiTest extends ApiTestAbstract
                         'Accept' => 'application/json',
                     ],
                     'exceptions' => false,
-                    'body' => [
-                        'file' => $this->streamPlaceholder,
-                        'key' => 'value',
-                        'boolean_false' => '0',
-                        'boolean_true' => '1',
+                    'multipart' => [
+                        [
+                            'name' => 'key',
+                            'contents' => 'value',
+                        ],
+                      [
+                        'name' => 'boolean_false',
+                        'contents' => '0',
+                      ],
+                      [
+                        'name' => 'boolean_true',
+                        'contents' => '1',
+                      ],
+                      [
+                        'name' => 'file',
+                        'contents' => $this->streamPlaceholder,
+                      ],
                     ],
                 ],
             ],
@@ -730,28 +847,47 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('post', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'body' => [
-                    'fileUri' => 'test.xml',
-                    'newFileUri' => 'new_test.xml',
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('post', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'body' => [
+//                    'fileUri' => 'test.xml',
+//                    'newFileUri' => 'new_test.xml',
+//                ],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('post', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'multipart' => [
+                [
+                  'name' => 'fileUri',
+                  'contents' => 'test.xml',
+                ],
+                [
+                  'name' => 'newFileUri',
+                  'contents' => 'new_test.xml',
+                ],
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->renameFile('test.xml', 'new_test.xml');
@@ -770,27 +906,39 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [
-                    'fileUri' => 'test.xml',
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('get', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'query' => [
+//                    'fileUri' => 'test.xml',
+//                ],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('get', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'query' => [
+                'fileUri' => 'test.xml',
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->getAuthorizedLocales('test.xml');
@@ -803,28 +951,43 @@ class SmartlingApiTest extends ApiTestAbstract
     {
         $endpointUrl = vsprintf('%s/%s/file/delete', [FileApi::ENDPOINT_URL, $this->projectId]);
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('post', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'body' => [
-                    'fileUri' => 'test.xml',
-
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('post', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'body' => [
+//                    'fileUri' => 'test.xml',
+//
+//                ],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('post', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'multipart' => [
+                [
+                  'name' => 'fileUri',
+                  'contents' => 'test.xml',
+                ],
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->deleteFile('test.xml');
@@ -845,32 +1008,63 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->with('post', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'body' => [
-                    'file' => $this->streamPlaceholder,
-                    'fileUri' => 'test.xml',
-                    'fileType' => 'xml',
-                    'translationState' => 'PUBLISHED',
-                    'overwrite' => '0',
-
-                ],
-            ])
-            ->willReturn($this->requestMock);
+//        $this->client
+//            ->expects(self::any())
+//            ->method('createRequest')
+//            ->with('post', $endpointUrl, [
+//                'headers' => [
+//                    'Accept' => 'application/json',
+//                    'Authorization' => vsprintf('%s %s', [
+//                        $this->authProvider->getTokenType(),
+//                        $this->authProvider->getAccessToken(),
+//                    ]),
+//                ],
+//                'exceptions' => false,
+//                'body' => [
+//                    'file' => $this->streamPlaceholder,
+//                    'fileUri' => 'test.xml',
+//                    'fileType' => 'xml',
+//                    'translationState' => 'PUBLISHED',
+//                    'overwrite' => '0',
+//
+//                ],
+//            ])
+//            ->willReturn($this->requestMock);
 
         $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
+            ->method('request')
+            ->with('post', $endpointUrl, [
+              'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => vsprintf('%s %s', [
+                  $this->authProvider->getTokenType(),
+                  $this->authProvider->getAccessToken(),
+                ]),
+              ],
+              'exceptions' => false,
+              'multipart' => [
+                [
+                  'name' => 'fileUri',
+                  'contents' => 'test.xml',
+                ],
+                [
+                  'name' => 'fileType',
+                  'contents' => 'xml',
+                ],
+                [
+                  'name' => 'file',
+                  'contents' => $this->streamPlaceholder,
+                ],
+                [
+                  'name' => 'translationState',
+                  'contents' => 'PUBLISHED',
+                ],
+                [
+                  'name' => 'overwrite',
+                  'contents' => '0',
+                ],
+              ],
+            ])
             ->willReturn($this->responseMock);
 
         $this->object->import(
