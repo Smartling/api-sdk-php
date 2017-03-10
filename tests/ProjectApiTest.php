@@ -21,9 +21,8 @@ class ProjectApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->any())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -35,11 +34,6 @@ class ProjectApiTest extends ApiTestAbstract
                 'exceptions' => false,
                 'query' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::any())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getProjectDetails();
