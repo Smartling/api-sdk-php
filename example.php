@@ -74,17 +74,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while uploading file.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while uploading file');
 }
 
 /**
@@ -103,17 +93,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while getting last modified.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while getting last modified');
 }
 
 /**
@@ -135,17 +115,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while downloading file.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while downloading file');
 }
 
 /**
@@ -164,17 +134,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while getting file status.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while getting file status');
 }
 
 
@@ -194,17 +154,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while getting file status for all locales.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while getting file status for all locales');
 }
 
 
@@ -225,17 +175,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while getting file authorized locales.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while getting file authorized locales');
 }
 
 /**
@@ -260,17 +200,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while getting file list.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while getting file list');
 }
 
 /**
@@ -289,17 +219,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while importing file.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while importing file');
 }
 
 /**
@@ -318,17 +238,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while renaming files.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while renaming files');
 }
 
 /**
@@ -347,17 +257,7 @@ try {
     echo var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    $messageTemplate = 'Error happened while deleting file.' . PHP_EOL
-        . 'Response code: %s' . PHP_EOL
-        . 'Response message: %s' . PHP_EOL;
-
-    echo vsprintf(
-        $messageTemplate,
-        [
-            $e->getCode(),
-            $e->getMessage(),
-        ]
-    );
+    echo $e->formatErrors('Error happened while deleting file');
 }
 
 /** @noinspection MoreThanThreeArgumentsInspection
@@ -369,13 +269,15 @@ try {
  */
 function resetFiles($userIdentifier, $userSecretKey, $projectId, array $files = [])
 {
+    echo '::: Reset File Example :::' . PHP_EOL;
+    
     $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
     foreach ($files as $file) {
         try {
             $fileApi = \Smartling\File\FileApi::create($authProvider, $projectId);
             $fileApi->deleteFile($file);
         } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-            // echo $e->getMessage() . PHP_EOL;
+            echo $e->formatErrors();
         }
     }
 }

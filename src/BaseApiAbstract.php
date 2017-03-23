@@ -392,7 +392,7 @@ abstract class BaseApiAbstract
             $message = implode(' || ', $error_msg);
 
             $this->getLogger()->error($message);
-            throw new SmartlingApiException($message, $response->getStatusCode());
+            throw new SmartlingApiException($json['response']['errors'], $response->getStatusCode());
 
         } catch (RuntimeException $e) {
             $message = vsprintf('Bad response format from Smartling: %s', [$response->getBody()]);
