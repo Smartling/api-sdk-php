@@ -8,7 +8,7 @@ use Smartling\Parameters\BaseParameters;
 /**
  * Class DownloadFileParameters
  *
- * @package Smartling\Params
+ * @package Smartling\File\Params
  */
 class DownloadFileParameters extends BaseParameters
 {

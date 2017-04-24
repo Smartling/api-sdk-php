@@ -8,7 +8,7 @@ use Smartling\Parameters\BaseParameters;
 /**
  * Class UploadFileParameters
  *
- * @package Smartling\Params
+ * @package Smartling\File\Params
  */
 class UploadFileParameters extends BaseParameters
 {
