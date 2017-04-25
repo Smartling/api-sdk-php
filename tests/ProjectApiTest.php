@@ -52,6 +52,7 @@ class ProjectApiTest extends ApiTestAbstract
     private function prepareProjectApiMock()
     {
         $this->object = $this->getMockBuilder('Smartling\Project\ProjectApi')
+            ->setMethods(NULL)
             ->setConstructorArgs([
                 $this->projectId,
                 $this->client,

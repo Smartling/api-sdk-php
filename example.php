@@ -1,4 +1,7 @@
 <?php
+
+use Smartling\Jobs\Params\SearchJobsParameters;
+
 error_reporting(E_ALL);
 /**
  * This file contains examples of Smartling API 2.x usage.
@@ -359,6 +362,41 @@ try {
         ]
     );
 }
+
+/**
+ * Search Job example.
+ */
+
+try {
+    echo '::: Job Search Example :::' . PHP_EOL;
+
+    $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
+
+    $jobsApi = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
+
+    $searchParameters = new SearchJobsParameters();
+    $searchParameters->setFileUris([
+        'some_file_to_search.xml',
+    ]);
+    $result = $jobsApi->searchJobs($searchParameters);
+
+    echo 'Job search result:' . PHP_EOL;
+    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+
+} catch (\Smartling\Exceptions\SmartlingApiException $e) {
+    $messageTemplate = 'Error happened while searching job.' . PHP_EOL
+        . 'Response code: %s' . PHP_EOL
+        . 'Response message: %s' . PHP_EOL;
+
+    echo vsprintf(
+        $messageTemplate,
+        [
+            $e->getCode(),
+            $e->getMessage(),
+        ]
+    );
+}
+
 
 /** @noinspection MoreThanThreeArgumentsInspection
  *
