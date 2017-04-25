@@ -57,7 +57,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -73,11 +73,6 @@ class JobsApiTest extends ApiTestAbstract
                     ],
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->searchJobs($searchParameters);
