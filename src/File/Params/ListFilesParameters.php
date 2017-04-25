@@ -2,6 +2,8 @@
 
 namespace Smartling\File\Params;
 
+use Smartling\Parameters\BaseParameters;
+
 /**
  * Class ListFilesParameters
  *

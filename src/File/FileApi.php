@@ -9,7 +9,7 @@ use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\Params\DownloadFileParameters;
 use Smartling\File\Params\ListFilesParameters;
 use Smartling\File\Params\ExtendedListFilesParameters;
-use Smartling\File\Params\ParameterInterface;
+use Smartling\Parameters\ParameterInterface;
 use Smartling\File\Params\UploadFileParameters;
 
 

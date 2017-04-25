@@ -3,11 +3,12 @@
 namespace Smartling\File\Params;
 
 use Smartling\BaseApiAbstract;
+use Smartling\Parameters\BaseParameters;
 
 /**
  * Class UploadFileParameters
  *
- * @package Smartling\Params
+ * @package Smartling\File\Params
  */
 class UploadFileParameters extends BaseParameters
 {
