@@ -3,11 +3,12 @@
 namespace Smartling\File\Params;
 
 use Smartling\Exceptions\SmartlingApiException;
+use Smartling\Parameters\BaseParameters;
 
 /**
  * Class DownloadFileParameters
  *
- * @package Smartling\Params
+ * @package Smartling\File\Params
  */
 class DownloadFileParameters extends BaseParameters
 {

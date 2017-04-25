@@ -33,6 +33,8 @@ abstract class BaseApiAbstract
 
     const STRATEGY_AUTH = 'auth';
 
+    const STRATEGY_SEARCH = 'search';
+
     const HTTP_METHOD_GET = 'get';
 
     const HTTP_METHOD_POST = 'post';
@@ -388,7 +390,10 @@ abstract class BaseApiAbstract
         if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
             $options['query'] = $requestData;
         } else {
-            if (self::STRATEGY_AUTH === $strategy) {
+            if (in_array($strategy, [
+                self::STRATEGY_AUTH,
+                self::STRATEGY_SEARCH,
+            ])) {
                 $options['json'] = $requestData;
             } else {
                 if (!isset($options['multipart']))
