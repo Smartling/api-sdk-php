@@ -485,7 +485,6 @@ class SmartlingApiTest extends ApiTestAbstract
     /**
      * @covers \Smartling\File\FileApi::sendRequest
      * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage Validation error text
      */
     public function testValidationErrorSendRequest()
     {
