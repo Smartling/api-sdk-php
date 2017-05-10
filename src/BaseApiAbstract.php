@@ -345,7 +345,7 @@ abstract class BaseApiAbstract
                 if ('object' === $type) {
                     $type .= '::' . get_class($this->getAuth());
                 }
-                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type);
+                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type, 401);
             } else {
                 $this->getAuth()->resetToken();
             }
@@ -394,12 +394,12 @@ abstract class BaseApiAbstract
             $message = implode(' || ', $error_msg);
 
             $this->getLogger()->error($message);
-            throw new SmartlingApiException($message, $response->getStatusCode());
+            throw new SmartlingApiException($json['response']['errors'], $response->getStatusCode());
 
         } catch (RuntimeException $e) {
             $message = vsprintf('Bad response format from Smartling: %s', [$response->getBody()]);
             $this->getLogger()->error($message);
-            throw new SmartlingApiException($message);
+            throw new SmartlingApiException($message, 0, $e);
         }
     }
 
