@@ -61,27 +61,12 @@ class SmartlingApiExampleTest extends PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    private $content;
-
-    /**
-     * @var string
-     */
-    private $fileContentUri;
-
-    /**
-     * @var string
-     */
     private $translationState;
 
     /**
      * @var string
      */
     private $targetLocale;
-
-    /**
-     * @var array
-     */
-    private $localesArray;
 
     /**
      * Reset all files in Smartling after tests.
@@ -120,11 +105,8 @@ class SmartlingApiExampleTest extends PHPUnit_Framework_TestCase
         $this->fileRealPath = realpath($this->fileUri);
         $this->fileType = 'xml';
         $this->retrievalType = 'pseudo';
-        $this->content = file_get_contents(realpath($this->fileUri));
-        $this->fileContentUri = 'testing_content.xml';
         $this->translationState = 'PUBLISHED';
         $this->targetLocale = 'ru-RU';
-        $this->localesArray = [$this->targetLocale];
 
         $authProvider = AuthTokenProvider::create($userIdentifier, $userSecretKey);
         $this->fileApi = FileApi::create($authProvider, $projectId);
