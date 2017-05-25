@@ -29,6 +29,11 @@ To get source code, clone the repo:
 
 To contribute, fork it and follow [general GitHub guidelines](http://help.github.com/fork-a-repo/) with pull request.
 
+Run tests
+---------
+`composer install`
+
+`project_id=project_id user_id=user_id user_key=user_key ./vendor/bin/phpunit`
 
 Copyright and license
 ---------------------

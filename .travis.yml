@@ -9,7 +9,7 @@ php:
 
 before_script: composer self-update && composer install
 
-script: vendor/bin/phpunit --coverage-text --debug --verbose
+script: vendor/bin/phpunit --coverage-text --debug --verbose --testsuite unit
 
 notifications:
   email:
