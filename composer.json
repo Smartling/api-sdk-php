@@ -26,7 +26,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Smartling\\Tests\\": "tests/"
+      "Smartling\\Tests\\Unit\\": "tests/unit",
+      "Smartling\\Tests\\Functional\\": "tests/functional"
     }
   },
   "minimum-stability": "dev"

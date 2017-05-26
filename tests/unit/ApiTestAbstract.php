@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartling\Tests;
+namespace Smartling\Tests\Unit;
 
 use GuzzleHttp\ClientInterface;
 use PHPUnit_Framework_MockObject_MockObject;

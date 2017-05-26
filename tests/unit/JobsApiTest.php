@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartling\Tests;
+namespace Smartling\Tests\Unit;
 
 use Smartling\Jobs\JobsApi;
 use Smartling\Jobs\Params\SearchJobsParameters;

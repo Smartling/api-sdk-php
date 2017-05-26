@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartling\Tests;
+namespace Smartling\Tests\Unit;
 
 use Smartling\File\FileApi;
 use Smartling\File\Params\DownloadFileParameters;
