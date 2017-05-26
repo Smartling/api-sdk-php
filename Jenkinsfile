@@ -4,14 +4,14 @@ pipeline {
   stages {
     stage('Run tests') {
       steps {
-        sh "docker run --rm -v \"${WORKSPACE}/api-sdk-php:/app\" composer/composer install"
-        sh "docker run --rm -e project_id=${params.PROJECT_ID} -e user_id=${params.USER_ID} -e user_key=${params.USER_KEY} -v \"${WORKSPACE}/api-sdk-php:/app\" phpunit/phpunit:4.8.5 --log-junit tests-result.xml --coverage-clover tests-clover.xml --debug --verbose"
+        sh "docker run --rm -v \"${WORKSPACE}:/app\" composer/composer install"
+        sh "docker run --rm -e project_id=${params.PROJECT_ID} -e user_id=${params.USER_ID} -e user_key=${params.USER_KEY} -v \"${WORKSPACE}:/app\" phpunit/phpunit:4.8.5 --log-junit tests-result.xml --coverage-clover tests-clover.xml --debug --verbose"
       }
     }
 
     stage('Junit') {
       steps {
-        junit 'api-sdk-php/tests-result.xml'
+        junit 'tests-result.xml'
       }
     }
 
@@ -20,7 +20,7 @@ pipeline {
         script {
           String scannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
           withSonarQubeEnv('sonar') {
-            sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=php -Dsonar.php.tests.reportsPath=\"${WORKSPACE}/api-sdk-php\" -Dsonar.sources=api-sdk-php -Dsonar.projectKey=\"${params.SONAR_PROJECT_KEY}\" -Dsonar.projectName=\"${params.SONAR_PROJECT_NAME}\" -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.php.file.suffixes=\"php,php3,php4,php5,phtml,inc,module,install\" -Dsonar.exclusions=\"${params.SONAR_EXCLUDE_PATH}\""
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=php -Dsonar.php.coverage.reportPath=tests-clover.xml -Dsonar.php.tests.reportsPath=tests-result.xml -Dsonar.sources=. -Dsonar.projectKey=\"${params.SONAR_PROJECT_KEY}\" -Dsonar.projectName=\"${params.SONAR_PROJECT_NAME}\" -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.php.file.suffixes=\"php,php3,php4,php5,phtml,inc,module,install\" -Dsonar.exclusions=\"${params.SONAR_EXCLUDE_PATH}\""
           }
         }
       }
