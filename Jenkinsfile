@@ -4,13 +4,13 @@ pipeline {
   stages {
     stage('Run tests') {
       steps {
-        sh "docker run --rm -v \"${WORKSPACE}/api-sdk-php:/api-sdk-php\" composer/composer install"
-        sh "docker run -e project_id=${params.PROJECT_ID} -e user_id=${params.USER_ID} -e user_key=${params.USER_KEY} -v \"${WORKSPACE}/api-sdk-php:/api-sdk-php\" phpunit/phpunit:4.8.5 --log-junit tests-result.xml --coverage-clover tests-clover.xml --debug --verbose"
+        sh "docker run --rm -v \"${WORKSPACE}/api-sdk-php:/app\" composer/composer install"
+        sh "docker run -e project_id=${params.PROJECT_ID} -e user_id=${params.USER_ID} -e user_key=${params.USER_KEY} -v \"${WORKSPACE}/api-sdk-php:/app\" phpunit/phpunit:4.8.5 --log-junit tests-result.xml --coverage-clover tests-clover.xml --debug --verbose"
       }
     }
 
     stage('Junit') {
-      steps {
+      steps {```
         junit 'api-sdk-php/tests-result.xml'
       }
     }
