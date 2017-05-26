@@ -20,7 +20,7 @@ pipeline {
         script {
           String scannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
           withSonarQubeEnv('sonar') {
-            sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=php -Dsonar.php.tests.reportsPath=\"${WORKSPACE}/api-sdk-php\" -Dsonar.sources=sonar_sources -Dsonar.projectKey=\"${params.SONAR_PROJECT_KEY}\" -Dsonar.projectName=\"${params.SONAR_PROJECT_NAME}\" -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.php.file.suffixes=\"php,php3,php4,php5,phtml,inc,module,install\" -Dsonar.exclusions=\"${params.SONAR_EXCLUDE_PATH}\""
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=php -Dsonar.php.tests.reportsPath=\"${WORKSPACE}/api-sdk-php\" -Dsonar.sources=api-sdk-php -Dsonar.projectKey=\"${params.SONAR_PROJECT_KEY}\" -Dsonar.projectName=\"${params.SONAR_PROJECT_NAME}\" -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.php.file.suffixes=\"php,php3,php4,php5,phtml,inc,module,install\" -Dsonar.exclusions=\"${params.SONAR_EXCLUDE_PATH}\""
           }
         }
       }
