@@ -1,4 +1,4 @@
-![Build Status](https://api.travis-ci.org/Smartling/api-sdk-php.svg?branch=2.0.0-g5)(http://travis-ci.org/Smartling/api-sdk-php)
+[![Build Status](https://travis-ci.org/Smartling/api-sdk-php.svg?branch=3.0.0-g6)](https://travis-ci.org/Smartling/api-sdk-php)
 
 
 [Smartling Translation API](http://docs.smartling.com)
