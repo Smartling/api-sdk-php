@@ -49,7 +49,6 @@ pipeline {
         message: "Build of <${env.BUILD_URL}|${env.JOB_BASE_NAME} #${env.BUILD_NUMBER}> is failed!"
       )
     }
-
   }
 
 }
