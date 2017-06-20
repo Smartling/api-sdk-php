@@ -38,6 +38,8 @@ abstract class BaseApiAbstract
 
     const STRATEGY_SEARCH = 'search';
 
+    const STRATEGY_NOBODY = 'no body';
+
     const HTTP_METHOD_GET = 'get';
 
     const HTTP_METHOD_POST = 'post';
@@ -345,7 +347,8 @@ abstract class BaseApiAbstract
                 if ('object' === $type) {
                     $type .= '::' . get_class($this->getAuth());
                 }
-                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type, 401);
+                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type,
+                    401);
             } else {
                 $this->getAuth()->resetToken();
             }
@@ -417,11 +420,10 @@ abstract class BaseApiAbstract
         if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
             $options['query'] = $requestData;
         } else {
-            if (in_array($strategy, [
-                self::STRATEGY_AUTH,
-                self::STRATEGY_SEARCH,
-            ])) {
+            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_SEARCH,])) {
                 $options['json'] = $requestData;
+            } elseif (in_array($strategy, [self::STRATEGY_NOBODY])) {
+                $options['body'] = '';
             } else {
                 $options['body'] = $this->addRequestDataToOptions($options, $requestData);
             }
@@ -481,7 +483,9 @@ abstract class BaseApiAbstract
     protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
         $request = $this->prepareHttpRequest($uri, $requestData, $method, $strategy);
-
+        if (self::STRATEGY_NOBODY === $strategy) {
+            $request->setHeader('Content-Type', 'application/json');
+        }
         try {
             $response = $this->getHttpClient()->send($request);
         } catch (RequestException $e) {
