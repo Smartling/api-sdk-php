@@ -36,7 +36,7 @@ abstract class BaseApiAbstract
 
     const STRATEGY_AUTH = 'auth';
 
-    const STRATEGY_SEARCH = 'search';
+    const STRATEGY_JSON_BODY = 'json body';
 
     const STRATEGY_NOBODY = 'no body';
 
@@ -45,6 +45,8 @@ abstract class BaseApiAbstract
     const HTTP_METHOD_POST = 'post';
 
     const HTTP_METHOD_DELETE = 'delete';
+
+    const HTTP_METHOD_PUT = 'put';
 
     private static $currentClientId = self::CLIENT_LIB_ID_SDK;
 
@@ -420,7 +422,7 @@ abstract class BaseApiAbstract
         if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
             $options['query'] = $requestData;
         } else {
-            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_SEARCH,])) {
+            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_JSON_BODY,])) {
                 $options['json'] = $requestData;
             } elseif (in_array($strategy, [self::STRATEGY_NOBODY])) {
                 $options['body'] = '';

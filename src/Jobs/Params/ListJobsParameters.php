@@ -9,12 +9,12 @@ class ListJobsParameters extends BaseParameters
 
     public function __construct($jobName = null, $limit = null, $offset = null)
     {
-        $this->setJobName($jobName);
+        $this->setName($jobName);
         $this->setLimit($limit);
         $this->setOffset($offset);
     }
 
-    public function setJobName($jobName)
+    public function setName($jobName)
     {
         if (null !== $jobName) {
             if (mb_strlen($jobName, 'UTF-8') >= 170) {
