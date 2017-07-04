@@ -132,7 +132,7 @@ function updateJobDemo($authProvider, $projectId, $jobId)
 {
     $result = FALSE;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
-    $params = new \Smartling\Jobs\Params\CreateJobParameters();
+    $params = new \Smartling\Jobs\Params\UpdateJobParameters();
     $params->setName("Test Job Name Updated " . time());
     $params->setDescription("Test Job Description Updated " . time());
     $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2030-01-01 19:19:17', new DateTimeZone('UTC')));

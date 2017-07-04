@@ -9,6 +9,7 @@ use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
 use Smartling\Jobs\Params\SearchJobsParameters;
+use Smartling\Jobs\Params\UpdateJobParameters;
 
 /**
  * Class JobsApi
@@ -44,15 +45,15 @@ class JobsApi extends BaseApiAbstract
      */
     public function createJob(CreateJobParameters $parameters)
     {
-        return $this->sendRequest('jobs/', $parameters->exportToArray(), self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        return $this->sendRequest('jobs', $parameters->exportToArray(), self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
     }
 
   /**
    * @param string $jobId
-   * @param CreateJobParameters $parameters
+   * @param UpdateJobParameters $parameters
    * @return bool
    */
-    public function updateJob($jobId, CreateJobParameters $parameters)
+    public function updateJob($jobId, UpdateJobParameters $parameters)
     {
         return $this->sendRequest('jobs/' . $jobId, $parameters->exportToArray(), self::HTTP_METHOD_PUT, self::STRATEGY_JSON_BODY);
     }
@@ -74,7 +75,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function listJobs(ListJobsParameters $parameters)
     {
-        return $this->sendRequest('jobs/', $parameters->exportToArray(), self::HTTP_METHOD_GET);
+        return $this->sendRequest('jobs', $parameters->exportToArray(), self::HTTP_METHOD_GET);
     }
 
     /**
@@ -94,7 +95,7 @@ class JobsApi extends BaseApiAbstract
 
     public function addFileToJob($jobId, $fileUri)
     {
-        $endpoint = vsprintf('jobs/%s/file/add/', [$jobId]);
+        $endpoint = vsprintf('jobs/%s/file/add', [$jobId]);
         return $this->sendRequest($endpoint, ['fileUri' => $fileUri], self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
     }
 
