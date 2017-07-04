@@ -182,9 +182,9 @@ class JobsApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\Jobs\JobsApi::listJob
+     * @covers \Smartling\Jobs\JobsApi::listJobs
      */
-    public function testListJob() {
+    public function testListJobs() {
         $name = 'Test Job Name Updated';
         $limit = 1;
         $offset = 2;
