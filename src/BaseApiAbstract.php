@@ -328,8 +328,7 @@ abstract class BaseApiAbstract
                 if ('object' === $type) {
                     $type .= '::' . get_class($this->getAuth());
                 }
-                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type,
-                    401);
+                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type, 401);
             } else {
                 $this->getAuth()->resetToken();
             }
