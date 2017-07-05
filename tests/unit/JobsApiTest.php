@@ -68,7 +68,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -85,11 +85,6 @@ class JobsApiTest extends ApiTestAbstract
                     'targetLocaleIds' => $locales,
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->createJob($params);
@@ -115,7 +110,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('put', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -131,11 +126,6 @@ class JobsApiTest extends ApiTestAbstract
                     'dueDate' => $dueDate->format('Y-m-d\TH:i:s\Z'),
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->updateJob($jobId, $params);
@@ -157,7 +147,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -171,11 +161,6 @@ class JobsApiTest extends ApiTestAbstract
                     'reason' => $reason,
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->cancelJob($jobId, $params);
@@ -199,7 +184,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -215,11 +200,6 @@ class JobsApiTest extends ApiTestAbstract
                     'offset' => $offset,
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->listJobs($params);
@@ -238,7 +218,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -250,11 +230,6 @@ class JobsApiTest extends ApiTestAbstract
                 'exceptions' => FALSE,
                 'query' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getJob($jobId);
@@ -273,7 +248,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -285,11 +260,6 @@ class JobsApiTest extends ApiTestAbstract
                 'exceptions' => FALSE,
                 'body' => '',
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->authorizeJob($jobId);
@@ -309,7 +279,7 @@ class JobsApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -323,11 +293,6 @@ class JobsApiTest extends ApiTestAbstract
                     'fileUri' => $fileUri,
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->addFileToJob($jobId, $fileUri);
