@@ -256,7 +256,7 @@ class JobsApiTest extends ApiTestAbstract
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
-                    'Content-type' => 'application/json',
+                    'Content-Type' => 'application/json',
                 ],
                 'exceptions' => FALSE,
                 'body' => '',
