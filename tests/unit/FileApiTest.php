@@ -9,7 +9,7 @@ use Smartling\File\Params\UploadFileParameters;
 /**
  * Test class for Smartling\File\FileApi.
  */
-class SmartlingApiTest extends ApiTestAbstract
+class FileApiTest extends ApiTestAbstract
 {
     private function prepareFileApiMock()
     {
