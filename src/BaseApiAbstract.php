@@ -33,13 +33,17 @@ abstract class BaseApiAbstract
 
     const STRATEGY_AUTH = 'auth';
 
-    const STRATEGY_SEARCH = 'search';
+    const STRATEGY_JSON_BODY = 'json body';
+
+    const STRATEGY_NOBODY = 'no body';
 
     const HTTP_METHOD_GET = 'get';
 
     const HTTP_METHOD_POST = 'post';
 
     const HTTP_METHOD_DELETE = 'delete';
+
+    const HTTP_METHOD_PUT = 'put';
 
     private static $currentClientId = self::CLIENT_LIB_ID_SDK;
 
@@ -294,6 +298,10 @@ abstract class BaseApiAbstract
             unset($options['headers']['Accept']);
         }
 
+        if (self::STRATEGY_NOBODY === $strategy) {
+            $options['headers']['Content-Type'] = 'application/json';
+        }
+
         return $options;
     }
 
@@ -390,11 +398,10 @@ abstract class BaseApiAbstract
         if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
             $options['query'] = $requestData;
         } else {
-            if (in_array($strategy, [
-                self::STRATEGY_AUTH,
-                self::STRATEGY_SEARCH,
-            ])) {
+            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_JSON_BODY,])) {
                 $options['json'] = $requestData;
+            } elseif (in_array($strategy, [self::STRATEGY_NOBODY])) {
+                $options['body'] = '';
             } else {
                 if (!isset($options['multipart']))
                 {
@@ -447,8 +454,6 @@ abstract class BaseApiAbstract
         $options = $this->prepareOptions($strategy);
         $options = $this->prepareRequestData($options, $requestData, $method, $strategy);
         $endpoint = $this->normalizeUri($uri);
-
-        $options['exceptions'] = false;
 
         try {
             $response = $this->getHttpClient()->request($method, $endpoint, $options);

@@ -263,31 +263,6 @@ try {
     echo $e->formatErrors('Error happened while deleting file');
 }
 
-/**
- * Search Job example.
- */
-
-try {
-    echo '::: Job Search Example :::' . PHP_EOL;
-
-    $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
-
-    $jobsApi = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
-
-    $searchParameters = new SearchJobsParameters();
-    $searchParameters->setFileUris([
-        'some_file_to_search.xml',
-    ]);
-    $result = $jobsApi->searchJobs($searchParameters);
-
-    echo 'Job search result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
-
-} catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    echo $e->formatErrors('Error happened while deleting file');
-}
-
-
 /** @noinspection MoreThanThreeArgumentsInspection
  *
  * @param string $userIdentifier
