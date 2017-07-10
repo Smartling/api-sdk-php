@@ -301,6 +301,10 @@ abstract class BaseApiAbstract
             unset($options['headers']['Accept']);
         }
 
+        if (self::STRATEGY_NOBODY === $strategy) {
+            $options['headers']['Content-Type'] = 'application/json';
+        }
+
         return $options;
     }
 
@@ -432,9 +436,6 @@ abstract class BaseApiAbstract
         }
 
         $endpoint = $this->normalizeUri($uri);
-
-        $options['exceptions'] = false;
-
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
 
         if (self::STRATEGY_UPLOAD === $strategy) {
@@ -485,9 +486,7 @@ abstract class BaseApiAbstract
     protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
     {
         $request = $this->prepareHttpRequest($uri, $requestData, $method, $strategy);
-        if (self::STRATEGY_NOBODY === $strategy) {
-            $request->setHeader('Content-Type', 'application/json');
-        }
+
         try {
             $response = $this->getHttpClient()->send($request);
         } catch (RequestException $e) {

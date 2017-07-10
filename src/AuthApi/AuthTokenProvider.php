@@ -13,7 +13,7 @@ use Smartling\BaseApiAbstract;
 class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
 {
 
-    const ENDPOINT_URL = 'https://api.smartling.com/auth-api/v2/';
+    const ENDPOINT_URL = 'https://api.smartling.com/auth-api/v2';
 
     const RESPONSE_KEY_ACCESS_TOKEN = 'accessToken';
     const RESPONSE_KEY_ACCESS_TOKEN_TTL = 'expiresIn';

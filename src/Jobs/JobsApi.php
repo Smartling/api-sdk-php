@@ -22,6 +22,8 @@ class JobsApi extends BaseApiAbstract
     const ENDPOINT_URL = 'https://api.smartling.com/jobs-api/v2/projects';
 
     /**
+     * Instantiates Jobs API object.
+     *
      * @param AuthApiInterface $authProvider
      * @param string $projectId
      * @param LoggerInterface $logger
@@ -40,6 +42,8 @@ class JobsApi extends BaseApiAbstract
     }
 
     /**
+     * Creates a job.
+     *
      * @param CreateJobParameters $parameters
      * @return bool
      */
@@ -49,6 +53,8 @@ class JobsApi extends BaseApiAbstract
     }
 
   /**
+   * Updates a job.
+   *
    * @param string $jobId
    * @param UpdateJobParameters $parameters
    * @return bool
@@ -59,6 +65,8 @@ class JobsApi extends BaseApiAbstract
     }
 
     /**
+     * Cancels a job.
+     *
      * @param string $jobId
      * @param CancelJobParameters $parameters
      * @return bool
@@ -70,6 +78,8 @@ class JobsApi extends BaseApiAbstract
     }
 
     /**
+     * Returns a list of jobs.
+     *
      * @param ListJobsParameters $parameters
      * @return bool
      */
@@ -79,6 +89,8 @@ class JobsApi extends BaseApiAbstract
     }
 
     /**
+     * Returns a job.
+     *
      * @param string $jobId
      * @return bool
      */
@@ -87,12 +99,27 @@ class JobsApi extends BaseApiAbstract
         return $this->sendRequest('jobs/' . $jobId, [], self::HTTP_METHOD_GET);
     }
 
+    /**
+     * Authorizes a job.
+     *
+     * @param $jobId
+     * @return bool
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
     public function authorizeJob($jobId)
     {
         $endpoint = vsprintf('jobs/%s/authorize', [$jobId]);
         return $this->sendRequest($endpoint, [], self::HTTP_METHOD_POST, self::STRATEGY_NOBODY);
     }
 
+    /**
+     * Adds file to a job.
+     *
+     * @param $jobId
+     * @param $fileUri
+     * @return bool
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
     public function addFileToJob($jobId, $fileUri)
     {
         $endpoint = vsprintf('jobs/%s/file/add', [$jobId]);
