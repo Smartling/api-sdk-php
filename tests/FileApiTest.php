@@ -221,6 +221,9 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
+        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
+        $requestData['query'] = [];
+
         $actual_xml = $this->object->downloadFile('test.xml', $locale, $options);
 
         self::assertEquals($expected_translated_file, $actual_xml);
@@ -328,7 +331,7 @@ class SmartlingApiTest extends ApiTestAbstract
     /**
      * @covers \Smartling\File\FileApi::getStatusForAllLocales
      */
-    public function textGetStatusForAllLocales()
+    public function testGetStatusForAllLocales()
     {
         $endpointUrl = vsprintf(
             '%s/%s/file/status',
@@ -529,8 +532,11 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
+        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
+        $requestData['query'] = [];
+
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'get']);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -581,8 +587,11 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
+        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
+        $requestData['query'] = [];
+
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'get']);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -633,8 +642,11 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
+        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
+        $requestData['query'] = [];
+
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', [], 'get']);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -642,12 +654,14 @@ class SmartlingApiTest extends ApiTestAbstract
      * @param array $requestData
      * @param string $method
      * @param array $params
-     *
+     * @param $paramsType
      * @covers       \Smartling\File\FileApi::sendRequest
      * @dataProvider sendRequestValidProvider
      */
-    public function testSendRequest($uri, $requestData, $method, $params)
+    public function testSendRequest($uri, $requestData, $method, $params, $paramsType)
     {
+        $defaultRequestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
+        $defaultRequestData[$paramsType] = $requestData;
         $params['headers']['Authorization'] = vsprintf('%s %s', [
             $this->authProvider->getTokenType(),
             $this->authProvider->getAccessToken(),
@@ -667,7 +681,7 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
 
-        $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $requestData, $method]);
+        $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $defaultRequestData, $method]);
         self::assertEquals(['wordCount' => 1629, 'stringCount' => 503, 'overWritten' => false], $result);
     }
 
@@ -690,6 +704,7 @@ class SmartlingApiTest extends ApiTestAbstract
                     'exceptions' => false,
                     'query' => [],
                 ],
+                'query',
             ],
             [
                 'uri',
@@ -712,6 +727,7 @@ class SmartlingApiTest extends ApiTestAbstract
                         'boolean_true' => '1',
                     ],
                 ],
+                'body',
             ],
         ];
     }

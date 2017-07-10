@@ -295,44 +295,11 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param string $strategy
-     * @param bool $httpErrors
-     *
-     * @return array
-     */
-    private function prepareOptions($strategy, $httpErrors = false)
-    {
-        $options = [
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-            'exceptions' => $httpErrors,
-        ];
-
-        if (self::STRATEGY_AUTH !== $strategy) {
-            $accessToken = $this->getAuth()->getAccessToken();
-            $tokenType = $this->getAuth()->getTokenType();
-            $options['headers']['Authorization'] =
-                vsprintf('%s %s', [$tokenType, $accessToken]);
-        }
-
-        if (self::STRATEGY_DOWNLOAD === $strategy) {
-            unset($options['headers']['Accept']);
-        }
-
-        if (self::STRATEGY_NOBODY === $strategy) {
-            $options['headers']['Content-Type'] = 'application/json';
-        }
-
-        return $options;
-    }
-
-    /**
      * @param array $requestData
      *
      * @return array
      */
-    private function addRequestDataToOptions(array $requestData = [])
+    private function processBodyOptions(array $requestData = [])
     {
         $opts = [];
         foreach ($requestData as $key => $value) {
@@ -439,19 +406,9 @@ abstract class BaseApiAbstract
      */
     private function prepareHttpRequest($uri, array $options, $method, $strategy)
     {
-//        $options = $this->prepareOptions($strategy, false);
-//
-//        if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
-//            $options['query'] = $requestData;
-//        } else {
-//            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_JSON_BODY,])) {
-//                $options['json'] = $requestData;
-//            } elseif (in_array($strategy, [self::STRATEGY_NOBODY])) {
-//                $options['body'] = '';
-//            } else {
-//                $options['body'] = $this->addRequestDataToOptions($options, $requestData);
-//            }
-//        }
+        if (!empty($options['body'])) {
+            $options['body'] = $this->processBodyOptions($options['body']);
+        }
 
         $endpoint = $this->normalizeUri($uri);
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
@@ -463,7 +420,7 @@ abstract class BaseApiAbstract
             }
 
         }
-        // Dump full request data to log except sensetive data
+        // Dump full request data to log except sensitive data.
         $logRequestData = $options;
         if (isset($logRequestData['headers']['Authorization'])) {
             $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0,
