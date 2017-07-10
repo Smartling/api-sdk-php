@@ -285,9 +285,12 @@ abstract class BaseApiAbstract
         ];
 
         if ($auth) {
+            $accessToken = $this->getAuth()->getAccessToken();
+            $tokenType = $this->getAuth()->getTokenType();
+
             $options['headers']['Authorization'] = vsprintf('%s %s', [
-                $this->getAuth()->getTokenType(),
-                $this->getAuth()->getAccessToken(),
+                $tokenType,
+                $accessToken,
             ]);
         }
 
