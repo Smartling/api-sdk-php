@@ -53,7 +53,7 @@ class JobsApi extends BaseApiAbstract
         $requestData = $this->getDefaultRequestData();
         $requestData['json'] = $parameters->exportToArray();
 
-        return $this->sendRequest('jobs', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY, $requestData);
+        return $this->sendRequest('jobs', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
     }
 
   /**
