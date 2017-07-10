@@ -127,14 +127,14 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     private function authenticate()
     {
-        $requestData = [
+        $this->requestTimestamp = time();
+        $requestData = $this->getDefaultRequestData(false);
+        $requestData['json'] = [
             'userIdentifier' => $this->getUserIdentifier(),
             'userSecret' => $this->getSecretKey()
-        ];
+        ];;
 
-        $this->requestTimestamp = time();
-
-        return $this->sendRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
+        return $this->sendRequest('authenticate', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_AUTH);
     }
 
     /**
@@ -143,10 +143,12 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     private function tokenRenew()
     {
         if ($this->tokenExists() && $this->tokenCanBeRenewed()) {
-            $requestData = [
+            $requestData = $this->getDefaultRequestData(false);
+            $requestData['json'] = [
                 'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
             ];
-            return $this->sendRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
+
+            return $this->sendRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_AUTH);
         } else {
             return $this->authenticate();
         }
@@ -192,8 +194,4 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         $this->data = [];
     }
 
-    protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
-    {
-        return parent::sendRequest($uri, $requestData, $method, self::STRATEGY_AUTH);
-    }
 }

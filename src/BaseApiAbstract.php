@@ -275,6 +275,25 @@ abstract class BaseApiAbstract
         }
     }
 
+    protected function getDefaultRequestData($auth = true, $httpErrors = false) {
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+            'exceptions' => $httpErrors,
+
+        ];
+
+        if ($auth) {
+            $options['headers']['Authorization'] = vsprintf('%s %s', [
+                $this->getAuth()->getTokenType(),
+                $this->getAuth()->getAccessToken(),
+            ]);
+        }
+
+        return $options;
+    }
+
     /**
      * @param string $strategy
      * @param bool $httpErrors
@@ -309,12 +328,11 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param array $options
      * @param array $requestData
      *
      * @return array
      */
-    private function addRequestDataToOptions(array $options, array $requestData = [])
+    private function addRequestDataToOptions(array $requestData = [])
     {
         $opts = [];
         foreach ($requestData as $key => $value) {
@@ -414,26 +432,26 @@ abstract class BaseApiAbstract
 
     /**
      * @param string $uri
-     * @param array $requestData
+     * @param array $options
      * @param string $method
      * @param string $strategy
      * @return RequestInterface
      */
-    private function prepareHttpRequest($uri, array $requestData, $method, $strategy)
+    private function prepareHttpRequest($uri, array $options, $method, $strategy)
     {
-        $options = $this->prepareOptions($strategy);
-
-        if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
-            $options['query'] = $requestData;
-        } else {
-            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_JSON_BODY,])) {
-                $options['json'] = $requestData;
-            } elseif (in_array($strategy, [self::STRATEGY_NOBODY])) {
-                $options['body'] = '';
-            } else {
-                $options['body'] = $this->addRequestDataToOptions($options, $requestData);
-            }
-        }
+//        $options = $this->prepareOptions($strategy, false);
+//
+//        if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
+//            $options['query'] = $requestData;
+//        } else {
+//            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_JSON_BODY,])) {
+//                $options['json'] = $requestData;
+//            } elseif (in_array($strategy, [self::STRATEGY_NOBODY])) {
+//                $options['body'] = '';
+//            } else {
+//                $options['body'] = $this->addRequestDataToOptions($options, $requestData);
+//            }
+//        }
 
         $endpoint = $this->normalizeUri($uri);
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);

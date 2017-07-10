@@ -5,6 +5,7 @@ namespace Smartling\Jobs;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
+use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
@@ -49,7 +50,10 @@ class JobsApi extends BaseApiAbstract
      */
     public function createJob(CreateJobParameters $parameters)
     {
-        return $this->sendRequest('jobs', $parameters->exportToArray(), self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['json'] = $parameters->exportToArray();
+
+        return $this->sendRequest('jobs', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY, $requestData);
     }
 
   /**
@@ -61,7 +65,10 @@ class JobsApi extends BaseApiAbstract
    */
     public function updateJob($jobId, UpdateJobParameters $parameters)
     {
-        return $this->sendRequest('jobs/' . $jobId, $parameters->exportToArray(), self::HTTP_METHOD_PUT, self::STRATEGY_JSON_BODY);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['json'] = $parameters->exportToArray();
+
+        return $this->sendRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_PUT, self::STRATEGY_JSON_BODY);
     }
 
     /**
@@ -74,7 +81,10 @@ class JobsApi extends BaseApiAbstract
     public function cancelJob($jobId, CancelJobParameters $parameters)
     {
         $endpoint = vsprintf('jobs/%s/cancel', [$jobId]);
-        return $this->sendRequest($endpoint, $parameters->exportToArray(), self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['json'] = $parameters->exportToArray();
+
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
     }
 
     /**
@@ -85,7 +95,10 @@ class JobsApi extends BaseApiAbstract
      */
     public function listJobs(ListJobsParameters $parameters)
     {
-        return $this->sendRequest('jobs', $parameters->exportToArray(), self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['query'] = $parameters->exportToArray();
+
+        return $this->sendRequest('jobs', $requestData, self::HTTP_METHOD_GET, self::STRATEGY_GENERAL);
     }
 
     /**
@@ -96,7 +109,10 @@ class JobsApi extends BaseApiAbstract
      */
     public function getJob($jobId)
     {
-        return $this->sendRequest('jobs/' . $jobId, [], self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['query'] = array();
+
+        return $this->sendRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_GET, self::STRATEGY_GENERAL);
     }
 
     /**
@@ -109,21 +125,28 @@ class JobsApi extends BaseApiAbstract
     public function authorizeJob($jobId)
     {
         $endpoint = vsprintf('jobs/%s/authorize', [$jobId]);
-        return $this->sendRequest($endpoint, [], self::HTTP_METHOD_POST, self::STRATEGY_NOBODY);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['body'] = '';
+        $requestData['headers']['Content-Type'] = 'application/json';
+
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST, self::STRATEGY_NOBODY);
     }
 
     /**
      * Adds file to a job.
      *
      * @param $jobId
-     * @param $fileUri
+     * @param \Smartling\Jobs\Params\AddFileToJobParameters $parameters
      * @return bool
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    public function addFileToJob($jobId, $fileUri)
+    public function addFileToJob($jobId, AddFileToJobParameters $parameters)
     {
         $endpoint = vsprintf('jobs/%s/file/add', [$jobId]);
-        return $this->sendRequest($endpoint, ['fileUri' => $fileUri], self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['json'] = $parameters->exportToArray();
+
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
     }
 
     /**
@@ -136,7 +159,10 @@ class JobsApi extends BaseApiAbstract
      */
     public function searchJobs(SearchJobsParameters $parameters)
     {
-        return $this->sendRequest('jobs/search', $parameters->exportToArray(), self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        $requestData = $this->getDefaultRequestData();
+        $requestData['json'] = $parameters->exportToArray();
+
+        return $this->sendRequest('jobs/search', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
     }
 
 }

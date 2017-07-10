@@ -9,6 +9,8 @@
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
+use Smartling\Jobs\Params\AddFileToJobParameters;
+
 $longOpts = [
   'project-id:',
   'user-id:',
@@ -275,10 +277,12 @@ function addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri)
 {
     $response = FALSE;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
+    $params = new AddFileToJobParameters();
+    $params->setFileUri($fileUri);
     $st = microtime(true);
 
     try {
-        $response = $jobs->addFileToJob($jobId, $fileUri);
+        $response = $jobs->addFileToJob($jobId, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }

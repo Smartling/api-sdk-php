@@ -5,6 +5,7 @@ namespace Smartling\Tests;
 use DateTime;
 use DateTimeZone;
 use Smartling\Jobs\JobsApi;
+use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
@@ -302,6 +303,8 @@ class JobsApiTest extends ApiTestAbstract
     public function testAddFileToJob() {
         $jobId = 'Some job id';
         $fileUri = 'some_file.xml';
+        $params = new AddFileToJobParameters();
+        $params->setFileUri($fileUri);
         $endpointUrl = vsprintf('%s/%s/jobs/%s/file/add', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
@@ -331,7 +334,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
-        $this->object->addFileToJob($jobId, $fileUri);
+        $this->object->addFileToJob($jobId, $params);
     }
 
     /**
