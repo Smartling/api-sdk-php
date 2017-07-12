@@ -443,7 +443,7 @@ class FileApi extends BaseApiAbstract
 
         $requestData = $this->getDefaultRequestData();
         $requestData['query'] = $params;
-        $request = $this->prepareHttpRequest('file/status', $params, self::HTTP_METHOD_GET);
+        $request = $this->prepareHttpRequest('file/status', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
     }
@@ -465,7 +465,7 @@ class FileApi extends BaseApiAbstract
 
         $requestData = $this->getDefaultRequestData();
         $requestData['query'] = $params;
-        $request = $this->prepareHttpRequest('file/last-modified', $params, self::HTTP_METHOD_GET);
+        $request = $this->prepareHttpRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
     }
