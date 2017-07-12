@@ -91,7 +91,7 @@ class FileApi extends BaseApiAbstract
             $body->setAggregator(Query::phpAggregator(false));
         }
 
-        return $this->sendRequest($request, self::STRATEGY_UPLOAD);
+        return $this->sendRequest($request);
     }
 
     /**
@@ -189,7 +189,7 @@ class FileApi extends BaseApiAbstract
         $requestData['query'] = $params;
         $request = $this->prepareHttpRequest("locales/{$locale}/file", $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request, self::STRATEGY_DOWNLOAD);
+        return $this->sendRequest($request, true);
     }
 
     /**

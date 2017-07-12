@@ -135,7 +135,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         ];
         $request = $this->prepareHttpRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest($request, self::STRATEGY_AUTH);
+        return $this->sendRequest($request);
     }
 
     /**
@@ -148,8 +148,9 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
             $requestData['json'] = [
                 'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
             ];
+            $request = $this->prepareHttpRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
 
-            return $this->sendRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_AUTH);
+            return $this->sendRequest($request);
         } else {
             return $this->authenticate();
         }

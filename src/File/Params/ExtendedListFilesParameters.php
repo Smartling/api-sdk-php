@@ -1,4 +1,5 @@
 <?php
+
 namespace Smartling\File\Params;
 
 /**
