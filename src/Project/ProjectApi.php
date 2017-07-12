@@ -43,6 +43,6 @@ class ProjectApi extends BaseApiAbstract
         $requestData = $this->getDefaultRequestData();
         $requestData['query'] = array();
 
-        return $this->sendRequest('', $requestData, self::HTTP_METHOD_GET);
+        return $this->sendRequest($this->prepareHttpRequest('', $requestData, self::HTTP_METHOD_GET));
     }
 }

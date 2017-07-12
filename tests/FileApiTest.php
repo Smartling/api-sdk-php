@@ -534,9 +534,10 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
         $requestData['query'] = [];
+        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
+        $this->invokeMethod($this->object, 'sendRequest', [$request]);
     }
 
     /**
@@ -589,9 +590,10 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
         $requestData['query'] = [];
+        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
+        $this->invokeMethod($this->object, 'sendRequest', [$request]);
     }
 
     /**
@@ -644,9 +646,10 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
         $requestData['query'] = [];
+        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
+        $this->invokeMethod($this->object, 'sendRequest', [$request]);
     }
 
     /**
@@ -681,7 +684,9 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
 
-        $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $defaultRequestData, $method]);
+        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', [$uri, $defaultRequestData, $method]);
+
+        $result = $this->invokeMethod($this->object, 'sendRequest', [$request]);
         self::assertEquals(['wordCount' => 1629, 'stringCount' => 503, 'overWritten' => false], $result);
     }
 

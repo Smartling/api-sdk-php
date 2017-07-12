@@ -132,9 +132,10 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         $requestData['json'] = [
             'userIdentifier' => $this->getUserIdentifier(),
             'userSecret' => $this->getSecretKey()
-        ];;
+        ];
+        $request = $this->prepareHttpRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest('authenticate', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_AUTH);
+        return $this->sendRequest($request, self::STRATEGY_AUTH);
     }
 
     /**

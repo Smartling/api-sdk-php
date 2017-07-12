@@ -52,8 +52,9 @@ class JobsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData();
         $requestData['json'] = $parameters->exportToArray();
+        $request = $this->prepareHttpRequest('jobs', $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest('jobs', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        return $this->sendRequest($request, self::STRATEGY_JSON_BODY);
     }
 
   /**
@@ -67,8 +68,9 @@ class JobsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData();
         $requestData['json'] = $parameters->exportToArray();
+        $request = $this->prepareHttpRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_PUT);
 
-        return $this->sendRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_PUT, self::STRATEGY_JSON_BODY);
+        return $this->sendRequest($request, self::STRATEGY_JSON_BODY);
     }
 
     /**
@@ -83,8 +85,9 @@ class JobsApi extends BaseApiAbstract
         $endpoint = vsprintf('jobs/%s/cancel', [$jobId]);
         $requestData = $this->getDefaultRequestData();
         $requestData['json'] = $parameters->exportToArray();
+        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        return $this->sendRequest($request, self::STRATEGY_JSON_BODY);
     }
 
     /**
@@ -97,8 +100,9 @@ class JobsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData();
         $requestData['query'] = $parameters->exportToArray();
+        $request = $this->prepareHttpRequest('jobs', $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest('jobs', $requestData, self::HTTP_METHOD_GET, self::STRATEGY_GENERAL);
+        return $this->sendRequest($request, self::STRATEGY_GENERAL);
     }
 
     /**
@@ -111,8 +115,9 @@ class JobsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData();
         $requestData['query'] = array();
+        $request = $this->prepareHttpRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_GET, self::STRATEGY_GENERAL);
+        return $this->sendRequest($request, self::STRATEGY_GENERAL);
     }
 
     /**
@@ -128,8 +133,9 @@ class JobsApi extends BaseApiAbstract
         $requestData = $this->getDefaultRequestData();
         $requestData['body'] = '';
         $requestData['headers']['Content-Type'] = 'application/json';
+        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST, self::STRATEGY_NOBODY);
+        return $this->sendRequest($request, self::STRATEGY_NOBODY);
     }
 
     /**
@@ -145,8 +151,9 @@ class JobsApi extends BaseApiAbstract
         $endpoint = vsprintf('jobs/%s/file/add', [$jobId]);
         $requestData = $this->getDefaultRequestData();
         $requestData['json'] = $parameters->exportToArray();
+        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        return $this->sendRequest($request, self::STRATEGY_JSON_BODY);
     }
 
     /**
@@ -161,8 +168,9 @@ class JobsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData();
         $requestData['json'] = $parameters->exportToArray();
+        $request = $this->prepareHttpRequest('jobs/search', $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest('jobs/search', $requestData, self::HTTP_METHOD_POST, self::STRATEGY_JSON_BODY);
+        return $this->sendRequest($request, self::STRATEGY_JSON_BODY);
     }
 
 }

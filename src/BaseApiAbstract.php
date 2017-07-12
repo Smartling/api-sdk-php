@@ -404,10 +404,9 @@ abstract class BaseApiAbstract
      * @param string $uri
      * @param array $options
      * @param string $method
-     * @param string $strategy
      * @return RequestInterface
      */
-    private function prepareHttpRequest($uri, array $options, $method, $strategy)
+    protected function prepareHttpRequest($uri, array $options, $method)
     {
         if (!empty($options['body'])) {
             $options['body'] = $this->processBodyOptions($options['body']);
@@ -416,13 +415,6 @@ abstract class BaseApiAbstract
         $endpoint = $this->normalizeUri($uri);
         $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
 
-        if (self::STRATEGY_UPLOAD === $strategy) {
-            $body = $clientRequest->getBody();
-            if ($body instanceof PostBody) {
-                $body->setAggregator(Query::phpAggregator(false));
-            }
-
-        }
         // Dump full request data to log except sensitive data.
         $logRequestData = $options;
         if (isset($logRequestData['headers']['Authorization'])) {
@@ -451,9 +443,7 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param string $uri
-     * @param array $requestData
-     * @param string $method
+     * @param RequestInterface $request
      * @param string $strategy
      *
      * @return  bool true on SUCCESS and empty data
@@ -461,10 +451,8 @@ abstract class BaseApiAbstract
      *          array otherwise
      * @throws SmartlingApiException
      */
-    protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
+    protected function sendRequest(RequestInterface $request, $strategy = self::STRATEGY_GENERAL)
     {
-        $request = $this->prepareHttpRequest($uri, $requestData, $method, $strategy);
-
         try {
             $response = $this->getHttpClient()->send($request);
         } catch (RequestException $e) {
@@ -481,7 +469,7 @@ abstract class BaseApiAbstract
             throw new SmartlingApiException($message, 0, $e);
         }
 
-        // Dump full response to log except sensetive data
+        // Dump full response to log except sensitive data.
         $logResponseData = (string)$response->getBody();
         $logResponseData = preg_replace('/(accessToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
         $logResponseData = preg_replace('/(refreshToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
