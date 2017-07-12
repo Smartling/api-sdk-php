@@ -13,6 +13,7 @@ use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Logger\DevNullLogger;
+use Smartling\Parameters\BaseParameters;
 
 /**
  * Class BaseApiAbstract
@@ -261,7 +262,7 @@ abstract class BaseApiAbstract
         }
     }
 
-    protected function getDefaultRequestData($auth = true, $httpErrors = false) {
+    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false) {
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
@@ -279,6 +280,8 @@ abstract class BaseApiAbstract
                 $accessToken,
             ]);
         }
+
+        $options[$parametersType] = $parameters;
 
         return $options;
     }

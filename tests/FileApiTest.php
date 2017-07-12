@@ -221,9 +221,6 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
-        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
-        $requestData['query'] = [];
-
         $actual_xml = $this->object->downloadFile('test.xml', $locale, $options);
 
         self::assertEquals($expected_translated_file, $actual_xml);
@@ -532,8 +529,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
-        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
-        $requestData['query'] = [];
+        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
         $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
@@ -588,8 +584,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
-        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
-        $requestData['query'] = [];
+        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
         $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
@@ -644,8 +639,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
-        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
-        $requestData['query'] = [];
+        $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
         $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
@@ -663,8 +657,8 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testSendRequest($uri, $requestData, $method, $params, $paramsType)
     {
-        $defaultRequestData = $this->invokeMethod($this->object, 'getDefaultRequestData');
-        $defaultRequestData[$paramsType] = $requestData;
+        $defaultRequestData = $this->invokeMethod($this->object, 'getDefaultRequestData', [$paramsType, $requestData]);
+
         $params['headers']['Authorization'] = vsprintf('%s %s', [
             $this->authProvider->getTokenType(),
             $this->authProvider->getAccessToken(),

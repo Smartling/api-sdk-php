@@ -128,11 +128,10 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     private function authenticate()
     {
         $this->requestTimestamp = time();
-        $requestData = $this->getDefaultRequestData(false);
-        $requestData['json'] = [
+        $requestData = $this->getDefaultRequestData('json', [
             'userIdentifier' => $this->getUserIdentifier(),
             'userSecret' => $this->getSecretKey()
-        ];
+        ], false);
         $request = $this->prepareHttpRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -144,10 +143,9 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     private function tokenRenew()
     {
         if ($this->tokenExists() && $this->tokenCanBeRenewed()) {
-            $requestData = $this->getDefaultRequestData(false);
-            $requestData['json'] = [
+            $requestData = $this->getDefaultRequestData('json', [
                 'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
-            ];
+            ], false);
             $request = $this->prepareHttpRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
 
             return $this->sendRequest($request);

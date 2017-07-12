@@ -81,8 +81,7 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $file_name;
         $params['fileType'] = $file_type;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['body'] = $params;
+        $requestData = $this->getDefaultRequestData('body', $params);
         $request = $this->prepareHttpRequest('file', $requestData, self::HTTP_METHOD_POST);
 
         $body = $request->getBody();
@@ -110,8 +109,7 @@ class FileApi extends BaseApiAbstract
     {
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
 
         $result = $this->sendRequest($request);
@@ -184,9 +182,8 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
+        $requestData = $this->getDefaultRequestData('query', $params);
         unset($requestData['headers']['Accept']);
-        $requestData['query'] = $params;
         $request = $this->prepareHttpRequest("locales/{$locale}/file", $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request, true);
@@ -212,8 +209,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest("locales/$locale/file/status", $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -237,8 +233,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest("/file/status", $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -278,8 +273,7 @@ class FileApi extends BaseApiAbstract
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest('files/list', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -296,8 +290,7 @@ class FileApi extends BaseApiAbstract
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest("locales/$locale/files/list", $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -327,8 +320,7 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
         $params['newFileUri'] = $newFileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['body'] = $params;
+        $requestData = $this->getDefaultRequestData('body', $params);
         $request = $this->prepareHttpRequest('file/rename', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -354,8 +346,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['body'] = $params;
+        $requestData = $this->getDefaultRequestData('body', $params);
         $request = $this->prepareHttpRequest('file/delete', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -399,8 +390,7 @@ class FileApi extends BaseApiAbstract
         $params['translationState'] = $translationState;
         $params['overwrite'] = $overwrite;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['body'] = $params;
+        $requestData = $this->getDefaultRequestData('body', $params);
         $request = $this->prepareHttpRequest("/locales/$locale/file/import", $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -420,8 +410,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest('file/authorized-locales', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -441,8 +430,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest('file/status', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -463,8 +451,7 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $params;
+        $requestData = $this->getDefaultRequestData('query', $params);
         $request = $this->prepareHttpRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);

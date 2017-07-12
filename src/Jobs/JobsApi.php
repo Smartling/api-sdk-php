@@ -50,8 +50,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function createJob(CreateJobParameters $parameters)
     {
-        $requestData = $this->getDefaultRequestData();
-        $requestData['json'] = $parameters->exportToArray();
+        $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $request = $this->prepareHttpRequest('jobs', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -66,8 +65,7 @@ class JobsApi extends BaseApiAbstract
    */
     public function updateJob($jobId, UpdateJobParameters $parameters)
     {
-        $requestData = $this->getDefaultRequestData();
-        $requestData['json'] = $parameters->exportToArray();
+        $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $request = $this->prepareHttpRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_PUT);
 
         return $this->sendRequest($request);
@@ -83,8 +81,7 @@ class JobsApi extends BaseApiAbstract
     public function cancelJob($jobId, CancelJobParameters $parameters)
     {
         $endpoint = vsprintf('jobs/%s/cancel', [$jobId]);
-        $requestData = $this->getDefaultRequestData();
-        $requestData['json'] = $parameters->exportToArray();
+        $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -98,8 +95,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function listJobs(ListJobsParameters $parameters)
     {
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = $parameters->exportToArray();
+        $requestData = $this->getDefaultRequestData('query', $parameters->exportToArray());
         $request = $this->prepareHttpRequest('jobs', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -113,8 +109,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function getJob($jobId)
     {
-        $requestData = $this->getDefaultRequestData();
-        $requestData['query'] = array();
+        $requestData = $this->getDefaultRequestData('query', []);
         $request = $this->prepareHttpRequest('jobs/' . $jobId, $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
@@ -130,8 +125,7 @@ class JobsApi extends BaseApiAbstract
     public function authorizeJob($jobId)
     {
         $endpoint = vsprintf('jobs/%s/authorize', [$jobId]);
-        $requestData = $this->getDefaultRequestData();
-        $requestData['body'] = '';
+        $requestData = $this->getDefaultRequestData('body', '');
         $requestData['headers']['Content-Type'] = 'application/json';
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
@@ -149,8 +143,7 @@ class JobsApi extends BaseApiAbstract
     public function addFileToJob($jobId, AddFileToJobParameters $parameters)
     {
         $endpoint = vsprintf('jobs/%s/file/add', [$jobId]);
-        $requestData = $this->getDefaultRequestData();
-        $requestData['json'] = $parameters->exportToArray();
+        $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -166,8 +159,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function searchJobs(SearchJobsParameters $parameters)
     {
-        $requestData = $this->getDefaultRequestData();
-        $requestData['json'] = $parameters->exportToArray();
+        $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $request = $this->prepareHttpRequest('jobs/search', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
