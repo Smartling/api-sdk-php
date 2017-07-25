@@ -40,6 +40,9 @@ class ProjectApi extends BaseApiAbstract
      */
     public function getProjectDetails()
     {
-        return $this->sendRequest('', [], self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', []);
+        $request = $this->prepareHttpRequest('', $requestData, self::HTTP_METHOD_GET);
+
+        return $this->sendRequest($request);
     }
 }
