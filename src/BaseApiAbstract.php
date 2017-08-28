@@ -299,7 +299,8 @@ abstract class BaseApiAbstract
             if (is_bool($value)) {
                 $value = (int)$value;
             }
-            if ('file' === $key) {
+            // "File" key is used in FIleAPI and "Content" in ContextAPI.
+            if (in_array($key, ['file', 'content'])) {
                 $value = $this->readFile($value);
             }
             $opts[$key] = $value;
