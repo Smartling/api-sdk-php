@@ -37,6 +37,20 @@ class ContextApi extends BaseApiAbstract
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function processBodyOptions(array $requestData = []) {
+        $opts = parent::processBodyOptions($requestData);
+        $key = 'content';
+
+        if (array_key_exists($key, $opts)) {
+            $opts[$key] = $this->readFile($opts[$key]);
+        }
+
+        return $opts;
+    }
+
+  /**
      * Upload a new context.
      *
      * @param \Smartling\Context\Params\UploadContextParameters $params

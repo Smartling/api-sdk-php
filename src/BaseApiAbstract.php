@@ -291,17 +291,13 @@ abstract class BaseApiAbstract
      *
      * @return array
      */
-    private function processBodyOptions(array $requestData = [])
+    protected function processBodyOptions(array $requestData = [])
     {
         $opts = [];
         foreach ($requestData as $key => $value) {
             // Hack to cast FALSE to '0' instead of empty string.
             if (is_bool($value)) {
                 $value = (int)$value;
-            }
-            // "File" key is used in FIleAPI and "Content" in ContextAPI.
-            if (in_array($key, ['file', 'content'])) {
-                $value = $this->readFile($value);
             }
             $opts[$key] = $value;
         }

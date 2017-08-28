@@ -44,6 +44,20 @@ class FileApi extends BaseApiAbstract
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function processBodyOptions(array $requestData = []) {
+        $opts = parent::processBodyOptions($requestData);
+        $key = 'file';
+
+        if (array_key_exists($key, $opts)) {
+            $opts[$key] = $this->readFile($opts[$key]);
+        }
+
+      return $opts;
+    }
+
+    /**
      * Uploads original source content to Smartling.
      *
      * @param string $realPath
