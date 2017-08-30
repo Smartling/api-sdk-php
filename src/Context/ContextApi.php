@@ -78,7 +78,7 @@ class ContextApi extends BaseApiAbstract
     public function matchContext($contextUid)
     {
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
-        $requestData = $this->getDefaultRequestData('body', '');
+        $requestData = $this->getDefaultRequestData('form_params', []);
         $requestData['headers']['Content-Type'] = 'application/json';
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);

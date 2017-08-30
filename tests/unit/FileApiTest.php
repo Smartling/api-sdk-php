@@ -116,7 +116,7 @@ class FileApiTest extends ApiTestAbstract
                     ],
                     [
                         'name' => 'smartling.client_lib_id',
-                        'contents' => '{"client":"smartling-api-sdk-php","version":"2.0.0"}',
+                        'contents' => '{"client":"smartling-api-sdk-php","version":"3.0.0"}',
                     ],
                     [
                         'name' => 'localeIdsToAuthorize[]',
@@ -330,7 +330,7 @@ class FileApiTest extends ApiTestAbstract
         );
 
         $this->client->expects($this->once())
-            ->method('send')
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -463,9 +463,6 @@ class FileApiTest extends ApiTestAbstract
         $this->responseMock->expects($this->any())
             ->method('getBody')
             ->willReturn($this->responseWithException);
-        $this->responseMock->expects($this->any())
-          ->method('json')
-          ->willReturn(json_decode($this->responseWithException, self::JSON_OBJECT_AS_ARRAY));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -491,10 +488,9 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -512,9 +508,6 @@ class FileApiTest extends ApiTestAbstract
         $this->responseMock->expects($this->any())
             ->method('getBody')
             ->willReturn(rtrim($this->responseWithException, '}'));
-        $this->responseMock->expects($this->any())
-          ->method('json')
-          ->willThrowException(new \RuntimeException(''));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -540,10 +533,9 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -561,9 +553,6 @@ class FileApiTest extends ApiTestAbstract
         $this->responseMock->expects($this->any())
             ->method('getBody')
             ->willReturn(rtrim($this->responseWithException, '}'));
-        $this->responseMock->expects($this->any())
-            ->method('json')
-            ->willThrowException(new \RuntimeException(''));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -589,10 +578,9 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -620,9 +608,7 @@ class FileApiTest extends ApiTestAbstract
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
 
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', [$uri, $defaultRequestData, $method]);
-
-        $result = $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $defaultRequestData, $method]);
         self::assertEquals(['wordCount' => 1629, 'stringCount' => 503, 'overWritten' => false], $result);
     }
 
@@ -680,7 +666,7 @@ class FileApiTest extends ApiTestAbstract
                       ],
                     ],
                 ],
-                'body',
+                'multipart',
             ],
         ];
     }
@@ -709,15 +695,9 @@ class FileApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => false,
-                'multipart' => [
-                    [
-                        'name' => 'fileUri',
-                        'contents' => 'test.xml',
-                    ],
-                    [
-                        'name' => 'newFileUri',
-                        'contents' => 'new_test.xml',
-                    ],
+                'form_params' => [
+                    'fileUri' => 'test.xml',
+                    'newFileUri' => 'new_test.xml',
                 ],
             ])
             ->willReturn($this->responseMock);
@@ -776,11 +756,8 @@ class FileApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => false,
-                'multipart' => [
-                    [
-                        'name' => 'fileUri',
-                        'contents' => 'test.xml',
-                    ],
+                'form_params' => [
+                    'fileUri' => 'test.xml',
                 ],
             ])
             ->willReturn($this->responseMock);

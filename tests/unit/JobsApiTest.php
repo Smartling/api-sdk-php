@@ -260,7 +260,7 @@ class JobsApiTest extends ApiTestAbstract
                     'Content-Type' => 'application/json',
                 ],
                 'exceptions' => FALSE,
-                'body' => '',
+                'form_params' => [],
             ])
             ->willReturn($this->responseMock);
 

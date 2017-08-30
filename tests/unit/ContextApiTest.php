@@ -54,6 +54,7 @@ class ContextApiTest extends ApiTestAbstract
     public function testUploadContext() {
         $params = new UploadContextParameters();
         $params->setContextFileUri('./tests/resources/context.html');
+        $params->setName('test_context.html');
         $endpointUrl = vsprintf('%s/%s/contexts', [
             ContextApi::ENDPOINT_URL,
             $this->projectId
@@ -61,7 +62,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -69,18 +70,19 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
-                    'Content-Type' => 'application/json'
                 ],
                 'exceptions' => FALSE,
-                'body' => [
-                    'content' => $this->streamPlaceholder,
+                'multipart' => [
+                    [
+                        'name' => 'content',
+                        'contents' => $this->streamPlaceholder,
+                    ],
+                    [
+                        'name' => 'name',
+                        'contents' => 'test_context.html',
+                    ],
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->uploadContext($params);
@@ -99,7 +101,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -110,13 +112,8 @@ class ContextApiTest extends ApiTestAbstract
                     'Content-Type' => 'application/json'
               ],
               'exceptions' => FALSE,
-              'body' => '',
+              'form_params' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->matchContext($contextUid);
