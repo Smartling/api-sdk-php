@@ -1,10 +1,8 @@
 <?php
 
-use Smartling\Jobs\Params\SearchJobsParameters;
-
 error_reporting(E_ALL);
 /**
- * This file contains examples of Smartling API 2.x usage.
+ * This file contains examples of Smartling API 3.x usage.
  *
  * How to use:
  * run "php example.php --project-id={PROJECT_ID} --user-id={USER_IDENTIFIER} --secret-key={SECRET_KEY}" in console
@@ -55,7 +53,6 @@ $fileContentUri = 'testing_content.xml';
 $translationState = 'PUBLISHED';
 $locale = 'ru-RU';
 $locales_array = [$locale];
-
 
 resetFiles($userIdentifier, $userSecretKey, $projectId, [$fileName, $newFileName]);
 
@@ -115,7 +112,7 @@ try {
     $result = $fileApi->downloadFile($fileName, $locale, $params);
 
     echo 'File download result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo var_export((string) $result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while downloading file');

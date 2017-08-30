@@ -13,7 +13,7 @@ use Smartling\BaseApiAbstract;
 class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
 {
 
-    const ENDPOINT_URL = 'https://api.smartling.com/auth-api/v2/';
+    const ENDPOINT_URL = 'https://api.smartling.com/auth-api/v2';
 
     const RESPONSE_KEY_ACCESS_TOKEN = 'accessToken';
     const RESPONSE_KEY_ACCESS_TOKEN_TTL = 'expiresIn';
@@ -127,14 +127,14 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     private function authenticate()
     {
-        $requestData = [
+        $this->requestTimestamp = time();
+        $requestData = $this->getDefaultRequestData('json', [
             'userIdentifier' => $this->getUserIdentifier(),
             'userSecret' => $this->getSecretKey()
-        ];
+        ], false);
+        $request = $this->prepareHttpRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
 
-        $this->requestTimestamp = time();
-
-        return $this->sendRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
+        return $this->sendRequest($request);
     }
 
     /**
@@ -143,10 +143,12 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     private function tokenRenew()
     {
         if ($this->tokenExists() && $this->tokenCanBeRenewed()) {
-            $requestData = [
+            $requestData = $this->getDefaultRequestData('json', [
                 'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
-            ];
-            return $this->sendRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
+            ], false);
+            $request = $this->prepareHttpRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
+
+            return $this->sendRequest($request);
         } else {
             return $this->authenticate();
         }
@@ -192,8 +194,4 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         $this->data = [];
     }
 
-    protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
-    {
-        return parent::sendRequest($uri, $requestData, $method, self::STRATEGY_AUTH);
-    }
 }
