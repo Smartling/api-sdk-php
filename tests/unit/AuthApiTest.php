@@ -3,6 +3,7 @@
 namespace Smartling\Tests;
 
 use Smartling\AuthApi\AuthTokenProvider;
+use Smartling\Tests\Unit\ApiTestAbstract;
 
 /**
  * Test class for Smartling\AuthApi\AuthTokenProvider.

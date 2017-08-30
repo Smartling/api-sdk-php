@@ -58,7 +58,7 @@ class ContextApi extends BaseApiAbstract
      * Upload a new context.
      *
      * @param \Smartling\Context\Params\UploadContextParameters $params
-     * @return bool
+     * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
     public function uploadContext(UploadContextParameters $params)
@@ -72,7 +72,7 @@ class ContextApi extends BaseApiAbstract
    * Match context.
    *
    * @param $contextUid
-   * @return bool
+   * @return array
    * @throws \Smartling\Exceptions\SmartlingApiException
    */
     public function matchContext($contextUid)

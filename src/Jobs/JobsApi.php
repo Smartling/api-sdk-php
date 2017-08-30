@@ -46,7 +46,7 @@ class JobsApi extends BaseApiAbstract
      * Creates a job.
      *
      * @param CreateJobParameters $parameters
-     * @return bool
+     * @return array
      */
     public function createJob(CreateJobParameters $parameters)
     {
@@ -60,7 +60,7 @@ class JobsApi extends BaseApiAbstract
     *
     * @param string $jobId
     * @param UpdateJobParameters $parameters
-    * @return bool
+    * @return array
     */
     public function updateJob($jobId, UpdateJobParameters $parameters)
     {
@@ -88,7 +88,7 @@ class JobsApi extends BaseApiAbstract
      * Returns a list of jobs.
      *
      * @param ListJobsParameters $parameters
-     * @return bool
+     * @return array
      */
     public function listJobs(ListJobsParameters $parameters)
     {
@@ -101,7 +101,7 @@ class JobsApi extends BaseApiAbstract
      * Returns a job.
      *
      * @param string $jobId
-     * @return bool
+     * @return array
      */
     public function getJob($jobId)
     {
@@ -131,7 +131,7 @@ class JobsApi extends BaseApiAbstract
      *
      * @param $jobId
      * @param \Smartling\Jobs\Params\AddFileToJobParameters $parameters
-     * @return bool
+     * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
     public function addFileToJob($jobId, AddFileToJobParameters $parameters)

@@ -1,4 +1,5 @@
 <?php
+
 namespace Smartling\Tests\Unit;
 
 use Smartling\Project\ProjectApi;
