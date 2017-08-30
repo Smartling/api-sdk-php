@@ -43,14 +43,18 @@ class ContextApi extends BaseApiAbstract
         $opts = parent::processBodyOptions($requestData);
         $key = 'content';
 
-        if (array_key_exists($key, $opts)) {
-            $opts[$key] = $this->readFile($opts[$key]);
+        if (!empty($opts['multipart'])) {
+            foreach ($opts['multipart'] as &$data) {
+                if ($data['name'] == $key) {
+                    $data['contents'] = $this->readFile($data['contents']);
+                }
+            }
         }
 
         return $opts;
     }
 
-  /**
+    /**
      * Upload a new context.
      *
      * @param \Smartling\Context\Params\UploadContextParameters $params
@@ -59,11 +63,9 @@ class ContextApi extends BaseApiAbstract
      */
     public function uploadContext(UploadContextParameters $params)
     {
-        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
-        $request = $this->prepareHttpRequest('contexts', $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('contexts', $requestData, self::HTTP_METHOD_POST);
     }
 
   /**
@@ -78,9 +80,8 @@ class ContextApi extends BaseApiAbstract
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
         $requestData = $this->getDefaultRequestData('body', '');
         $requestData['headers']['Content-Type'] = 'application/json';
-        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
     }
 
 }

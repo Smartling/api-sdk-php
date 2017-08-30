@@ -132,9 +132,8 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
             'userIdentifier' => $this->getUserIdentifier(),
             'userSecret' => $this->getSecretKey()
         ], false);
-        $request = $this->prepareHttpRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('authenticate', $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -146,9 +145,8 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
             $requestData = $this->getDefaultRequestData('json', [
                 'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
             ], false);
-            $request = $this->prepareHttpRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
 
-            return $this->sendRequest($request);
+            return $this->sendRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
         } else {
             return $this->authenticate();
         }

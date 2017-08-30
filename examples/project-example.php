@@ -11,8 +11,6 @@ error_reporting(E_ALL);
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
-use Smartling\Context\Params\UploadContextParameters;
-
 $longOpts = [
     'project-id:',
     'user-id:',
@@ -49,50 +47,16 @@ $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $u
 /**
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
- * @param string $fileUri
  * @return bool
  */
-function uploadContextDemo($authProvider, $projectId, $fileUri)
+function projectDetailsDemo($authProvider, $projectId)
 {
     $response = false;
-    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
-    $params = new UploadContextParameters();
-    $params->setContextFileUri($fileUri);
-    $params->setName('test_context.html');
+    $project = \Smartling\Project\ProjectApi::create($authProvider, $projectId);
     $st = microtime(true);
 
     try {
-        $response = $context->uploadContext($params);
-    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
-    }
-
-    $et = microtime(true);
-    $time = $et - $st;
-
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
-
-    if (!empty($response)) {
-      var_dump($response);
-    }
-
-    return $response;
-}
-
-/**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
- * @param string $projectId
- * @param $contextUid
- * @return bool
- */
-function matchContextDemo($authProvider, $projectId, $contextUid)
-{
-    $response = false;
-    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
-    $st = microtime(true);
-
-    try {
-        $response = $context->matchContext($contextUid);
+        $response = $project->getProjectDetails();
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -109,5 +73,4 @@ function matchContextDemo($authProvider, $projectId, $contextUid)
     return $response;
 }
 
-$contextInfo = uploadContextDemo($authProvider, $projectId, '../tests/resources/context.html');
-$response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
+$response = projectDetailsDemo($authProvider, $projectId);

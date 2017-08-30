@@ -1,6 +1,7 @@
 <?php
 
 error_reporting(E_ALL);
+
 /**
  * This file contains examples of Smartling API 3.x usage.
  *
@@ -27,14 +28,15 @@ if (
     exit;
 }
 
-$autoloader = 'vendor/autoload.php';
+$autoloader = '../vendor/autoload.php';
 
 if (!file_exists($autoloader) || !is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
-} else {
+}
+else {
     /** @noinspection UntrustedInclusionInspection */
-    require_once 'vendor/autoload.php';
+    require_once '../vendor/autoload.php';
 }
 
 $projectId = $options['project-id'];
@@ -43,7 +45,7 @@ $userSecretKey = $options['secret-key'];
 
 
 $fileName = 'test.xml';
-$fileUri = 'tests/resources/test.xml';
+$fileUri = '../tests/resources/test.xml';
 $fileRealPath = realpath($fileUri);
 $fileType = 'xml';
 $newFileName = 'new_test_file.xml';
