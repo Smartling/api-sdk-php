@@ -12,7 +12,6 @@ use Smartling\File\Params\ExtendedListFilesParameters;
 use Smartling\Parameters\ParameterInterface;
 use Smartling\File\Params\UploadFileParameters;
 
-
 /**
  * Class FileApi
  *
@@ -39,6 +38,24 @@ class FileApi extends BaseApiAbstract
         $instance->setAuth($authProvider);
 
         return $instance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function processBodyOptions(array $requestData = []) {
+        $opts = parent::processBodyOptions($requestData);
+        $key = 'file';
+
+        if (!empty($opts['multipart'])) {
+            foreach ($opts['multipart'] as &$data) {
+                if ($data['name'] == $key) {
+                    $data['contents'] = $this->readFile($data['contents']);
+                }
+            }
+        }
+
+        return $opts;
     }
 
     /**
@@ -75,12 +92,13 @@ class FileApi extends BaseApiAbstract
             $params = new UploadFileParameters();
         }
         $params = $params->exportToArray();
-
         $params['file'] = $realPath;
         $params['fileUri'] = $file_name;
         $params['fileType'] = $file_type;
 
-        return $this->sendRequest('file', $params, self::HTTP_METHOD_POST, self::STRATEGY_UPLOAD);
+        $requestData = $this->getDefaultRequestData('multipart', $params);
+
+        return $this->sendRequest('file', $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -99,7 +117,9 @@ class FileApi extends BaseApiAbstract
     {
         $params['fileUri'] = $fileUri;
 
-        $result = $this->sendRequest('file/last-modified', $params, self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', $params);
+
+        $result = $this->sendRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
 
         /** @noinspection OffsetOperationsInspection */
         if (is_array($result) && array_key_exists('items', $result) && is_array($result['items']))
@@ -169,7 +189,10 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest("locales/{$locale}/file", $params, self::HTTP_METHOD_GET, self::STRATEGY_DOWNLOAD);
+        $requestData = $this->getDefaultRequestData('query', $params);
+        unset($requestData['headers']['Accept']);
+
+        return $this->sendRequest("locales/{$locale}/file", $requestData, self::HTTP_METHOD_GET, true);
     }
 
     /**
@@ -192,7 +215,9 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest("locales/$locale/file/status", $params, self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', $params);
+
+        return $this->sendRequest("locales/$locale/file/status", $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -213,7 +238,9 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest("/file/status", $params, self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', $params);
+
+        return $this->sendRequest("/file/status", $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -250,7 +277,9 @@ class FileApi extends BaseApiAbstract
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
 
-        return $this->sendRequest('files/list', $params, self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', $params);
+
+        return $this->sendRequest('files/list', $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -264,9 +293,10 @@ class FileApi extends BaseApiAbstract
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
 
-        return $this->sendRequest("locales/$locale/files/list", $params, self::HTTP_METHOD_GET);
-    }
+        $requestData = $this->getDefaultRequestData('query', $params);
 
+        return $this->sendRequest("locales/$locale/files/list", $requestData, self::HTTP_METHOD_GET);
+    }
 
     /**
      * Renames an uploaded file by changing the fileUri.
@@ -292,7 +322,9 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
         $params['newFileUri'] = $newFileUri;
 
-        return $this->sendRequest('file/rename', $params, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('form_params', $params);
+
+        return $this->sendRequest('file/rename', $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -313,10 +345,11 @@ class FileApi extends BaseApiAbstract
     public function deleteFile($fileUri, ParameterInterface $params = null)
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
-
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/delete', $params, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('form_params', $params);
+
+        return $this->sendRequest('file/delete', $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -357,7 +390,9 @@ class FileApi extends BaseApiAbstract
         $params['translationState'] = $translationState;
         $params['overwrite'] = $overwrite;
 
-        return $this->sendRequest("/locales/$locale/file/import", $params, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('multipart', $params);
+
+        return $this->sendRequest("/locales/$locale/file/import", $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -372,10 +407,11 @@ class FileApi extends BaseApiAbstract
     public function getAuthorizedLocales($fileUri, ParameterInterface $params = null)
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
-
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/authorized-locales', $params, self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', $params);
+
+        return $this->sendRequest('file/authorized-locales', $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -390,10 +426,11 @@ class FileApi extends BaseApiAbstract
     public function getStatusAllLocales($fileUri, ParameterInterface $params = null)
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
-
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/status', $params, self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', $params);
+
+        return $this->sendRequest('file/status', $requestData, self::HTTP_METHOD_GET);
     }
 
 
@@ -409,9 +446,10 @@ class FileApi extends BaseApiAbstract
     public function getLastModified($fileUri, ParameterInterface $params = null)
     {
         $params = (is_null($params)) ? [] : $params->exportToArray();
-
         $params['fileUri'] = $fileUri;
 
-        return $this->sendRequest('file/last-modified', $params, self::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('query', $params);
+
+        return $this->sendRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
     }
 }

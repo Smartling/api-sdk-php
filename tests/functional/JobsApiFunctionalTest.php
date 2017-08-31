@@ -9,6 +9,7 @@ use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\FileApi;
 use Smartling\Jobs\JobsApi;
+use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
@@ -206,7 +207,9 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testJobsApiAddFileToJob() {
         try {
             $this->fileApi->uploadFile('tests/resources/test.xml', 'test.xml', 'xml');
-            $result = $this->jobsApi->addFileToJob($this->jobId, 'test.xml');
+            $params = new AddFileToJobParameters();
+            $params->setFileUri('test.xml');
+            $result = $this->jobsApi->addFileToJob($this->jobId, $params);
 
             $this->assertArrayHasKey('failCount', $result);
             $this->assertArrayHasKey('successCount', $result);

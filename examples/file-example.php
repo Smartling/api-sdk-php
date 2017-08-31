@@ -1,8 +1,7 @@
 <?php
 
-use Smartling\Jobs\Params\SearchJobsParameters;
-
 error_reporting(E_ALL);
+
 /**
  * This file contains examples of Smartling API 2.x usage.
  *
@@ -29,14 +28,15 @@ if (
     exit;
 }
 
-$autoloader = 'vendor/autoload.php';
+$autoloader = '../vendor/autoload.php';
 
 if (!file_exists($autoloader) || !is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
-} else {
+}
+else {
     /** @noinspection UntrustedInclusionInspection */
-    require_once 'vendor/autoload.php';
+    require_once '../vendor/autoload.php';
 }
 
 $projectId = $options['project-id'];
@@ -45,7 +45,7 @@ $userSecretKey = $options['secret-key'];
 
 
 $fileName = 'test.xml';
-$fileUri = 'tests/resources/test.xml';
+$fileUri = '../tests/resources/test.xml';
 $fileRealPath = realpath($fileUri);
 $fileType = 'xml';
 $newFileName = 'new_test_file.xml';
@@ -55,7 +55,6 @@ $fileContentUri = 'testing_content.xml';
 $translationState = 'PUBLISHED';
 $locale = 'ru-RU';
 $locales_array = [$locale];
-
 
 resetFiles($userIdentifier, $userSecretKey, $projectId, [$fileName, $newFileName]);
 
@@ -115,7 +114,7 @@ try {
     $result = $fileApi->downloadFile($fileName, $locale, $params);
 
     echo 'File download result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo var_export((string) $result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while downloading file');

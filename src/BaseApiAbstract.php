@@ -23,19 +23,7 @@ abstract class BaseApiAbstract
 
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
-    const CLIENT_LIB_ID_VERSION = '2.0.0';
-
-    const STRATEGY_GENERAL = 'general';
-
-    const STRATEGY_DOWNLOAD = 'download';
-
-    const STRATEGY_UPLOAD = 'upload';
-
-    const STRATEGY_AUTH = 'auth';
-
-    const STRATEGY_JSON_BODY = 'json body';
-
-    const STRATEGY_NOBODY = 'no body';
+    const CLIENT_LIB_ID_VERSION = '3.0.0';
 
     const HTTP_METHOD_GET = 'get';
 
@@ -272,37 +260,66 @@ abstract class BaseApiAbstract
         }
     }
 
-    /**
-     * @param string $strategy
-     * @param bool $httpErrors
-     *
-     * @return array
-     */
-    private function prepareOptions($strategy, $httpErrors = false)
-    {
+    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false) {
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
             ],
             'exceptions' => $httpErrors,
+
         ];
 
-        if (self::STRATEGY_AUTH !== $strategy) {
+        if ($auth) {
             $accessToken = $this->getAuth()->getAccessToken();
             $tokenType = $this->getAuth()->getTokenType();
-            $options['headers']['Authorization'] =
-                vsprintf('%s %s', [$tokenType, $accessToken]);
+
+            $options['headers']['Authorization'] = vsprintf('%s %s', [
+                $tokenType,
+                $accessToken,
+            ]);
         }
 
-        if (self::STRATEGY_DOWNLOAD === $strategy) {
-            unset($options['headers']['Accept']);
-        }
-
-        if (self::STRATEGY_NOBODY === $strategy) {
-            $options['headers']['Content-Type'] = 'application/json';
-        }
+        $options[$parametersType] = $parameters;
 
         return $options;
+    }
+
+    /**
+     * @param array $requestData
+     *
+     * @return array
+     */
+    protected function processBodyOptions(array $requestData = [])
+    {
+        if (!empty($requestData['multipart'])) {
+            $body = [];
+
+            foreach ($requestData['multipart'] as $key => $value) {
+                // Hack to cast FALSE to '0' instead of empty string.
+                if (is_bool($value)) {
+                    $value = (int) $value;
+                }
+
+                if (is_array($value)) {
+                    foreach ($value as $_item) {
+                        $body[] = [
+                            'name' => $key . '[]',
+                            'contents' => (string) $_item,
+                        ];
+                    }
+                }
+                else {
+                    $body[] = [
+                        'name' => $key,
+                        'contents' => $value,
+                    ];
+                }
+            }
+
+            $requestData['multipart'] = $body;
+        }
+
+      return $requestData;
     }
 
     /**
@@ -387,75 +404,42 @@ abstract class BaseApiAbstract
     }
 
     /**
+     * @param $uri
      * @param array $options
-     * @param array $requestData
-     * @param string $method
-     *
-     * @return array
-     */
-    protected function prepareRequestData($options, $requestData, $method = self::HTTP_METHOD_GET, $strategy)
-    {
-        if (in_array($method, [self::HTTP_METHOD_GET, self::HTTP_METHOD_DELETE], true)) {
-            $options['query'] = $requestData;
-        } else {
-            if (in_array($strategy, [self::STRATEGY_AUTH, self::STRATEGY_JSON_BODY,])) {
-                $options['json'] = $requestData;
-            } elseif (in_array($strategy, [self::STRATEGY_NOBODY])) {
-                $options['body'] = '';
-            } else {
-                if (!isset($options['multipart']))
-                {
-                    $options['multipart'] = [];
-                }
-
-                foreach ($requestData as $key => $value) {
-                    // Hack to cast FALSE to '0' instead of empty string.
-                    if (is_bool($value)) {
-                        $value = (int) $value;
-                    }
-
-                    if ('file' === $key) {
-                        $value = $this->readFile($value);
-                    }
-
-                    if (is_array($value)) {
-                        foreach ($value as $_item) {
-                            $options['multipart'][] = [
-                                'name' => $key . '[]',
-                                'contents' => (string)$_item,
-                            ];
-                        }
-                    } else {
-                        $options['multipart'][] = [
-                            'name' => $key,
-                            'contents' => $value,
-                        ];
-                    }
-                }
-            }
-        }
-
-        return $options;
-    }
-
-    /**
-     * @param string $uri
-     * @param array $requestData
-     * @param string $method
-     * @param string $strategy
-     *
-     * @return  bool true on SUCCESS and empty data
+     * @param $method
+     * @param bool $returnRawResponseBody
+     * @return bool true on SUCCESS and empty data
      *          string on $processResponseBody = false
-     *          array otherwise
-     * @throws SmartlingApiException
+     * array otherwise
+     * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    protected function sendRequest($uri, array $requestData, $method, $strategy = self::STRATEGY_GENERAL)
+    protected function sendRequest($uri, array $options, $method, $returnRawResponseBody = false)
     {
-        $options = $this->prepareOptions($strategy);
-        $options = $this->prepareRequestData($options, $requestData, $method, $strategy);
         $endpoint = $this->normalizeUri($uri);
 
+        // Dump full request data to log except sensitive data.
+        $logRequestData = $options;
+        if (isset($logRequestData['headers']['Authorization'])) {
+            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0,
+                    12) . '*****';
+        }
+        if (isset($logRequestData['json']['userIdentifier'])) {
+            $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0,
+                    5) . '*****';
+            $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
+        }
+        $toLog = [
+            'request' => [
+                'endpoint' => $endpoint,
+                'method' => $method,
+                'requestData' => $logRequestData,
+            ],
+        ];
+        $serialized = var_export($toLog, true);
+        $this->getLogger()->debug($serialized);
+
         try {
+            $options = $this->processBodyOptions($options);
             $response = $this->getHttpClient()->request($method, $endpoint, $options);
         } catch (RequestException $e) {
             $message = vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
@@ -471,7 +455,7 @@ abstract class BaseApiAbstract
             throw new SmartlingApiException($message, 0, $e);
         }
 
-        // Dump full response to log except sensetive data
+        // Dump full response to log except sensitive data.
         $logResponseData = (string)$response->getBody();
         $logResponseData = preg_replace('/(accessToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
         $logResponseData = preg_replace('/(refreshToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
@@ -493,33 +477,27 @@ abstract class BaseApiAbstract
             $this->processErrors($response);
         }
 
-        switch ($strategy) {
-            case self::STRATEGY_DOWNLOAD: {
-                return $response->getBody();
-                break;
-            }
-            case self::STRATEGY_AUTH:
-            case self::STRATEGY_GENERAL:
-            case self::STRATEGY_UPLOAD:
-            default: {
+        if ($returnRawResponseBody) {
+            return $response->getBody();
+        }
+        else {
+            try {
+                $json = json_decode($response->getBody(), true);
 
-                try {
-                    $json = json_decode($response->getBody(), true);
-
-                    if (!array_key_exists('response', $json)
-                        || !is_array($json['response'])
-                        || empty($json['response']['code'])
-                        || $json['response']['code'] !== 'SUCCESS'
-                    ) {
-                        $this->processError($response);
-                    }
-
-                    return isset($json['response']['data']) ? $json['response']['data'] : true;
-
-                } catch (RuntimeException $e) {
+                if (!array_key_exists('response', $json)
+                    || !is_array($json['response'])
+                    || empty($json['response']['code'])
+                    || $json['response']['code'] !== 'SUCCESS'
+                ) {
                     $this->processError($response);
                 }
+
+                return isset($json['response']['data']) ? $json['response']['data'] : true;
+
+            } catch (RuntimeException $e) {
+                $this->processError($response);
             }
         }
     }
+
 }

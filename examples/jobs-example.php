@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(E_ALL);
+
 /**
  * This file contains examples of Smartling API 2.x usage.
  *
@@ -9,31 +11,34 @@
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
+use Smartling\Jobs\Params\AddFileToJobParameters;
+
 $longOpts = [
-  'project-id:',
-  'user-id:',
-  'secret-key:',
+    'project-id:',
+    'user-id:',
+    'secret-key:',
 ];
 
 $options = getopt('', $longOpts);
 
 if (
-  !array_key_exists('project-id', $options)
-  || !array_key_exists('user-id', $options)
-  || !array_key_exists('secret-key', $options)
+    !array_key_exists('project-id', $options)
+    || !array_key_exists('user-id', $options)
+    || !array_key_exists('secret-key', $options)
 ) {
-  echo 'Missing required params.' . PHP_EOL;
-  exit;
+    echo 'Missing required params.' . PHP_EOL;
+    exit;
 }
 
-$autoloader = 'vendor/autoload.php';
+$autoloader = '../vendor/autoload.php';
 
 if (!file_exists($autoloader) || !is_readable($autoloader)) {
-  echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
-  exit;
-} else {
-  /** @noinspection UntrustedInclusionInspection */
-  require_once 'vendor/autoload.php';
+    echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
+    exit;
+}
+else {
+    /** @noinspection UntrustedInclusionInspection */
+    require_once '../vendor/autoload.php';
 }
 
 $projectId = $options['project-id'];
@@ -58,7 +63,7 @@ function listJobsDemo($authProvider, $projectId)
         var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = microtime(true);
     $time = $et - $st;
 
     echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
@@ -87,7 +92,7 @@ function listJobsDemo($authProvider, $projectId)
  */
 function createJobDemo($authProvider, $projectId)
 {
-    $result = FALSE;
+    $result = false;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $params = new \Smartling\Jobs\Params\CreateJobParameters();
     $params->setName("Test Job Name " . time());
@@ -130,7 +135,7 @@ function createJobDemo($authProvider, $projectId)
  */
 function updateJobDemo($authProvider, $projectId, $jobId)
 {
-    $result = FALSE;
+    $result = false;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $params = new \Smartling\Jobs\Params\UpdateJobParameters();
     $params->setName("Test Job Name Updated " . time());
@@ -172,7 +177,7 @@ function updateJobDemo($authProvider, $projectId, $jobId)
  */
 function cancelJobDemo($authProvider, $projectId, $jobId)
 {
-    $response = FALSE;
+    $response = false;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $params = new \Smartling\Jobs\Params\CancelJobParameters();
     $params->setReason('Some reason to cancel');
@@ -201,7 +206,7 @@ function cancelJobDemo($authProvider, $projectId, $jobId)
 function getJobDemo($authProvider, $projectId, $jobId)
 {
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
-    $info = FALSE;
+    $info = false;
     $st = microtime(true);
 
     try {
@@ -210,7 +215,7 @@ function getJobDemo($authProvider, $projectId, $jobId)
         var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = microtime(true);
     $time = $et - $st;
 
     echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
@@ -237,7 +242,7 @@ function getJobDemo($authProvider, $projectId, $jobId)
 function searchJobDemo($authProvider, $projectId, $fileUri)
 {
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
-    $info = FALSE;
+    $info = false;
     $searchParameters = new \Smartling\Jobs\Params\SearchJobsParameters();
     $searchParameters->setFileUris([
         $fileUri,
@@ -273,12 +278,14 @@ function searchJobDemo($authProvider, $projectId, $fileUri)
  */
 function addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri)
 {
-    $response = FALSE;
+    $response = false;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
+    $params = new AddFileToJobParameters();
+    $params->setFileUri($fileUri);
     $st = microtime(true);
 
     try {
-        $response = $jobs->addFileToJob($jobId, $fileUri);
+        $response = $jobs->addFileToJob($jobId, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -299,7 +306,7 @@ function addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri)
  */
 function authorizeJobDemo($authProvider, $projectId, $jobId)
 {
-    $response = FALSE;
+    $response = false;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $st = microtime(true);
 
