@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 
 /**
- * This file contains examples of Smartling API 3.x usage.
+ * This file contains examples of Smartling API 2.x usage.
  *
  * How to use:
  * run "php example.php --project-id={PROJECT_ID} --user-id={USER_IDENTIFIER} --secret-key={SECRET_KEY}" in console
