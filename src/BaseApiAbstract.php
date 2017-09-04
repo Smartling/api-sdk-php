@@ -221,18 +221,16 @@ abstract class BaseApiAbstract
             [
                 'base_uri' => $serviceUrl,
                 'debug' => $debug,
-                'defaults' => [
-                    'headers' => [
-                        'User-Agent' => vsprintf(
-                            '%s/%s %s',
-                            [
-                                self::getCurrentClientId(),
-                                self::getCurrentClientVersion(),
-                                GuzzleHttp\default_user_agent()
-                            ]
-                        ),
-                    ],
-                ]
+                'headers' => [
+                    'User-Agent' => vsprintf(
+                        '%s/%s %s',
+                        [
+                            self::getCurrentClientId(),
+                            self::getCurrentClientVersion(),
+                            GuzzleHttp\default_user_agent()
+                        ]
+                    ),
+                ],
             ]
         );
 
