@@ -69,10 +69,7 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getAccessToken(),
                     ]),
                     'Content-Type' => 'application/json',
-                    'X-SL-Context-Source' => vsprintf('group=connectors;name=%s;version=%s', [
-                        BaseApiAbstract::getCurrentClientId(),
-                        BaseApiAbstract::getCurrentClientVersion(),
-                    ]),
+                    'X-SL-Context-Source' => $this->object->getXSLContextSourceHeader(),
                 ],
                 'exceptions' => FALSE,
                 'body' => [
@@ -111,10 +108,7 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getAccessToken(),
                     ]),
                     'Content-Type' => 'application/json',
-                    'X-SL-Context-Source' => vsprintf('group=connectors;name=%s;version=%s', [
-                        BaseApiAbstract::getCurrentClientId(),
-                        BaseApiAbstract::getCurrentClientVersion(),
-                    ]),
+                    'X-SL-Context-Source' => $this->object->getXSLContextSourceHeader(),
               ],
               'exceptions' => FALSE,
               'body' => '',

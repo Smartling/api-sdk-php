@@ -50,7 +50,19 @@ class ContextApi extends BaseApiAbstract
         return $opts;
     }
 
-  /**
+    /**
+     * Returns X-SL-Context-Source header.
+     *
+     * @return string
+     */
+    public function getXSLContextSourceHeader() {
+        return vsprintf('group=connectors;name=%s;version=%s', [
+            BaseApiAbstract::getCurrentClientId(),
+            BaseApiAbstract::getCurrentClientVersion(),
+        ]);
+    }
+
+    /**
      * Upload a new context.
      *
      * @param \Smartling\Context\Params\UploadContextParameters $params
@@ -61,10 +73,7 @@ class ContextApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = vsprintf('group=connectors;name=%s;version=%s', [
-            BaseApiAbstract::getCurrentClientId(),
-            BaseApiAbstract::getCurrentClientVersion(),
-        ]);
+        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest('contexts', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -82,10 +91,7 @@ class ContextApi extends BaseApiAbstract
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
         $requestData = $this->getDefaultRequestData('body', '');
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = vsprintf('group=connectors;name=%s;version=%s', [
-            BaseApiAbstract::getCurrentClientId(),
-            BaseApiAbstract::getCurrentClientVersion(),
-        ]);
+        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
