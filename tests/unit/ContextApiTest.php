@@ -70,7 +70,7 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
-                    'X-SL-Context-Source' => $this->object->getXSLContextSourceHeader(),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
                 ],
                 'exceptions' => FALSE,
                 'multipart' => [
@@ -111,7 +111,7 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getAccessToken(),
                     ]),
                     'Content-Type' => 'application/json',
-                    'X-SL-Context-Source' => $this->object->getXSLContextSourceHeader(),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
               ],
               'exceptions' => FALSE,
               'form_params' => [],
