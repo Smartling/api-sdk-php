@@ -1,7 +1,6 @@
 <?php
 
 namespace Smartling\Tests;
-use Smartling\BaseApiAbstract;
 use Smartling\Context\ContextApi;
 use Smartling\Context\Params\UploadContextParameters;
 

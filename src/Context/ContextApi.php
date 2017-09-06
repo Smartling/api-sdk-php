@@ -57,8 +57,8 @@ class ContextApi extends BaseApiAbstract
      */
     public function getXSLContextSourceHeader() {
         return vsprintf('group=connectors;name=%s;version=%s', [
-            BaseApiAbstract::getCurrentClientId(),
-            BaseApiAbstract::getCurrentClientVersion(),
+            static::getCurrentClientId(),
+            static::getCurrentClientVersion(),
         ]);
     }
 
