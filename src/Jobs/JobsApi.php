@@ -20,7 +20,7 @@ use Smartling\Jobs\Params\UpdateJobParameters;
 class JobsApi extends BaseApiAbstract
 {
 
-    const ENDPOINT_URL = 'https://api.smartling.com/jobs-api/v2/projects';
+    const ENDPOINT_URL = 'https://api.smartling.com/jobs-api/v3/projects';
 
     /**
      * Instantiates Jobs API object.
