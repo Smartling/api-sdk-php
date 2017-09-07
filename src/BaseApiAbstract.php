@@ -490,7 +490,10 @@ abstract class BaseApiAbstract
                 if (!array_key_exists('response', $json)
                     || !is_array($json['response'])
                     || empty($json['response']['code'])
-                    || $json['response']['code'] !== 'SUCCESS'
+                    || !in_array($json['response']['code'], [
+                        'SUCCESS',
+                        'ACCEPTED',
+                    ])
                 ) {
                     $this->processError($response);
                 }

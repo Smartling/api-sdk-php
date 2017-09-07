@@ -48,6 +48,11 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
     protected $responseWithException = '{"response":{"data":null,"code":"VALIDATION_ERROR","errors":[{"message":"Validation error text"}]}}';
 
     /**
+     * @var string
+     */
+    protected $responseAsync = '{"response":{"data":{"message":"This process will continue asynchronously and may take up to a few minutes.", "url":"https://api.smartling.com/jobs-api/v3/projects/{projectId}/jobs/{translationJobId}/processes/{processUid}"},"code":"ACCEPTED"}}';
+
+    /**
      * @var PHPUnit_Framework_MockObject_MockObject|ClientInterface
      */
     protected $client;
