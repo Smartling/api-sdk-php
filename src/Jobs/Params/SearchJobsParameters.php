@@ -12,31 +12,31 @@ use Smartling\Parameters\BaseParameters;
 class SearchJobsParameters extends BaseParameters
 {
 
-  /**
-   * Sets hash codes for searching.
-   *
-   * @param array $hashCodes
-   */
-  public function setHashCodes(array $hashCodes) {
-    $this->params['hashcodes'] = $hashCodes;
-  }
+    /**
+     * Sets hash codes for searching.
+     *
+     * @param array $hashCodes
+     */
+    public function setHashCodes(array $hashCodes) {
+        $this->params['hashcodes'] = $hashCodes;
+    }
 
-  /**
-   * Sets file uris for searching.
-   *
-   * @param array $fileUris
-   */
-  public function setFileUris(array $fileUris) {
-    $this->params['fileUris'] = $fileUris;
-  }
+    /**
+     * Sets file uris for searching.
+     *
+     * @param array $fileUris
+     */
+    public function setFileUris(array $fileUris) {
+        $this->params['fileUris'] = $fileUris;
+    }
 
-  /**
-   * Sets translation job uids for searching.
-   *
-   * @param array $uids
-   */
-  public function setUids(array $uids) {
-    $this->params['translationJobUids'] = $uids;
-  }
+    /**
+     * Sets translation job uids for searching.
+     *
+     * @param array $uids
+     */
+    public function setUids(array $uids) {
+        $this->params['translationJobUids'] = $uids;
+    }
 
 }
