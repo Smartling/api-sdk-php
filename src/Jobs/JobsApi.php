@@ -125,7 +125,7 @@ class JobsApi extends BaseApiAbstract
     public function authorizeJob($jobId)
     {
         $endpoint = vsprintf('jobs/%s/authorize', [$jobId]);
-        $requestData = $this->getDefaultRequestData('body', '');
+        $requestData = $this->getDefaultRequestData('json', new \stdClass());
         $requestData['headers']['Content-Type'] = 'application/json';
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
