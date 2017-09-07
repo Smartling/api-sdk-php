@@ -378,4 +378,71 @@ class JobsApiTest extends ApiTestAbstract
         $this->object->searchJobs($params);
     }
 
+    /**
+     * Test async response with ACCEPTED code.
+     *
+     * It should not throw "Bad response format" exception.
+     */
+    public function testAcceptResponse()
+    {
+        $responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
+            ->setMethods(
+                array_merge(
+                    self::$responseInterfaceMethods,
+                    self::$messageInterfaceMethods
+                )
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $responseMock->expects(self::any())
+            ->method('getStatusCode')
+            ->willReturn(202);
+
+        $responseMock->expects(self::any())
+            ->method('getBody')
+            ->willReturn($this->responseAsync);
+
+        $responseMock->expects(self::any())
+            ->method('json')
+            ->willReturn(
+                json_decode($this->responseAsync, true)
+            );
+
+        $jobId = 'Some job id';
+        $reason = 'Some reason';
+        $params = new CancelJobParameters();
+        $params->setReason($reason);
+        $endpointUrl = vsprintf('%s/%s/jobs/%s/cancel', [
+            JobsApi::ENDPOINT_URL,
+            $this->projectId,
+            $jobId,
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('createRequest')
+            ->with('post', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => FALSE,
+                'json' => [
+                    'reason' => $reason,
+                ],
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->cancelJob($jobId, $params);
+    }
+
 }
