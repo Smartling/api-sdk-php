@@ -285,7 +285,7 @@ class JobsApiTest extends ApiTestAbstract
                     'Content-Type' => 'application/json',
                 ],
                 'exceptions' => FALSE,
-                'body' => '',
+                'json' => new \stdClass(),
             ])
             ->willReturn($this->requestMock);
 

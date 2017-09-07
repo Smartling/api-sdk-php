@@ -287,11 +287,11 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param array $requestData
+     * @param mixed $requestData
      *
      * @return array
      */
-    protected function processBodyOptions(array $requestData = [])
+    protected function processBodyOptions($requestData = [])
     {
         $opts = [];
         foreach ($requestData as $key => $value) {
@@ -407,7 +407,10 @@ abstract class BaseApiAbstract
             $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0,
                     12) . '*****';
         }
-        if (isset($logRequestData['json']['userIdentifier'])) {
+        if (isset($logRequestData['json']) &&
+            is_array($logRequestData['json']) &&
+            isset($logRequestData['json']['userIdentifier'])
+        ) {
             $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0,
                     5) . '*****';
             $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
@@ -492,7 +495,7 @@ abstract class BaseApiAbstract
                     $this->processError($response);
                 }
 
-                return isset($json['response']['data']) ? $json['response']['data'] : true;
+                return !empty($json['response']['data']) ? $json['response']['data'] : true;
 
             } catch (RuntimeException $e) {
                 $this->processError($response);
