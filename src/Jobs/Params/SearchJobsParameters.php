@@ -30,4 +30,13 @@ class SearchJobsParameters extends BaseParameters
     $this->params['fileUris'] = $fileUris;
   }
 
+  /**
+   * Sets translation job uids for searching.
+   *
+   * @param array $uids
+   */
+  public function setUids(array $uids) {
+    $this->params['translationJobUids'] = $uids;
+  }
+
 }

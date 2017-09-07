@@ -15,7 +15,7 @@ use Smartling\Context\Params\UploadContextParameters;
 class ContextApi extends BaseApiAbstract
 {
 
-    const ENDPOINT_URL = 'https://api.smartling.com/context-api/v2/projects';
+    const ENDPOINT_URL = 'https://api.smartling.com/context-api/v3/projects';
 
     /**
      * Instantiates Context API object.

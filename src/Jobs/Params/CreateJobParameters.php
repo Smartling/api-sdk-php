@@ -9,11 +9,11 @@ namespace Smartling\Jobs\Params;
 class CreateJobParameters extends UpdateJobParameters
 {
 
-  /**
-   * @param array $targetLocales
-   */
-  public function setTargetLocales(array $targetLocales = []) {
-      $this->params['targetLocaleIds'] = $targetLocales;
-  }
+    /**
+     * @param array $targetLocales
+     */
+    public function setTargetLocales(array $targetLocales = []) {
+        $this->params['targetLocaleIds'] = $targetLocales;
+    }
 
 }
