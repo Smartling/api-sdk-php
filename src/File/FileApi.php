@@ -43,7 +43,7 @@ class FileApi extends BaseApiAbstract
     /**
      * {@inheritdoc}
      */
-    protected function processBodyOptions(array $requestData = []) {
+    protected function processBodyOptions($requestData = []) {
         $opts = parent::processBodyOptions($requestData);
         $key = 'file';
 

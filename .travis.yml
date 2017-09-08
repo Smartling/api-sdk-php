@@ -15,3 +15,4 @@ script: vendor/bin/phpunit --coverage-text --debug --verbose --testsuite unit
 notifications:
   email:
     - pratushnyi@smartling.com
+    - ploparev@smartling.com

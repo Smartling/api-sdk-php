@@ -283,11 +283,11 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param array $requestData
+     * @param mixed $requestData
      *
      * @return array
      */
-    protected function processBodyOptions(array $requestData = [])
+    protected function processBodyOptions($requestData = [])
     {
         if (!empty($requestData['multipart'])) {
             $body = [];
@@ -421,7 +421,10 @@ abstract class BaseApiAbstract
             $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0,
                     12) . '*****';
         }
-        if (isset($logRequestData['json']['userIdentifier'])) {
+        if (isset($logRequestData['json']) &&
+            is_array($logRequestData['json']) &&
+            isset($logRequestData['json']['userIdentifier'])
+        ) {
             $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0,
                     5) . '*****';
             $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
@@ -485,12 +488,15 @@ abstract class BaseApiAbstract
                 if (!array_key_exists('response', $json)
                     || !is_array($json['response'])
                     || empty($json['response']['code'])
-                    || $json['response']['code'] !== 'SUCCESS'
+                    || !in_array($json['response']['code'], [
+                        'SUCCESS',
+                        'ACCEPTED',
+                    ])
                 ) {
                     $this->processError($response);
                 }
 
-                return isset($json['response']['data']) ? $json['response']['data'] : true;
+                return !empty($json['response']['data']) ? $json['response']['data'] : true;
 
             } catch (RuntimeException $e) {
                 $this->processError($response);
