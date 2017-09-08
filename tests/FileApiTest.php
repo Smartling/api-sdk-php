@@ -938,4 +938,48 @@ class SmartlingApiTest extends ApiTestAbstract
 
         self::assertEquals('stream', get_resource_type($stream));
     }
+
+    /**
+     * Test async response with ACCEPTED code.
+     *
+     * It should not throw "Bad response format" exception.
+     */
+    public function testAcceptResponse() {
+        $responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
+            ->setMethods(
+                array_merge(
+                    self::$responseInterfaceMethods,
+                    self::$messageInterfaceMethods
+                )
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $responseMock->expects(self::any())
+            ->method('getStatusCode')
+            ->willReturn(202);
+
+        $responseMock->expects(self::any())
+            ->method('getBody')
+            ->willReturn($this->responseAsync);
+
+        $responseMock->expects(self::any())
+            ->method('json')
+            ->willReturn(
+                json_decode($this->responseAsync, true)
+            );
+
+        $this->client
+            ->expects(self::any())
+            ->method('createRequest')
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->willReturn($responseMock);
+
+        // Just random api call to mock async response of 'send' method.
+        $this->object->renameFile('test.xml', 'new_test.xml');
+    }
+
 }
