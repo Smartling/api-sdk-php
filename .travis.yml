@@ -21,3 +21,4 @@ script: vendor/bin/phpunit --coverage-text --debug --verbose
 notifications:
   email:
     - pratushnyi@smartling.com
+    - ploparev@smartling.com
