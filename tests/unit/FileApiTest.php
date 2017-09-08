@@ -897,13 +897,8 @@ class FileApiTest extends ApiTestAbstract
                 json_decode($this->responseAsync, true)
             );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->willReturn($this->requestMock);
-
         $this->client->expects(self::once())
-            ->method('send')
+            ->method('request')
             ->willReturn($responseMock);
 
         // Just random api call to mock async response of 'send' method.
