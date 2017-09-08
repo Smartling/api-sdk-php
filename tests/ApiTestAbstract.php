@@ -48,6 +48,11 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
     protected $responseWithException = '{"response":{"data":null,"code":"VALIDATION_ERROR","errors":[{"message":"Validation error text"}]}}';
 
     /**
+     * @var string
+     */
+    protected $responseAsync = '{"response":{"data":{"message":"message", "url":"url"},"code":"ACCEPTED"}}';
+
+    /**
      * @var PHPUnit_Framework_MockObject_MockObject|ClientInterface
      */
     protected $client;
