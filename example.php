@@ -1,7 +1,5 @@
 <?php
 
-use Smartling\Jobs\Params\SearchJobsParameters;
-
 error_reporting(E_ALL);
 /**
  * This file contains examples of Smartling API 2.x usage.
