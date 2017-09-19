@@ -47,7 +47,7 @@ $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $u
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $fileUri
- * @return bool
+ * @return array
  */
 function uploadContextDemo($authProvider, $projectId, $fileUri)
 {
@@ -80,7 +80,7 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param $contextUid
- * @return bool
+ * @return array
  */
 function matchContextDemo($authProvider, $projectId, $contextUid)
 {
@@ -106,5 +106,69 @@ function matchContextDemo($authProvider, $projectId, $contextUid)
     return $response;
 }
 
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @param string $fileUri
+ * @return array
+ */
+function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri)
+{
+    $response = FALSE;
+    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $params = new UploadContextParameters();
+    $params->setContextFileUri($fileUri);
+    $params->setName('test_context.html');
+    $st = microtime(true);
+
+    try {
+        $response = $context->uploadAndMatchContext($params);
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        var_dump($e->getErrors());
+    }
+
+    $et = microtime(TRUE);
+    $time = $et - $st;
+
+    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+
+    if (!empty($response)) {
+        var_dump($response);
+    }
+
+    return $response;
+}
+
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @return array
+ */
+function getMissingResources($authProvider, $projectId)
+{
+    $response = FALSE;
+    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $st = microtime(true);
+
+    try {
+        $response = $context->getMissingResources();
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        var_dump($e->getErrors());
+    }
+
+    $et = microtime(TRUE);
+    $time = $et - $st;
+
+    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+
+    if (!empty($response)) {
+        var_dump($response);
+    }
+
+    return $response;
+}
+
 $contextInfo = uploadContextDemo($authProvider, $projectId, 'tests/resources/context.html');
 $response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
+$response = uploadAndMatchContextDemo($authProvider, $projectId, 'tests/resources/context.html');
+$missingResources = getMissingResources($authProvider, $projectId);

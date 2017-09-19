@@ -5,6 +5,7 @@ namespace Smartling\Context;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
+use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
 
 /**
@@ -51,6 +52,16 @@ class ContextApi extends BaseApiAbstract
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false) {
+        $requestData = parent::getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false);
+        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
+
+        return $requestData;
+    }
+
+    /**
      * Returns X-SL-Context-Source header.
      *
      * @return string
@@ -66,33 +77,61 @@ class ContextApi extends BaseApiAbstract
      * Upload a new context.
      *
      * @param \Smartling\Context\Params\UploadContextParameters $params
-     * @return bool
+     * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
     public function uploadContext(UploadContextParameters $params)
     {
         $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest('contexts', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
     }
 
-  /**
-   * Match context.
-   *
-   * @param $contextUid
-   * @return bool
-   * @throws \Smartling\Exceptions\SmartlingApiException
-   */
+    /**
+     * Match context.
+     *
+     * @param $contextUid
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
     public function matchContext($contextUid)
     {
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
         $requestData = $this->getDefaultRequestData('body', '');
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * Upload and match async.
+     *
+     * @param \Smartling\Context\Params\UploadContextParameters $params
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function uploadAndMatchContext(UploadContextParameters $params)
+    {
+        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
+        $requestData['headers']['Content-Type'] = 'application/json';
+        $request = $this->prepareHttpRequest('contexts/upload-and-match-async', $requestData, self::HTTP_METHOD_POST);
+
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * Get missing resources.
+     *
+     * @param MissingResourcesParameters|null $params
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function getMissingResources(MissingResourcesParameters $params = null) {
+        $requestData = $this->getDefaultRequestData('query', is_null($params) ? [] : $params->exportToArray());
+        $request = $this->prepareHttpRequest('missing-resources', $requestData, self::HTTP_METHOD_GET);
 
         return $this->sendRequest($request);
     }
