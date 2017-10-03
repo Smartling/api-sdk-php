@@ -41,6 +41,7 @@ class SmartlingApiException extends \Exception
         if (is_string($errors)) {
             $message = $errors;
         } elseif (is_array($errors)) {
+            $message = print_r($errors, TRUE);
             $this->errors = $errors;
         }
         
