@@ -106,5 +106,35 @@ function matchContextDemo($authProvider, $projectId, $contextUid)
     return $response;
 }
 
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @return bool
+ */
+function getAllMissingResourcesDemo($authProvider, $projectId)
+{
+    $response = FALSE;
+    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $st = microtime(true);
+
+    try {
+        $response = $context->getAllMissingResources();
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        var_dump($e->getErrors());
+    }
+
+    $et = microtime(TRUE);
+    $time = $et - $st;
+
+    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+
+    if (!empty($response)) {
+        var_dump($response);
+    }
+
+    return $response;
+}
+
 $contextInfo = uploadContextDemo($authProvider, $projectId, 'tests/resources/context.html');
 $response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
+$missingResources = getAllMissingResourcesDemo($authProvider, $projectId);
