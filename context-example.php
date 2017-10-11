@@ -10,6 +10,7 @@
  */
 
 use Smartling\Context\Params\UploadContextParameters;
+use Smartling\Context\Params\UploadResourceParameters;
 
 $longOpts = [
   'project-id:',
@@ -55,7 +56,7 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $params = new UploadContextParameters();
     $params->setContextFileUri($fileUri);
-    $params->setName('test_context.html');
+    $params->setName('context.html');
     $st = microtime(true);
 
     try {
@@ -118,7 +119,7 @@ function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri)
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $params = new UploadContextParameters();
     $params->setContextFileUri($fileUri);
-    $params->setName('test_context.html');
+    $params->setName('context.html');
     $st = microtime(true);
 
     try {
@@ -168,7 +169,69 @@ function getMissingResources($authProvider, $projectId)
     return $response;
 }
 
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @return bool
+ */
+function getAllMissingResourcesDemo($authProvider, $projectId) {
+    $response = FALSE;
+    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $st = microtime(true);
+
+    try {
+        $response = $context->getAllMissingResources();
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        var_dump($e->getErrors());
+    }
+
+    $et = microtime(TRUE);
+    $time = $et - $st;
+
+    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+
+    if (!empty($response)) {
+        var_dump($response);
+    }
+
+    return $response;
+}
+
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @param string $resourceId
+ * @param string $fileUri
+ * @return bool
+ */
+function uploadResourceDemo($authProvider, $projectId, $resourceId, $fileUri) {
+    $response = FALSE;
+    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $st = microtime(true);
+
+    try {
+        $params = new UploadResourceParameters();
+        $params->setFile($fileUri);
+        $response = $context->uploadResource($resourceId, $params);
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        var_dump($e->getErrors());
+    }
+
+    $et = microtime(TRUE);
+    $time = $et - $st;
+
+    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+
+    if (!empty($response)) {
+        var_dump($response);
+    }
+
+    return $response;
+}
+
 $contextInfo = uploadContextDemo($authProvider, $projectId, 'tests/resources/context.html');
 $response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
 $response = uploadAndMatchContextDemo($authProvider, $projectId, 'tests/resources/context.html');
 $missingResources = getMissingResources($authProvider, $projectId);
+$allMissingResources = getAllMissingResourcesDemo($authProvider, $projectId);
+$uploadedResourceResponse = uploadResourceDemo($authProvider, $projectId, '[resource_id]', 'tests/resources/test.png');
