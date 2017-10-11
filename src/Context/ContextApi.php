@@ -5,7 +5,9 @@ namespace Smartling\Context;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
+use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
+use Smartling\Exceptions\SmartlingApiException;
 
 /**
  * Class ContextApi
@@ -16,6 +18,26 @@ class ContextApi extends BaseApiAbstract
 {
 
     const ENDPOINT_URL = 'https://api.smartling.com/context-api/v2/projects';
+
+    /**
+     * Timeout in seconds.
+     *
+     * @var int
+     */
+    private $timeOut = 15;
+
+    /**
+     * @return int
+     */
+    public function getTimeOut() {
+        return $this->timeOut;
+    }
+    /**
+     * @param int $timeOut
+     */
+    public function setTimeOut($timeOut) {
+        $this->timeOut = $timeOut;
+    }
 
     /**
      * Instantiates Context API object.
@@ -51,6 +73,16 @@ class ContextApi extends BaseApiAbstract
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false) {
+        $requestData = parent::getDefaultRequestData($parametersType, $parameters, $auth, $httpErrors);
+        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
+
+        return $requestData;
+    }
+
+    /**
      * Returns X-SL-Context-Source header.
      *
      * @return string
@@ -65,15 +97,14 @@ class ContextApi extends BaseApiAbstract
     /**
      * Upload a new context.
      *
-     * @param \Smartling\Context\Params\UploadContextParameters $params
+     * @param UploadContextParameters $params
      * @return bool
-     * @throws \Smartling\Exceptions\SmartlingApiException
+     * @throws SmartlingApiException
      */
     public function uploadContext(UploadContextParameters $params)
     {
         $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest('contexts', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
@@ -84,17 +115,67 @@ class ContextApi extends BaseApiAbstract
    *
    * @param $contextUid
    * @return bool
-   * @throws \Smartling\Exceptions\SmartlingApiException
+   * @throws SmartlingApiException
    */
     public function matchContext($contextUid)
     {
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
         $requestData = $this->getDefaultRequestData('body', '');
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
+    }
+
+    /**
+     * Get missing resources.
+     *
+     * @param MissingResourcesParameters $params
+     * @return array
+     * @throws SmartlingApiException
+     */
+    public function getMissingResources(MissingResourcesParameters $params = NULL)
+    {
+        $requestData = $this->getDefaultRequestData('query', is_null($params) ? [] : $params->exportToArray());
+        $requestData['headers']['Content-Type'] = 'application/json';
+        $request = $this->prepareHttpRequest('missing-resources', $requestData, self::HTTP_METHOD_GET);
+
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * Get all missing resources.
+     *
+     * @return array
+     * @throws SmartlingApiException
+     */
+    public function getAllMissingResources()
+    {
+        $missingResources = [];
+        $offset = FALSE;
+        $start_time = time();
+
+        while (!is_null($offset)) {
+            $delta = time() - $start_time;
+
+            if ($delta > $this->getTimeOut()) {
+                throw new SmartlingApiException(vsprintf('Not all missing resources received after %s seconds.', [$delta]));
+            }
+
+            if (!$offset) {
+                $params = NULL;
+            }
+            else {
+                $params = new MissingResourcesParameters();
+                $params->setOffset($offset);
+            }
+
+            $response = $this->getMissingResources($params);
+            $offset = !empty($response['offset']) ? $response['offset'] : NULL;
+            $missingResources = array_merge($missingResources, $response['items']);
+        }
+
+        return $missingResources;
     }
 
 }
