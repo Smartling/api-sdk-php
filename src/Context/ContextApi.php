@@ -36,8 +36,13 @@ class ContextApi extends BaseApiAbstract
 
     /**
      * @param int $timeOut
+     * @throws \InvalidArgumentException
      */
     public function setTimeOut($timeOut) {
+        if ($timeOut <= 0) {
+            throw new \InvalidArgumentException('Timeout value must be more or grater then zero.');
+        }
+
         $this->timeOut = $timeOut;
     }
 
@@ -165,18 +170,25 @@ class ContextApi extends BaseApiAbstract
      * Get all missing resources.
      *
      * @return array
+     * Contains next keys:
+     *  - "items": array of missing resources
+     *  - "all": boolean which indicates whether function has read all the
+     *           available items or not.
+     *
      * @throws SmartlingApiException
      */
     public function getAllMissingResources() {
         $missingResources = [];
         $offset = FALSE;
+        $all = TRUE;
         $start_time = time();
 
         while (!is_null($offset)) {
             $delta = time() - $start_time;
 
             if ($delta > $this->getTimeOut()) {
-                throw new SmartlingApiException(vsprintf('Not all missing resources received after %s seconds.', [$delta]));
+                $all = FALSE;
+                break;
             }
 
             if (!$offset) {
@@ -192,7 +204,10 @@ class ContextApi extends BaseApiAbstract
             $missingResources = array_merge($missingResources, $response['items']);
         }
 
-        return $missingResources;
+        return [
+            'items' => $missingResources,
+            'all' => $all,
+        ];
     }
 
     /**
