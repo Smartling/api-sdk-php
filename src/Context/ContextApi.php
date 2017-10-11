@@ -5,7 +5,10 @@ namespace Smartling\Context;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
+use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
+use Smartling\Context\Params\UploadResourceParameters;
+use Smartling\Exceptions\SmartlingApiException;
 
 /**
  * Class ContextApi
@@ -16,6 +19,27 @@ class ContextApi extends BaseApiAbstract
 {
 
     const ENDPOINT_URL = 'https://api.smartling.com/context-api/v2/projects';
+
+    /**
+     * Timeout in seconds.
+     *
+     * @var int
+     */
+    private $timeOut = 15;
+
+    /**
+     * @return int
+     */
+    public function getTimeOut() {
+        return $this->timeOut;
+    }
+
+    /**
+     * @param int $timeOut
+     */
+    public function setTimeOut($timeOut) {
+        $this->timeOut = $timeOut;
+    }
 
     /**
      * Instantiates Context API object.
@@ -41,13 +65,25 @@ class ContextApi extends BaseApiAbstract
      */
     protected function processBodyOptions($requestData = []) {
         $opts = parent::processBodyOptions($requestData);
-        $key = 'content';
+        $keys = ['content', 'resource'];
 
-        if (array_key_exists($key, $opts)) {
-            $opts[$key] = $this->readFile($opts[$key]);
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $opts)) {
+                $opts[$key] = $this->readFile($opts[$key]);
+            }
         }
 
         return $opts;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false) {
+        $requestData = parent::getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false);
+        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
+
+        return $requestData;
     }
 
     /**
@@ -66,33 +102,113 @@ class ContextApi extends BaseApiAbstract
      * Upload a new context.
      *
      * @param \Smartling\Context\Params\UploadContextParameters $params
-     * @return bool
+     * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
     public function uploadContext(UploadContextParameters $params)
     {
         $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest('contexts', $requestData, self::HTTP_METHOD_POST);
 
         return $this->sendRequest($request);
     }
 
-  /**
-   * Match context.
-   *
-   * @param $contextUid
-   * @return bool
-   * @throws \Smartling\Exceptions\SmartlingApiException
-   */
+    /**
+     * Match context.
+     *
+     * @param $contextUid
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
     public function matchContext($contextUid)
     {
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
         $requestData = $this->getDefaultRequestData('body', '');
         $requestData['headers']['Content-Type'] = 'application/json';
-        $requestData['headers']['X-SL-Context-Source'] = $this->getXSLContextSourceHeader();
         $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * Upload and match async.
+     *
+     * @param \Smartling\Context\Params\UploadContextParameters $params
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function uploadAndMatchContext(UploadContextParameters $params)
+    {
+        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
+        $requestData['headers']['Content-Type'] = 'application/json';
+        $request = $this->prepareHttpRequest('contexts/upload-and-match-async', $requestData, self::HTTP_METHOD_POST);
+
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * Get missing resources.
+     *
+     * @param MissingResourcesParameters|null $params
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function getMissingResources(MissingResourcesParameters $params = null) {
+        $requestData = $this->getDefaultRequestData('query', is_null($params) ? [] : $params->exportToArray());
+        $request = $this->prepareHttpRequest('missing-resources', $requestData, self::HTTP_METHOD_GET);
+
+        return $this->sendRequest($request);
+    }
+
+    /**
+     * Get all missing resources.
+     *
+     * @return array
+     * @throws SmartlingApiException
+     */
+    public function getAllMissingResources() {
+        $missingResources = [];
+        $offset = FALSE;
+        $start_time = time();
+
+        while (!is_null($offset)) {
+            $delta = time() - $start_time;
+
+            if ($delta > $this->getTimeOut()) {
+                throw new SmartlingApiException(vsprintf('Not all missing resources received after %s seconds.', [$delta]));
+            }
+
+            if (!$offset) {
+                $params = NULL;
+            }
+            else {
+                $params = new MissingResourcesParameters();
+                $params->setOffset($offset);
+            }
+
+            $response = $this->getMissingResources($params);
+            $offset = !empty($response['offset']) ? $response['offset'] : NULL;
+            $missingResources = array_merge($missingResources, $response['items']);
+        }
+
+        return $missingResources;
+    }
+
+    /**
+     * Upload resource.
+     *
+     * @param $resourceId
+     * @param \Smartling\Context\Params\UploadResourceParameters $params
+     * @return bool
+     * @throws SmartlingApiException
+     */
+    public function uploadResource($resourceId, UploadResourceParameters $params)
+    {
+        $endpoint = vsprintf('resources/%s', $resourceId);
+        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
+        $requestData['headers']['Content-Type'] = 'application/json';
+        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
 
         return $this->sendRequest($request);
     }

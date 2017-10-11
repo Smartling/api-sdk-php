@@ -2,7 +2,9 @@
 
 namespace Smartling\Tests;
 use Smartling\Context\ContextApi;
+use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
+use Smartling\Context\Params\UploadResourceParameters;
 
 
 /**
@@ -120,6 +122,125 @@ class ContextApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $this->object->matchContext($contextUid);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::uploadAndMatchContext
+     */
+    public function testUploadAndMatchContext() {
+        $params = new UploadContextParameters();
+        $params->setContextFileUri('./tests/resources/context.html');
+        $endpointUrl = vsprintf('%s/%s/contexts/upload-and-match-async', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('createRequest')
+            ->with('post', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'Content-Type' => 'application/json',
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'body' => [
+                    'content' => $this->streamPlaceholder,
+                ],
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->uploadAndMatchContext($params);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::getMissingResources
+     */
+    public function testGetMissingResources() {
+        $offset = 'some_offset';
+        $params = new MissingResourcesParameters();
+        $params->setOffset($offset);
+        $endpointUrl = vsprintf('%s/%s/missing-resources', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('createRequest')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'query' => [
+                    'offset' => $offset,
+                ],
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->getMissingResources($params);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::uploadResource
+     */
+    public function testUploadResource() {
+        $resourceId = 'some_resource_id';
+        $params = new UploadResourceParameters();
+        $params->setFile('./tests/resources/test.png');
+        $endpointUrl = vsprintf('%s/%s/resources/%s', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId,
+            $resourceId,
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('createRequest')
+            ->with('put', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'Content-Type' => 'application/json',
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'body' => [
+                    'resource' => $this->streamPlaceholder,
+                ],
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->uploadResource($resourceId, $params);
     }
 
 }
