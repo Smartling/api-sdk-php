@@ -232,9 +232,9 @@ function uploadResourceDemo($authProvider, $projectId, $resourceId, $fileUri) {
     return $response;
 }
 
-$contextInfo = uploadContextDemo($authProvider, $projectId, 'tests/resources/context.html');
+$contextInfo = uploadContextDemo($authProvider, $projectId, '../tests/resources/context.html');
 $response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
-$response = uploadAndMatchContextDemo($authProvider, $projectId, 'tests/resources/context.html');
+$response = uploadAndMatchContextDemo($authProvider, $projectId, '../tests/resources/context.html');
 $missingResources = getMissingResources($authProvider, $projectId);
 $allMissingResources = getAllMissingResourcesDemo($authProvider, $projectId);
-$uploadedResourceResponse = uploadResourceDemo($authProvider, $projectId, '[resource_id]', 'tests/resources/test.png');
+$uploadedResourceResponse = uploadResourceDemo($authProvider, $projectId, '[resource_id]', '../tests/resources/test.png');

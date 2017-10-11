@@ -74,10 +74,8 @@ class ContextApi extends BaseApiAbstract
 
         if (!empty($opts['multipart'])) {
             foreach ($opts['multipart'] as &$data) {
-                foreach ($keys as $key) {
-                    if ($data['name'] == $key) {
-                        $data['contents'] = $this->readFile($data['contents']);
-                    }
+                if (in_array($data['name'], $keys)) {
+                    $data['contents'] = $this->readFile($data['contents']);
                 }
             }
         }
@@ -117,7 +115,6 @@ class ContextApi extends BaseApiAbstract
     public function uploadContext(UploadContextParameters $params)
     {
         $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
 
         return $this->sendRequest('contexts', $requestData, self::HTTP_METHOD_POST);
     }
@@ -147,8 +144,7 @@ class ContextApi extends BaseApiAbstract
      */
     public function uploadAndMatchContext(UploadContextParameters $params)
     {
-        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
+        $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
         return $this->sendRequest('contexts/upload-and-match-async', $requestData, self::HTTP_METHOD_POST);
     }
@@ -221,8 +217,7 @@ class ContextApi extends BaseApiAbstract
     public function uploadResource($resourceId, UploadResourceParameters $params)
     {
         $endpoint = vsprintf('resources/%s', $resourceId);
-        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
+        $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
     }
