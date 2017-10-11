@@ -5,6 +5,7 @@ namespace Smartling\Tests\Functional;
 use PHPUnit_Framework_TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Context\Params\UploadContextParameters;
+use Smartling\Context\Params\UploadResourceParameters;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Context\ContextApi;
 
@@ -70,6 +71,49 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
             $result = $this->contextApi->matchContext($contextInfo['contextUid']);
 
             $this->assertArrayHasKey('matchId', $result);
+        } catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * Test for upload and match context.
+     */
+    public function testUploadAndMatchContext() {
+        try {
+            $params = new UploadContextParameters();
+            $params->setContextFileUri('tests/resources/context.html');
+            $params->setName('test_context.html');
+            $result = $this->contextApi->uploadAndMatchContext($params);
+
+            $this->assertArrayHasKey('matchId', $result);
+        } catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * Test for get missing resources.
+     */
+    public function testGetMissingResources() {
+        try {
+            $result = $this->contextApi->getMissingResources();
+
+            $this->assertArrayHasKey('items', $result);
+        } catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * Test for get all missing resources.
+     */
+    public function testGetAllMissingResources() {
+        try {
+            $result = $this->contextApi->getAllMissingResources();
+
+            $this->assertArrayHasKey('items', $result);
+            $this->assertArrayHasKey('all', $result);
         } catch (SmartlingApiException $e) {
             $this->fail($e->getMessage());
         }

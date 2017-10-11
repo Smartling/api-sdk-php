@@ -406,9 +406,10 @@ abstract class BaseApiAbstract
      * @param array $options
      * @param $method
      * @param bool $returnRawResponseBody
-     * @return bool true on SUCCESS and empty data
-     *          string on $processResponseBody = false
-     * array otherwise
+     * @return  mixed.
+     *          true on SUCCESS and empty data
+     *          string on $returnRawResponseBody = true
+     *          array otherwise
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
     protected function sendRequest($uri, array $options, $method, $returnRawResponseBody = false)
