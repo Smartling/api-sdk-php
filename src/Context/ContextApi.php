@@ -232,10 +232,9 @@ class ContextApi extends BaseApiAbstract
     public function renderContext($contextUid)
     {
         $endpoint = vsprintf('contexts/%s/render', $contextUid);
-        $requestData = $this->getDefaultRequestData('body', '');
-        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('form_params', []);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
     }
 
 }

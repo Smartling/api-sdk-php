@@ -244,7 +244,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -255,13 +255,8 @@ class ContextApiTest extends ApiTestAbstract
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
                 ],
                 'exceptions' => FALSE,
-                'body' => '',
+                'form_params' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->renderContext($contextUid);
