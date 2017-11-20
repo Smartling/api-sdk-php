@@ -243,4 +243,40 @@ class ContextApiTest extends ApiTestAbstract
         $this->object->uploadResource($resourceId, $params);
     }
 
+    /**
+     * @covers \Smartling\Context\ContextApi::renderContext
+     */
+    public function testRenderContext() {
+        $contextUid = 'someContextUid';
+        $endpointUrl = vsprintf('%s/%s/contexts/%s/render', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId,
+            $contextUid
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('createRequest')
+            ->with('post', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'body' => '',
+            ])
+            ->willReturn($this->requestMock);
+
+        $this->client->expects(self::once())
+            ->method('send')
+            ->with($this->requestMock)
+            ->willReturn($this->responseMock);
+
+        $this->object->renderContext($contextUid);
+    }
+
 }
