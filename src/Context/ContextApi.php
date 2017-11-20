@@ -222,4 +222,20 @@ class ContextApi extends BaseApiAbstract
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
     }
 
+    /**
+     * Render context.
+     *
+     * @param $contextUid
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function renderContext($contextUid)
+    {
+        $endpoint = vsprintf('contexts/%s/render', $contextUid);
+        $requestData = $this->getDefaultRequestData('body', '');
+        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+
+        return $this->sendRequest($request);
+    }
+
 }
