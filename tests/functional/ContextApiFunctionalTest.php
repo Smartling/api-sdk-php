@@ -119,4 +119,21 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Test for render context.
+     */
+    public function testRenderContext() {
+        try {
+            $params = new UploadContextParameters();
+            $params->setContextFileUri('tests/resources/context.html');
+            $params->setName('test_context.html');
+            $contextInfo = $this->contextApi->uploadContext($params);
+            $result = $this->contextApi->renderContext($contextInfo['contextUid']);
+
+            $this->assertTrue($result);
+        } catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
 }
