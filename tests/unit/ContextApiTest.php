@@ -162,6 +162,37 @@ class ContextApiTest extends ApiTestAbstract
     /**
      * @covers \Smartling\Context\ContextApi::getMissingResources
      */
+    public function testGetMatchStatus() {
+        $matchId = 'test_match_id';
+        $endpointUrl = vsprintf('%s/%s/match/%s', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId,
+            $matchId,
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'query' => [],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->getMatchStatus($matchId);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::getMissingResources
+     */
     public function testGetMissingResources() {
         $offset = 'some_offset';
         $params = new MissingResourcesParameters();
@@ -229,6 +260,37 @@ class ContextApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $this->object->uploadResource($resourceId, $params);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::renderContext
+     */
+    public function testRenderContext() {
+        $contextUid = 'someContextUid';
+        $endpointUrl = vsprintf('%s/%s/contexts/%s/render', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId,
+            $contextUid
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('post', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'form_params' => [],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->renderContext($contextUid);
     }
 
 }
