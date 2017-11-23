@@ -13,8 +13,8 @@
   "authors": [],
   "require": {
     "psr/log": "~1.0",
-    "php": ">=5.5.0",
-    "guzzlehttp/guzzle": "~5"
+    "php": ">=5.5",
+    "guzzlehttp/guzzle": "~6"
   },
   "require-dev": {
     "phpunit/phpunit": "~4"
@@ -26,7 +26,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Smartling\\Tests\\": "tests/"
+      "Smartling\\Tests\\Unit\\": "tests/unit",
+      "Smartling\\Tests\\Functional\\": "tests/functional"
     }
   },
   "minimum-stability": "dev"

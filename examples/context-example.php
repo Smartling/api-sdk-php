@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(E_ALL);
+
 /**
  * This file contains examples of Smartling API 2.x usage.
  *
@@ -13,30 +15,31 @@ use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
 
 $longOpts = [
-  'project-id:',
-  'user-id:',
-  'secret-key:',
+    'project-id:',
+    'user-id:',
+    'secret-key:',
 ];
 
 $options = getopt('', $longOpts);
 
 if (
-  !array_key_exists('project-id', $options)
-  || !array_key_exists('user-id', $options)
-  || !array_key_exists('secret-key', $options)
+    !array_key_exists('project-id', $options)
+    || !array_key_exists('user-id', $options)
+    || !array_key_exists('secret-key', $options)
 ) {
-  echo 'Missing required params.' . PHP_EOL;
-  exit;
+    echo 'Missing required params.' . PHP_EOL;
+    exit;
 }
 
-$autoloader = 'vendor/autoload.php';
+$autoloader = '../vendor/autoload.php';
 
 if (!file_exists($autoloader) || !is_readable($autoloader)) {
-  echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
-  exit;
-} else {
-  /** @noinspection UntrustedInclusionInspection */
-  require_once 'vendor/autoload.php';
+    echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
+    exit;
+}
+else {
+    /** @noinspection UntrustedInclusionInspection */
+    require_once '../vendor/autoload.php';
 }
 
 $projectId = $options['project-id'];
@@ -52,7 +55,7 @@ $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $u
  */
 function uploadContextDemo($authProvider, $projectId, $fileUri)
 {
-    $response = FALSE;
+    $response = false;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $params = new UploadContextParameters();
     $params->setContextFileUri($fileUri);
@@ -65,7 +68,7 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
         var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = microtime(true);
     $time = $et - $st;
 
     echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
@@ -85,7 +88,7 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
  */
 function matchContextDemo($authProvider, $projectId, $contextUid)
 {
-    $response = FALSE;
+    $response = false;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $st = microtime(true);
 
@@ -95,7 +98,7 @@ function matchContextDemo($authProvider, $projectId, $contextUid)
         var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = microtime(true);
     $time = $et - $st;
 
     echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
@@ -124,6 +127,35 @@ function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri)
 
     try {
         $response = $context->uploadAndMatchContext($params);
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        var_dump($e->getErrors());
+    }
+
+    $et = microtime(TRUE);
+    $time = $et - $st;
+
+    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+
+    if (!empty($response)) {
+        var_dump($response);
+    }
+
+    return $response;
+}
+
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @param $matchId
+ * @return bool
+ */
+function getMatchStatusDemo($authProvider, $projectId, $matchId) {
+    $response = FALSE;
+    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $st = microtime(true);
+
+    try {
+        $response = $context->getMatchStatus($matchId);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -259,10 +291,11 @@ function renderContextDemo($authProvider, $projectId, $contextUid)
     return $response;
 }
 
-$contextInfo = uploadContextDemo($authProvider, $projectId, 'tests/resources/context.html');
+$contextInfo = uploadContextDemo($authProvider, $projectId, '../tests/resources/context.html');
 $response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
-$response = uploadAndMatchContextDemo($authProvider, $projectId, 'tests/resources/context.html');
+$response = uploadAndMatchContextDemo($authProvider, $projectId, '../tests/resources/context.html');
+$matchStatus = getMatchStatusDemo($authProvider, $projectId, $response['matchId']);
 $missingResources = getMissingResources($authProvider, $projectId);
 $allMissingResources = getAllMissingResourcesDemo($authProvider, $projectId);
-$uploadedResourceResponse = uploadResourceDemo($authProvider, $projectId, '[resource_id]', 'tests/resources/test.png');
+$uploadedResourceResponse = uploadResourceDemo($authProvider, $projectId, '[resource_id]', '../tests/resources/test.png');
 $response = renderContextDemo($authProvider, $projectId, $contextInfo['contextUid']);

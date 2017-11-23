@@ -9,41 +9,44 @@ use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
 use Smartling\Exceptions\SmartlingApiException;
+use Smartling\Wait;
+use Smartling\Waitable;
 
 /**
  * Class ContextApi
  *
  * @package Smartling\Project
  */
-class ContextApi extends BaseApiAbstract
+class ContextApi extends BaseApiAbstract implements Waitable
 {
+
+    use Wait;
 
     const ENDPOINT_URL = 'https://api.smartling.com/context-api/v2/projects';
 
     /**
-     * Timeout in seconds.
+     * Makes async operation sync.
      *
-     * @var int
+     * @param array $data
+     * @throws SmartlingApiException
      */
-    private $timeOut = 15;
+    public function wait(array $data) {
+        if (!empty($data['matchId'])) {
+            $start_time = time();
 
-    /**
-     * @return int
-     */
-    public function getTimeOut() {
-        return $this->timeOut;
-    }
+            do {
+                $delta = time() - $start_time;
 
-    /**
-     * @param int $timeOut
-     * @throws \InvalidArgumentException
-     */
-    public function setTimeOut($timeOut) {
-        if ($timeOut <= 0) {
-            throw new \InvalidArgumentException('Timeout value must be more or grater then zero.');
+                if ($delta > $this->getTimeOut()) {
+                    throw new SmartlingApiException(vsprintf('Async operation is not completed after %s seconds.', [$delta]));
+                }
+
+                sleep(1);
+
+                $result = $this->getMatchStatus($data['matchId']);
+            }
+            while ($result['status'] != 'COMPLETED');
         }
-
-        $this->timeOut = $timeOut;
     }
 
     /**
@@ -72,9 +75,11 @@ class ContextApi extends BaseApiAbstract
         $opts = parent::processBodyOptions($requestData);
         $keys = ['content', 'resource'];
 
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $opts)) {
-                $opts[$key] = $this->readFile($opts[$key]);
+        if (!empty($opts['multipart'])) {
+            foreach ($opts['multipart'] as &$data) {
+                if (in_array($data['name'], $keys)) {
+                    $data['contents'] = $this->readFile($data['contents']);
+                }
             }
         }
 
@@ -112,15 +117,13 @@ class ContextApi extends BaseApiAbstract
      */
     public function uploadContext(UploadContextParameters $params)
     {
-        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
-        $request = $this->prepareHttpRequest('contexts', $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('contexts', $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
-     * Match context.
+     * Match context async.
      *
      * @param $contextUid
      * @return array
@@ -129,11 +132,21 @@ class ContextApi extends BaseApiAbstract
     public function matchContext($contextUid)
     {
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
-        $requestData = $this->getDefaultRequestData('body', '');
+        $requestData = $this->getDefaultRequestData('form_params', []);
         $requestData['headers']['Content-Type'] = 'application/json';
-        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+    }
+
+    /**
+     * Match context sync.
+     *
+     * @param $contextUid
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function matchContextSync($contextUid)
+    {
+        $this->wait($this->matchContext($contextUid));
     }
 
     /**
@@ -145,11 +158,34 @@ class ContextApi extends BaseApiAbstract
      */
     public function uploadAndMatchContext(UploadContextParameters $params)
     {
-        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
-        $request = $this->prepareHttpRequest('contexts/upload-and-match-async', $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('contexts/upload-and-match-async', $requestData, self::HTTP_METHOD_POST);
+    }
+
+    /**
+     * Upload and match sync.
+     *
+     * @param \Smartling\Context\Params\UploadContextParameters $params
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function uploadAndMatchContextSync(UploadContextParameters $params)
+    {
+        $this->wait($this->uploadAndMatchContext($params));
+    }
+
+    /**
+     * Get context match status.
+     *
+     * @param $matchId
+     * @return array
+     * @throws SmartlingApiException
+     */
+    public function getMatchStatus($matchId) {
+        $endpoint = vsprintf('/match/%s', $matchId);
+        $requestData = $this->getDefaultRequestData('query', []);
+
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -161,9 +197,8 @@ class ContextApi extends BaseApiAbstract
      */
     public function getMissingResources(MissingResourcesParameters $params = null) {
         $requestData = $this->getDefaultRequestData('query', is_null($params) ? [] : $params->exportToArray());
-        $request = $this->prepareHttpRequest('missing-resources', $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('missing-resources', $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -221,11 +256,9 @@ class ContextApi extends BaseApiAbstract
     public function uploadResource($resourceId, UploadResourceParameters $params)
     {
         $endpoint = vsprintf('resources/%s', $resourceId);
-        $requestData = $this->getDefaultRequestData('body', $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
-        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
+        $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
-        return $this->sendRequest($request);
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
     }
 
     /**
@@ -238,10 +271,9 @@ class ContextApi extends BaseApiAbstract
     public function renderContext($contextUid)
     {
         $endpoint = vsprintf('contexts/%s/render', $contextUid);
-        $requestData = $this->getDefaultRequestData('body', '');
-        $request = $this->prepareHttpRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('form_params', []);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
     }
 
 }
