@@ -9,41 +9,44 @@ use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
 use Smartling\Exceptions\SmartlingApiException;
+use Smartling\Wait;
+use Smartling\Waitable;
 
 /**
  * Class ContextApi
  *
  * @package Smartling\Project
  */
-class ContextApi extends BaseApiAbstract
+class ContextApi extends BaseApiAbstract implements Waitable
 {
+
+    use Wait;
 
     const ENDPOINT_URL = 'https://api.smartling.com/context-api/v2/projects';
 
     /**
-     * Timeout in seconds.
+     * Makes async operation sync.
      *
-     * @var int
+     * @param array $data
+     * @throws SmartlingApiException
      */
-    private $timeOut = 15;
+    public function wait(array $data) {
+        if (!empty($data['matchId'])) {
+            $start_time = time();
 
-    /**
-     * @return int
-     */
-    public function getTimeOut() {
-        return $this->timeOut;
-    }
+            do {
+                $delta = time() - $start_time;
 
-    /**
-     * @param int $timeOut
-     * @throws \InvalidArgumentException
-     */
-    public function setTimeOut($timeOut) {
-        if ($timeOut <= 0) {
-            throw new \InvalidArgumentException('Timeout value must be more or grater then zero.');
+                if ($delta > $this->getTimeOut()) {
+                    throw new SmartlingApiException(vsprintf('Async operation is not completed after %s seconds.', [$delta]));
+                }
+
+                sleep(1);
+
+                $result = $this->getMatchStatus($data['matchId']);
+            }
+            while ($result['status'] != 'COMPLETED');
         }
-
-        $this->timeOut = $timeOut;
     }
 
     /**
@@ -120,7 +123,7 @@ class ContextApi extends BaseApiAbstract
     }
 
     /**
-     * Match context.
+     * Match context async.
      *
      * @param $contextUid
      * @return array
@@ -136,6 +139,17 @@ class ContextApi extends BaseApiAbstract
     }
 
     /**
+     * Match context sync.
+     *
+     * @param $contextUid
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function matchContextSync($contextUid)
+    {
+        $this->wait($this->matchContext($contextUid));
+    }
+
+    /**
      * Upload and match async.
      *
      * @param \Smartling\Context\Params\UploadContextParameters $params
@@ -147,6 +161,31 @@ class ContextApi extends BaseApiAbstract
         $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
         return $this->sendRequest('contexts/upload-and-match-async', $requestData, self::HTTP_METHOD_POST);
+    }
+
+    /**
+     * Upload and match sync.
+     *
+     * @param \Smartling\Context\Params\UploadContextParameters $params
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function uploadAndMatchContextSync(UploadContextParameters $params)
+    {
+        $this->wait($this->uploadAndMatchContext($params));
+    }
+
+    /**
+     * Get context match status.
+     *
+     * @param $matchId
+     * @return array
+     * @throws SmartlingApiException
+     */
+    public function getMatchStatus($matchId) {
+        $endpoint = vsprintf('/match/%s', $matchId);
+        $requestData = $this->getDefaultRequestData('query', []);
+
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
