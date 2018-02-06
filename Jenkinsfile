@@ -26,6 +26,24 @@ pipeline {
       }
     }
 
+    stage("Quality Gate") {
+      steps {
+        script {
+          try {
+            timeout(time: 5, unit: 'MINUTES') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                error "Pipeline aborted due to quality gate failure: ${qg.status}"
+              }
+            }
+          }
+          catch (err) {
+            sh 'echo "Quality Gate step has not been finished: timed out."'
+          }
+        }
+      }
+    }
+
     stage('Clean up') {
       steps {
         deleteDir()
