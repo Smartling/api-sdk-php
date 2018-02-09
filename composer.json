@@ -9,7 +9,7 @@
     "automated translation"
   ],
   "homepage": "https://www.smartling.com",
-  "license": "Apache",
+  "license": "Apache-2.0",
   "authors": [],
   "require": {
     "psr/log": "~1.0",
