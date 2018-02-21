@@ -443,6 +443,12 @@ abstract class BaseApiAbstract
         try {
             $options = $this->processBodyOptions($options);
             $response = $this->getHttpClient()->request($method, $endpoint, $options);
+
+            if (401 === (int) $response->getStatusCode()) {
+                $this->getLogger()->notice('Got unexpected 401 response code, trying to reauth carefully...');
+                $this->getAuth()->resetToken();
+                $response = $this->getHttpClient()->request($method, $endpoint, $options);
+            }
         } catch (RequestException $e) {
             $message = vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
             $this->getLogger()->error($message);
