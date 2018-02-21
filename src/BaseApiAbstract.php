@@ -22,8 +22,6 @@ use Smartling\Parameters\BaseParameters;
  */
 abstract class BaseApiAbstract
 {
-    const TTL_PREDICTION_CORRECTION_TIME_SEC = 10;
-
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
     const CLIENT_LIB_ID_VERSION = '2.0.0';

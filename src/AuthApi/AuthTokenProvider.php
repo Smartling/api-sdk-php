@@ -21,6 +21,8 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     const RESPONSE_KEY_REFRESH_TOKEN_TTL = 'refreshExpiresIn';
     const RESPONSE_KEY_TOKEN_TYPE = 'tokenType';
 
+    const TTL_CORRECTION_TIME_SEC = 10;
+
     /**
      * @var string
      */
@@ -113,9 +115,8 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
         if (!$this->tokenExists()) {
             $this->requestTimestamp = time();
             $this->data = $this->authenticate();
-            $this->getLogger()->debug(var_export($this->data, true));
         } elseif ($this->tokenExpired()) {
-            $this->data = $this->tokenRenew();
+            $this->data = $this->refreshToken();
         }
         return $this->data[self::RESPONSE_KEY_ACCESS_TOKEN];
     }
@@ -133,8 +134,11 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     private function tokenExpired()
     {
-        return $this->tokenExists() &&
-        time() > $this->requestTimestamp + $this->data[self::RESPONSE_KEY_ACCESS_TOKEN_TTL];
+        $tokenExpirationTime = $this->requestTimestamp
+            + $this->data[static::RESPONSE_KEY_ACCESS_TOKEN_TTL]
+            - static::TTL_CORRECTION_TIME_SEC;
+
+        return $this->tokenExists() && time() > $tokenExpirationTime;
     }
 
     /**
@@ -155,7 +159,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     /**
      * Renews tokens
      */
-    private function tokenRenew()
+    private function refreshToken()
     {
         if ($this->tokenExists() && $this->tokenCanBeRenewed()) {
             $requestData = $this->getDefaultRequestData('json', [
@@ -174,9 +178,8 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     private function tokenCanBeRenewed()
     {
-        $refreshTokenEOL = $this->requestTimestamp + $this->data[self::RESPONSE_KEY_REFRESH_TOKEN_TTL];
-
-        return $this->tokenExists() && (time() < $refreshTokenEOL);
+        return $this->tokenExists()
+            && (time() < ($this->requestTimestamp + $this->data[self::RESPONSE_KEY_REFRESH_TOKEN_TTL]));
     }
 
     /**
