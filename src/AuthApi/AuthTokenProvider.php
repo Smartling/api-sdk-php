@@ -106,6 +106,21 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getAccessToken()
+    {
+        if (!$this->tokenExists()) {
+            $this->requestTimestamp = time();
+            $this->data = $this->authenticate();
+            $this->getLogger()->debug(var_export($this->data, true));
+        } elseif ($this->tokenExpired()) {
+            $this->data = $this->tokenRenew();
+        }
+        return $this->data[self::RESPONSE_KEY_ACCESS_TOKEN];
+    }
+
+    /**
      * Checks if token exists
      */
     private function tokenExists()
@@ -147,7 +162,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
                 'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
             ], false);
             $request = $this->prepareHttpRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
-
+            $this->requestTimestamp = time();
             return $this->sendRequest($request);
         } else {
             return $this->authenticate();
@@ -159,23 +174,9 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     private function tokenCanBeRenewed()
     {
-        return $this->tokenExists() &&
-        time() > $this->requestTimestamp + $this->data[self::RESPONSE_KEY_REFRESH_TOKEN_TTL];
-    }
+        $refreshTokenEOL = $this->requestTimestamp + $this->data[self::RESPONSE_KEY_REFRESH_TOKEN_TTL];
 
-    /**
-     * @inheritdoc
-     */
-    public function getAccessToken()
-    {
-        if (!$this->tokenExists()) {
-            $this->requestTimestamp = time();
-            $this->data = $this->authenticate();
-        }
-        if ($this->tokenExpired()) {
-            $this->tokenRenew();
-        }
-        return $this->data[self::RESPONSE_KEY_ACCESS_TOKEN];
+        return $this->tokenExists() && (time() < $refreshTokenEOL);
     }
 
     /**
@@ -192,6 +193,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     public function resetToken()
     {
         $this->data = [];
+        $this->requestTimestamp = 0;
     }
 
 }

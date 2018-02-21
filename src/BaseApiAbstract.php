@@ -22,6 +22,7 @@ use Smartling\Parameters\BaseParameters;
  */
 abstract class BaseApiAbstract
 {
+    const TTL_PREDICTION_CORRECTION_TIME_SEC = 10;
 
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
@@ -444,6 +445,12 @@ abstract class BaseApiAbstract
     {
         try {
             $response = $this->getHttpClient()->send($request);
+
+            if (401 === (int) $response->getStatusCode()) {
+                $this->getLogger()->notice('Got unexpected 401 response code, trying to reauth carefully...');
+                $this->getAuth()->resetToken();
+                $response = $this->getHttpClient()->send($request);
+            }
         } catch (RequestException $e) {
             $message = vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
             $this->getLogger()->error($message);
