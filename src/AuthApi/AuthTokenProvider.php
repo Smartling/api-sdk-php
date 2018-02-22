@@ -21,6 +21,8 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     const RESPONSE_KEY_REFRESH_TOKEN_TTL = 'refreshExpiresIn';
     const RESPONSE_KEY_TOKEN_TYPE = 'tokenType';
 
+    const TTL_CORRECTION_TIME_SEC = 10;
+
     /**
      * @var string
      */
@@ -106,6 +108,20 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getAccessToken()
+    {
+        if (!$this->tokenExists()) {
+            $this->requestTimestamp = time();
+            $this->data = $this->authenticate();
+        } elseif ($this->tokenExpired()) {
+            $this->data = $this->refreshToken();
+        }
+        return $this->data[self::RESPONSE_KEY_ACCESS_TOKEN];
+    }
+
+    /**
      * Checks if token exists
      */
     private function tokenExists()
@@ -118,8 +134,11 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     private function tokenExpired()
     {
-        return $this->tokenExists() &&
-        time() > $this->requestTimestamp + $this->data[self::RESPONSE_KEY_ACCESS_TOKEN_TTL];
+        $tokenExpirationTime = $this->requestTimestamp
+            + $this->data[static::RESPONSE_KEY_ACCESS_TOKEN_TTL]
+            - static::TTL_CORRECTION_TIME_SEC;
+
+        return $this->tokenExists() && time() > $tokenExpirationTime;
     }
 
     /**
@@ -140,14 +159,14 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     /**
      * Renews tokens
      */
-    private function tokenRenew()
+    private function refreshToken()
     {
         if ($this->tokenExists() && $this->tokenCanBeRenewed()) {
             $requestData = $this->getDefaultRequestData('json', [
                 'refreshToken' => $this->data[self::RESPONSE_KEY_REFRESH_TOKEN]
             ], false);
             $request = $this->prepareHttpRequest('authenticate/refresh', $requestData, self::HTTP_METHOD_POST);
-
+            $this->requestTimestamp = time();
             return $this->sendRequest($request);
         } else {
             return $this->authenticate();
@@ -159,23 +178,8 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      */
     private function tokenCanBeRenewed()
     {
-        return $this->tokenExists() &&
-        time() > $this->requestTimestamp + $this->data[self::RESPONSE_KEY_REFRESH_TOKEN_TTL];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAccessToken()
-    {
-        if (!$this->tokenExists()) {
-            $this->requestTimestamp = time();
-            $this->data = $this->authenticate();
-        }
-        if ($this->tokenExpired()) {
-            $this->tokenRenew();
-        }
-        return $this->data[self::RESPONSE_KEY_ACCESS_TOKEN];
+        return $this->tokenExists()
+            && (time() < ($this->requestTimestamp + $this->data[self::RESPONSE_KEY_REFRESH_TOKEN_TTL]));
     }
 
     /**
@@ -192,6 +196,7 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
     public function resetToken()
     {
         $this->data = [];
+        $this->requestTimestamp = 0;
     }
 
 }
