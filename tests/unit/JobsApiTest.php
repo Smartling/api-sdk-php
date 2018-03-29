@@ -274,7 +274,7 @@ class JobsApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\Jobs\JobsApi::addFileToJob
+     * @covers \Smartling\Jobs\JobsApi::addFileToJobSync
      */
     public function testAddFileToJob() {
         $jobId = 'Some job id';
@@ -345,7 +345,7 @@ class JobsApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\Jobs\JobsApi::addLocaleToJob
+     * @covers \Smartling\Jobs\JobsApi::addLocaleToJobSync
      */
     public function testAddLocaleToJob() {
         $jobId = 'Some job id';
