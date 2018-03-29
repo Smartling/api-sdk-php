@@ -139,7 +139,7 @@ class JobsApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\Jobs\JobsApi::cancelJob
+     * @covers \Smartling\Jobs\JobsApi::cancelJobSync
      */
     public function testCancelJob() {
         $jobId = 'Some job id';
