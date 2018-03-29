@@ -3,6 +3,7 @@
 namespace Smartling\Tests;
 
 use Smartling\AuthApi\AuthTokenProvider;
+use Smartling\Tests\Unit\ApiTestAbstract;
 
 /**
  * Test class for Smartling\AuthApi\AuthTokenProvider.
@@ -41,7 +42,7 @@ class AuthApiTest extends ApiTestAbstract
         ]);
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -52,11 +53,6 @@ class AuthApiTest extends ApiTestAbstract
                     'userSecret' => 'SomeSecretKey',
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->invokeMethod($this->object, 'authenticate');
