@@ -71,6 +71,11 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
      */
     protected $responseMock;
 
+    /**
+     * @var RequestInterface | PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $requestMock;
+
     protected static $requestInterfaceMethods = [
         'setUrl',
         'getUrl',
@@ -223,7 +228,17 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         if (true === $setDefaultResponse) {
-            $this->responseMock->expects($this->any())
+            $this->responseMock
+                ->expects(self::any())
+                ->method('json')
+                ->willReturn(
+                    json_decode(
+                        $this->validResponse,
+                        self::JSON_OBJECT_AS_ARRAY
+                    )
+                );
+
+            $this->responseMock->expects(self::any())
                 ->method('getBody')
                 ->willReturn($this->validResponse);
         }
@@ -243,4 +258,5 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
         $this->prepareAuthProviderMock();
         $this->prepareClientResponseMock();
     }
+
 }
