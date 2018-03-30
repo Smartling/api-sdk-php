@@ -58,4 +58,60 @@ class AuthApiTest extends ApiTestAbstract
         $this->invokeMethod($this->object, 'authenticate');
     }
 
+    /**
+     * Test auth with invalid credentials.
+     *
+     * If there are invalid credentials then BaseApiAbstract::sendRequest()
+     * returns response with 401 status code. It means that BaseApiAbstract
+     * will try to re-authenticate and send request again. But we don't need
+     * to re-authenticate if sendRequest() method was called from
+     * AuthTokenProvider object (invalid credentials).
+     *
+     * AuthTokenProvider::sendRequest() - 401 - Invalid credentials.
+     * [Some]Api::sendRequest() - 401 - expired access token.
+     *
+     * @expectedException Smartling\Exceptions\SmartlingApiException
+     * @expectedExceptionMessage AuthProvider expected to be instance of AuthApiInterface, type given:NULL
+     */
+    public function testAuthenticateWithInvalidCredentials() {
+        $response_mock = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
+            ->setMethods(
+                array_merge(
+                    self::$responseInterfaceMethods,
+                    self::$messageInterfaceMethods
+                )
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $response_mock->expects($this->any())
+            ->method('getStatusCode')
+            ->willReturn(401);
+
+        $client_mock = $this->getMockBuilder('GuzzleHttp\Client')
+            ->setMethods(
+                array_merge(
+                    self::$clientInterfaceMethods,
+                    self::$hasEmitterInterfaceMethods
+                )
+            )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $client_mock->expects(self::once())
+            ->method('request')
+            ->willReturn($response_mock);
+
+        $auth_api_mock = $this->getMockBuilder('Smartling\AuthApi\AuthTokenProvider')
+            ->setMethods(NULL)
+            ->setConstructorArgs([
+                $this->userIdentifier,
+                $this->secretKey,
+                $client_mock,
+            ])
+            ->getMock();
+
+        $this->invokeMethod($auth_api_mock, 'authenticate');
+    }
+
 }
