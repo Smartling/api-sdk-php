@@ -444,7 +444,7 @@ abstract class BaseApiAbstract
             $options = $this->processBodyOptions($options);
             $response = $this->getHttpClient()->request($method, $endpoint, $options);
 
-            if (401 === (int) $response->getStatusCode()) {
+            if (401 === (int) $response->getStatusCode() && !($this instanceof AuthApiInterface)) {
                 $this->getLogger()->notice('Got unexpected 401 response code, trying to reauth carefully...');
                 $this->getAuth()->resetToken();
                 $response = $this->getHttpClient()->request($method, $endpoint, $options);
