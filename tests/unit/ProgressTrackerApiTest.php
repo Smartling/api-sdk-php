@@ -39,7 +39,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ])
             ->willReturn($this->responseMock);
 
-        $this->object->getToken("account_uid");
+        $this->object->getToken($accountUid);
     }
 
     /**
