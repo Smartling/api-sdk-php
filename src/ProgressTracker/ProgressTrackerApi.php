@@ -39,7 +39,7 @@ class ProgressTrackerApi extends BaseApiAbstract
      */
     public static function create(AuthApiInterface $authProvider, $projectId, $logger = null)
     {
-        $client = self::initializeHttpClient(self::ENDPOINT_URL);
+        $client = static::initializeHttpClient(self::ENDPOINT_URL);
 
         $instance = new self($projectId, $client, $logger, self::ENDPOINT_URL);
         $instance->setAuth($authProvider);
@@ -58,7 +58,7 @@ class ProgressTrackerApi extends BaseApiAbstract
         $requestData = $this->getDefaultRequestData('query', []);
         $endpoint = vsprintf('accounts/%s/token', [$accountUid]);
 
-        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
+        return $this->sendRequest($endpoint, $requestData, static::HTTP_METHOD_GET);
     }
 
     /**
@@ -80,6 +80,6 @@ class ProgressTrackerApi extends BaseApiAbstract
             $objectId,
         ]);
 
-        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+        return $this->sendRequest($endpoint, $requestData, static::HTTP_METHOD_POST);
     }
 }
