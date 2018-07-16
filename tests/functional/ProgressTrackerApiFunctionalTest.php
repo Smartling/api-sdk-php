@@ -17,7 +17,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
     /**
      * @var ProgressTrackerApi
      */
-    private $progressTraclerApi;
+    private $progressTrackerApi;
 
     /**
      * Test mixture.
@@ -37,7 +37,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
         }
 
         $authProvider = AuthTokenProvider::create($userIdentifier, $userSecretKey);
-        $this->progressTraclerApi = ProgressTrackerApi::create($authProvider, $projectId);
+        $this->progressTrackerApi = ProgressTrackerApi::create($authProvider, $projectId);
     }
 
     /**
@@ -51,9 +51,31 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
             $params->setData([
               "foo" => "bar"
             ]);
-            $result = $this->progressTraclerApi->createRecord("space", "object", $params);
+            $result = $this->progressTrackerApi->createRecord("space", "object", $params);
 
             $this->assertArrayHasKey('recordId', $result);
+        } catch (SmartlingApiException $e) {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Tests for delete record.
+     */
+    public function testDeleteRecord()
+    {
+        try {
+            $params = new CreateRecordParameters();
+            $params->setTtl(15);
+            $params->setData([
+                "foo" => "bar"
+            ]);
+            $result = $this->progressTrackerApi->createRecord("space", "object", $params);
+            $result = $this->progressTrackerApi->deleteRecord("space", "object", $result["recordId"]);
+
+            $this->assertTrue($result);
         } catch (SmartlingApiException $e) {
             $result = false;
         }
@@ -67,7 +89,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testGetToken()
     {
         try {
-            $result = $this->progressTraclerApi->getToken(getenv("account_uid"));
+            $result = $this->progressTrackerApi->getToken(getenv("account_uid"));
 
             $this->assertArrayHasKey('token', $result);
             $this->assertArrayHasKey('config', $result);

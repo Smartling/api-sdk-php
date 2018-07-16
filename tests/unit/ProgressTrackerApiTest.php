@@ -89,6 +89,43 @@ class ProgressTrackerApiTest extends ApiTestAbstract
     }
 
     /**
+     * @covers \Smartling\ProgressTracker\ProgressTrackerApi::deleteToken
+     */
+    public function testDeleteRecord()
+    {
+        $spaceId = "space";
+        $objectId = "object";
+        $recordId = "record";
+        $endpointUrl = vsprintf(
+            '%s/projects/%s/spaces/%s/objects/%s/records/%s',
+            [
+                ProgressTrackerApi::ENDPOINT_URL,
+                $this->projectId,
+                $spaceId,
+                $objectId,
+              $recordId
+            ]
+        );
+
+        $this->client->expects($this->any())
+            ->method('request')
+            ->with('delete', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->deleteRecord($spaceId, $objectId, $recordId);
+    }
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */

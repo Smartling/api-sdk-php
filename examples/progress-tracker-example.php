@@ -113,5 +113,38 @@ function createRecordDemo($authProvider, $projectId, $spaceId, $objectId)
     return $response;
 }
 
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @param $spaceId
+ * @param $objectId
+ * @param $recordId
+ * @return bool
+ */
+function deleteRecordDemo($authProvider, $projectId, $spaceId, $objectId, $recordId)
+{
+  $response = false;
+  $progressTracker = \Smartling\ProgressTracker\ProgressTrackerApi::create($authProvider, $projectId);
+  $st = microtime(true);
+
+  try {
+    $response = $progressTracker->deleteRecord($spaceId, $objectId, $recordId);
+  } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+    var_dump($e->getErrors());
+  }
+
+  $et = microtime(true);
+  $time = $et - $st;
+
+  echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+
+  if (!empty($response)) {
+    var_dump($response);
+  }
+
+  return $response;
+}
+
 $response = getTokenDemo($authProvider, $projectId, $accountUid);
 $response = createRecordDemo($authProvider, $projectId, "space", "object");
+$response = deleteRecordDemo($authProvider, $projectId, "space", "object", $response["recordId"]);

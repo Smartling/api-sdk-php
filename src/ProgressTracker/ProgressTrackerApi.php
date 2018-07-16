@@ -82,4 +82,27 @@ class ProgressTrackerApi extends BaseApiAbstract
 
         return $this->sendRequest($endpoint, $requestData, static::HTTP_METHOD_POST);
     }
+
+    /**
+     * Deletes record.
+     *
+     * @param $spaceId
+     * @param $objectId
+     * @param $recordId
+     *
+     * @return array
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function deleteRecord($spaceId, $objectId, $recordId)
+    {
+        $requestData = $this->getDefaultRequestData('query', []);
+        $endpoint = vsprintf('projects/%s/spaces/%s/objects/%s/records/%s', [
+            $this->getProjectId(),
+            $spaceId,
+            $objectId,
+            $recordId
+        ]);
+
+        return $this->sendRequest($endpoint, $requestData, static::HTTP_METHOD_DELETE);
+    }
 }
