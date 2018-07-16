@@ -43,7 +43,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\ProgressTracker\ProgressTrackerApi::getToken
+     * @covers \Smartling\ProgressTracker\ProgressTrackerApi::createRecord
      */
     public function testCreateRecord()
     {
@@ -89,7 +89,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\ProgressTracker\ProgressTrackerApi::deleteToken
+     * @covers \Smartling\ProgressTracker\ProgressTrackerApi::deleteRecord
      */
     public function testDeleteRecord()
     {
