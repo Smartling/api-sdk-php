@@ -398,8 +398,12 @@ class SubmissionsApiTest extends ApiTestAbstract
     /**
      * @covers       \Smartling\Submissions\SubmissionsApi::searchSubmissions
      * @dataProvider searchSubmissionTestDataProvider
+     * @param SearchSubmissionsParams $searchParams
+     * @param array $queryParams
+     * @param array $rawResponse
+     * @throws \Smartling\Exceptions\InvalidAccessTokenException
      */
-    public function testSearchSubmissios(SearchSubmissionsParams $searchParams, array $queryParams, array $rawResponse)
+    public function testSearchSubmissions(SearchSubmissionsParams $searchParams, array $queryParams, array $rawResponse)
     {
 
         $testRawResponse = json_encode($rawResponse);
