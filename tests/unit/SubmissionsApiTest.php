@@ -3,7 +3,9 @@
 namespace Smartling\Tests\Unit;
 
 
+use Smartling\Submissions\Params\CreateSubmissionParams;
 use Smartling\Submissions\Params\SearchSubmissionsParams;
+use Smartling\Submissions\Params\UpdateSubmissionParams;
 use Smartling\Submissions\SubmissionsApi;
 
 class SubmissionsApiTest extends ApiTestAbstract
@@ -63,12 +65,11 @@ class SubmissionsApiTest extends ApiTestAbstract
     public function testCreateSubmission()
     {
 
-        $testRequestBody = [
-            'original_asset_id' => ['a' => '1'],
-            'title' => 'Submission 1',
-            'fileUri' => '/posts/hello-world_1_1_post.xml',
-            'original_locale' => 'en-US'
-        ];
+        $createParams = (new CreateSubmissionParams())
+            ->setOriginalAssetId(['a' => '1'])
+            ->setTitle('Submission 1')
+            ->setFileUri('/posts/hello-world_1_1_post.xml')
+            ->setOriginalLocale('en-US');
 
         $testRawResponse = json_encode(
             [
@@ -112,7 +113,7 @@ class SubmissionsApiTest extends ApiTestAbstract
                     [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
             ],
             'exceptions' => false,
-            'json' => $testRequestBody
+            'json' => $createParams->exportToArray()
         ];
 
         $this->client
@@ -121,7 +122,7 @@ class SubmissionsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, $requestStructure)
             ->willReturn($this->responseMock);
 
-        $response = $this->object->createSubmission($bucketName, $testRequestBody);
+        $response = $this->object->createSubmission($bucketName, $createParams);
         self::assertEquals($testExpectedResponse, $response);
     }
 
@@ -133,9 +134,7 @@ class SubmissionsApiTest extends ApiTestAbstract
 
         $submissionUid = '8264fd9133d3';
 
-        $testRequestBody = [
-            'title' => 'Submission 2'
-        ];
+        $updateParams = (new UpdateSubmissionParams())->setTitle('Submission 2');
 
         $testRawResponse = json_encode(
             [
@@ -179,7 +178,7 @@ class SubmissionsApiTest extends ApiTestAbstract
                     [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
             ],
             'exceptions' => false,
-            'json' => $testRequestBody
+            'json' => $updateParams->exportToArray()
         ];
 
         $this->client
@@ -188,7 +187,7 @@ class SubmissionsApiTest extends ApiTestAbstract
             ->with('put', $endpointUrl, $requestStructure)
             ->willReturn($this->responseMock);
 
-        $response = $this->object->updateSubmission($bucketName, $submissionUid, $testRequestBody);
+        $response = $this->object->updateSubmission($bucketName, $submissionUid, $updateParams);
         self::assertEquals($testExpectedResponse, $response);
     }
 
@@ -322,13 +321,9 @@ class SubmissionsApiTest extends ApiTestAbstract
 
                 ]
             ],
-
             [
                 (new SearchSubmissionsParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml'),
-                [
-                    'original_asset_id' => json_encode(["a" => "1"]),
-                    'fileUri' => '%.xml'
-                ],
+                (new SearchSubmissionsParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml')->exportToArray(),
                 [
                     "response" => [
                         "code" => "SUCCESS",
@@ -386,7 +381,9 @@ class SubmissionsApiTest extends ApiTestAbstract
                 [
                     "response" => [
                         "code" => "SUCCESS",
-                        "data" => []
+                        "data" => [
+                            "items" => []
+                        ]
                     ]
 
                 ]

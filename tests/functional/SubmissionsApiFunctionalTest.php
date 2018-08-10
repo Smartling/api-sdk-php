@@ -3,7 +3,9 @@
 namespace Smartling\Tests\Unit;
 
 use Smartling\AuthApi\AuthTokenProvider;
+use Smartling\Submissions\Params\CreateSubmissionParams;
 use Smartling\Submissions\Params\SearchSubmissionsParams;
+use Smartling\Submissions\Params\UpdateSubmissionParams;
 use Smartling\Submissions\SubmissionsApi;
 
 class SubmissionsApiFunctionalTest extends \PHPUnit_Framework_TestCase
@@ -44,16 +46,15 @@ class SubmissionsApiFunctionalTest extends \PHPUnit_Framework_TestCase
     {
         $time = (string)microtime(true);
 
-        $testRequestBody = [
-            'original_asset_id' => ['a' => $time],
-            'title' => vsprintf('Submission %s', [$time]),
-            'fileUri' => vsprintf('/posts/hello-world_1_%s_post.xml', [$time]),
-            'original_locale' => 'en-US'
-        ];
+        $createParams = (new CreateSubmissionParams())
+            ->setOriginalAssetId(['a' => $time])
+            ->setTitle(vsprintf('Submission %s', [$time]))
+            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setOriginalLocale('en-US');
 
-        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $testRequestBody);
+        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($testRequestBody, $response);
+        self::assertArraySubset($createParams->exportToArray(), $response);
         self::assertArrayHasKey('submission_uid', $response);
     }
 
@@ -64,27 +65,26 @@ class SubmissionsApiFunctionalTest extends \PHPUnit_Framework_TestCase
     {
         $time = (string)microtime(true);
 
-        $testRequestBody = [
-            'original_asset_id' => ['a' => $time],
-            'title' => vsprintf('Submission %s', [$time]),
-            'fileUri' => vsprintf('/posts/hello-world_1_%s_post.xml', [$time]),
-            'original_locale' => 'en-US'
-        ];
+        $createParams = (new CreateSubmissionParams())
+            ->setOriginalAssetId(['a' => $time])
+            ->setTitle(vsprintf('Submission %s', [$time]))
+            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setOriginalLocale('en-US');
 
-        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $testRequestBody);
+        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($testRequestBody, $response);
+        self::assertArraySubset($createParams->exportToArray(), $response);
         self::assertArrayHasKey('submission_uid', $response);
 
         $submissionUid = $response['submission_uid'];
 
-        $testUpdateBody = [
-            'title' => 'Submission UPDATED',
-        ];
+        $updateParams = (new UpdateSubmissionParams())
+            ->setTitle('Submission UPDATED');
 
-        $updateResponse = $this->submissionsApi->updateSubmission(self::BUCKET_NAME, $submissionUid, $testUpdateBody);
 
-        self::assertArraySubset($testUpdateBody, $updateResponse);
+        $updateResponse = $this->submissionsApi->updateSubmission(self::BUCKET_NAME, $submissionUid, $updateParams);
+
+        self::assertArraySubset($updateParams->exportToArray(), $updateResponse);
         self::assertArrayHasKey('submission_uid', $updateResponse);
         self::assertEquals($submissionUid, $updateResponse['submission_uid']);
     }
@@ -96,29 +96,23 @@ class SubmissionsApiFunctionalTest extends \PHPUnit_Framework_TestCase
     {
         $time = (string)microtime(true);
 
-        $testRequestBody = [
-            'original_asset_id' => ['a' => $time],
-            'title' => vsprintf('Submission %s', [$time]),
-            'fileUri' => vsprintf('/posts/hello-world_1_%s_post.xml', [$time]),
-            'original_locale' => 'en-US'
-        ];
+        $createParams = (new CreateSubmissionParams())
+            ->setOriginalAssetId(['a' => $time])
+            ->setTitle(vsprintf('Submission %s', [$time]))
+            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setOriginalLocale('en-US');
 
-        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $testRequestBody);
+        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($testRequestBody, $response);
+        self::assertArraySubset($createParams->exportToArray(), $response);
         self::assertArrayHasKey('submission_uid', $response);
 
         $submissionUid = $response['submission_uid'];
 
         $getResponsePositive = $this->submissionsApi->getSubmission(self::BUCKET_NAME, $submissionUid);
 
-        self::assertArraySubset($testRequestBody, $getResponsePositive);
+        self::assertArraySubset($createParams->exportToArray(), $getResponsePositive);
         self::assertArrayHasKey('submission_uid', $getResponsePositive);
-
-        $getResponseNegative = $this->submissionsApi->getSubmission(self::BUCKET_NAME, md5($submissionUid));
-
-        self::assertEquals([], $getResponseNegative);
-
     }
 
     /**
@@ -128,24 +122,31 @@ class SubmissionsApiFunctionalTest extends \PHPUnit_Framework_TestCase
     {
         $time = (string)microtime(true);
 
+        $createParams = (new CreateSubmissionParams())
+            ->setOriginalAssetId(['a' => $time])
+            ->setTitle(vsprintf('Submission %s', [$time]))
+            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setOriginalLocale('en-US');
 
-        $testRequestBody = [
-            'original_asset_id' => ['a' => $time, 'b' => 'c'],
-            'title' => vsprintf('Submission %s', [$time]),
-            'fileUri' => vsprintf('/posts/hello-world_1_%s_post.xml', [$time]),
-            'original_locale' => 'en-US'
-        ];
+        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $createParams);
 
-        $response = $this->submissionsApi->createSubmission(self::BUCKET_NAME, $testRequestBody);
-
-        self::assertArraySubset($testRequestBody, $response);
+        self::assertArraySubset($createParams->exportToArray(), $response);
         self::assertArrayHasKey('submission_uid', $response);
 
         $submissionUid = $response['submission_uid'];
 
+        $searchResponseEmpty = $this->submissionsApi->searchSubmissions(self::BUCKET_NAME,
+            (new SearchSubmissionsParams())->setFileUri(vsprintf('%%%s%%', [md5($time)]))
+        );
+
+        self::assertTrue(is_array($searchResponseEmpty));
+        self::assertArrayHasKey('items', $searchResponseEmpty);
+        $items = $searchResponseEmpty['items'];
+        self::assertTrue(is_array($items));
+        self::assertTrue(0 === count($items));
+
         $searchResponse = $this->submissionsApi->searchSubmissions(self::BUCKET_NAME,
-            (new SearchSubmissionsParams())
-                ->setFileUri(vsprintf('%%%s%%', [$time]))
+            (new SearchSubmissionsParams())->setFileUri(vsprintf('%%%s%%', [$time]))
         );
 
         self::assertTrue(is_array($searchResponse));
@@ -153,11 +154,7 @@ class SubmissionsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         $items = $searchResponse['items'];
         self::assertTrue(is_array($items));
         self::assertTrue(1 === count($items));
-        $item = reset($items);
-
-        self::assertArraySubset($testRequestBody, $item);
-        self::assertArrayHasKey('submission_uid', $item);
-        self::assertEquals($submissionUid, $item['submission_uid']);
+        self::assertTrue($submissionUid === $items[0]['submission_uid']);
     }
 
 }

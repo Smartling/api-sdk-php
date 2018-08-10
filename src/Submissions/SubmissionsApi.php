@@ -6,7 +6,9 @@ use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
+use Smartling\Submissions\Params\CreateSubmissionParams;
 use Smartling\Submissions\Params\SearchSubmissionsParams;
+use Smartling\Submissions\Params\UpdateSubmissionParams;
 
 /**
  * Class SubmissionsApi
@@ -39,9 +41,9 @@ class SubmissionsApi extends BaseApiAbstract
      * @return mixed
      * @throws SmartlingApiException
      */
-    public function createSubmission($bucketName, array $params)
+    public function createSubmission($bucketName, CreateSubmissionParams $params)
     {
-        $requestData = $this->getDefaultRequestData('json', $params);
+        $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_POST);
     }
@@ -57,21 +59,20 @@ class SubmissionsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('query', []);
         $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
-        $result =  $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
-        return true === $result ? [] : $result;
+        return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
      * @param string $bucketName
-     * @param string $submissionId
+     * @param string $submissionUid
      * @param array $params
      * @return mixed
      * @throws SmartlingApiException
      */
-    public function updateSubmission($bucketName, $submissionId, array $params)
+    public function updateSubmission($bucketName, $submissionUid, UpdateSubmissionParams $params)
     {
-        $requestData = $this->getDefaultRequestData('json', $params);
-        $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionId]);
+        $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
+        $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_PUT);
     }
 
@@ -85,7 +86,6 @@ class SubmissionsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('query', $searchParams->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);
-        $result = $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
-        return true === $result ? [] : $result;
+        return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
     }
 }
