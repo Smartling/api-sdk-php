@@ -14,7 +14,7 @@ use Smartling\Submissions\Params\SearchSubmissionsParams;
  */
 class SubmissionsApi extends BaseApiAbstract
 {
-    const ENDPOINT_URL = 'https://api.smartling.com/submissions-api/v2/projects';
+    const ENDPOINT_URL = 'https://api.smartling.com/submission-service-api/v2/projects';
 
     /**
      * @param AuthApiInterface $authProvider
@@ -57,7 +57,8 @@ class SubmissionsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('query', []);
         $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
-        return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
+        $result =  $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
+        return true === $result ? [] : $result;
     }
 
     /**
