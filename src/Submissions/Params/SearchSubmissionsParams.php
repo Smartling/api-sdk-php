@@ -132,3 +132,4 @@ class SearchSubmissionsParams extends BaseParameters
         return $this;
     }
 }
+
