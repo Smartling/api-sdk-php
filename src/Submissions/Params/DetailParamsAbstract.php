@@ -27,6 +27,14 @@ abstract class DetailParamsAbstract extends ParamsAbstract
         $state = (string)$state;
         if (in_array($state, SubmissionDetailsStates::$allowedStates, true)) {
             $this->set('state', $state);
+        } else {
+            throw new \UnexpectedValueException(
+                'Invalid \'state\' value \'%s\', expected one of: %s',
+                [
+                    $state,
+                    implode('|', SubmissionDetailsStates::$allowedStates)
+                ]
+            );
         }
         return $this;
     }

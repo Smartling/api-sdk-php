@@ -37,7 +37,7 @@ class SubmissionsApi extends BaseApiAbstract
 
     /**
      * @param string $bucketName
-     * @param array $params
+     * @param CreateSubmissionParams $params
      * @return mixed
      * @throws SmartlingApiException
      */
@@ -65,7 +65,7 @@ class SubmissionsApi extends BaseApiAbstract
     /**
      * @param string $bucketName
      * @param string $submissionUid
-     * @param array $params
+     * @param UpdateSubmissionParams $params
      * @return mixed
      * @throws SmartlingApiException
      */
