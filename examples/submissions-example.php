@@ -9,9 +9,6 @@
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
-use Smartling\Batch\BatchApi;
-use Smartling\File\Params\UploadFileParameters;
-
 $longOpts = [
     'project-id:',
     'user-id:',
@@ -48,10 +45,10 @@ $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $u
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param $projectId
  * @param $demoBucketName
- * @param $demoRequestBody
+ * @param $demoCreateParams
  * @return array
  */
-function createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoRequestBody)
+function createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoCreateParams)
 {
     echo "--- Create Submission ---\n";
 
@@ -61,7 +58,7 @@ function createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoR
     $st = microtime(true);
 
     try {
-        $response = $submissionApi->createSubmission($demoBucketName, $demoRequestBody);
+        $response = $submissionApi->createSubmission($demoBucketName, $demoCreateParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -83,10 +80,10 @@ function createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoR
  * @param $projectId
  * @param $demoBucketName
  * @param $submissionUid
- * @param $demoUpdateRequestBody
+ * @param $demoUpdateParams
  * @return array|mixed
  */
-function updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid, $demoUpdateRequestBody)
+function updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid, $demoUpdateParams)
 {
     echo "--- Update Submission ---\n";
 
@@ -96,7 +93,7 @@ function updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submi
     $st = microtime(true);
 
     try {
-        $response = $submissionApi->updateSubmission($demoBucketName, $submissionUid, $demoUpdateRequestBody);
+        $response = $submissionApi->updateSubmission($demoBucketName, $submissionUid, $demoUpdateParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -147,7 +144,8 @@ function getSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissi
     return $response;
 }
 
-function searchSubmissionDemo($authProvider, $projectId, $demoBucketName, $searchParams) {
+function searchSubmissionDemo($authProvider, $projectId, $demoBucketName, $searchParams)
+{
     echo "--- Search Submission ---\n";
 
     $response = [];
@@ -179,20 +177,19 @@ $demoBucketName = 'tst-bucket';
 
 $time = (string)microtime(true);
 
-$demoRequestBody = [
-    'original_asset_id' => ['a' => $time],
-    'title' => vsprintf('Submission %s', [$time]),
-    'fileUri' => vsprintf('/posts/hello-world_1_%s_post.xml', [$time]),
-    'original_locale' => 'en-US'
-];
+$demoCreateParams = (new \Smartling\Submissions\Params\CreateSubmissionParams())
+    ->setOriginalAssetId(['a' => $time])
+    ->setTitle(vsprintf('Submission %s', [$time]))
+    ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+    ->setOriginalLocale('en-US');
 
-$demoUpdateRequestBody = [
-    'title' => 'Updated Title'
-];
+$demoUpdateParams = (new \Smartling\Submissions\Params\UpdateSubmissionParams())
+    ->setTitle('Updated Title');
 
-$response = createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoRequestBody);
+
+$response = createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoCreateParams);
 $submissionUid = $response['submission_uid'];
-$response = updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid, $demoUpdateRequestBody);
+$response = updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid, $demoUpdateParams);
 
 $response = getSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid);
 
