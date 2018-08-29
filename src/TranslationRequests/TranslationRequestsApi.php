@@ -6,9 +6,9 @@ use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
-use Smartling\TranslationRequests\Params\CreateSubmissionParams;
-use Smartling\TranslationRequests\Params\SearchSubmissionsParams;
-use Smartling\TranslationRequests\Params\UpdateSubmissionParams;
+use Smartling\TranslationRequests\Params\CreateTranslationRequestParams;
+use Smartling\TranslationRequests\Params\SearchTranslationRequestParams;
+use Smartling\TranslationRequests\Params\UpdateTranslationRequestParams;
 
 /**
  * Class TranslationRequestsApi
@@ -37,11 +37,11 @@ class TranslationRequestsApi extends BaseApiAbstract
 
     /**
      * @param string $bucketName
-     * @param CreateSubmissionParams $params
+     * @param CreateTranslationRequestParams $params
      * @return mixed
      * @throws SmartlingApiException
      */
-    public function createSubmission($bucketName, CreateSubmissionParams $params)
+    public function createSubmission($bucketName, CreateTranslationRequestParams $params)
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);
@@ -65,11 +65,11 @@ class TranslationRequestsApi extends BaseApiAbstract
     /**
      * @param string $bucketName
      * @param string $submissionUid
-     * @param UpdateSubmissionParams $params
+     * @param UpdateTranslationRequestParams $params
      * @return mixed
      * @throws SmartlingApiException
      */
-    public function updateSubmission($bucketName, $submissionUid, UpdateSubmissionParams $params)
+    public function updateSubmission($bucketName, $submissionUid, UpdateTranslationRequestParams $params)
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
@@ -78,11 +78,11 @@ class TranslationRequestsApi extends BaseApiAbstract
 
     /**
      * @param string $bucketName
-     * @param SearchSubmissionsParams $searchParams
+     * @param SearchTranslationRequestParams $searchParams
      * @return array
      * @throws SmartlingApiException
      */
-    public function searchSubmissions($bucketName, SearchSubmissionsParams $searchParams)
+    public function searchSubmissions($bucketName, SearchTranslationRequestParams $searchParams)
     {
         $requestData = $this->getDefaultRequestData('query', $searchParams->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);

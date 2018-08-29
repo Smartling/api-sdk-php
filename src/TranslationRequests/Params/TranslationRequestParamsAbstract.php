@@ -3,10 +3,10 @@
 namespace Smartling\TranslationRequests\Params;
 
 /**
- * Class SubmissionParamsAbstract
+ * Class TranslationRequestParamsAbstract
  * @package Smartling\TranslationRequests\Params
  */
-class SubmissionParamsAbstract extends ParamsAbstract
+class TranslationRequestParamsAbstract extends ParamsAbstract
 {
     /**
      * @param $title

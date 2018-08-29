@@ -5,10 +5,10 @@ namespace Smartling\TranslationRequests\Params;
 use Smartling\Parameters\BaseParameters;
 
 /**
- * Class SearchSubmissionsParams
+ * Class SearchTranslationRequestParams
  * @package Smartling\TranslationRequests\Params
  */
-class SearchSubmissionsParams extends BaseParameters
+class SearchTranslationRequestParams extends BaseParameters
 {
     /**
      * @param array $originalAssetId
@@ -83,7 +83,7 @@ class SearchSubmissionsParams extends BaseParameters
     public function setState($state)
     {
         $state = (string)$state;
-        if (in_array($state, SubmissionDetailsStates::$allowedStates, true)) {
+        if (in_array($state, TranslationSubmissionStates::$allowedStates, true)) {
             $this->set('state', $state);
         }
         return $this;

@@ -3,10 +3,10 @@
 namespace Smartling\TranslationRequests\Params;
 
 /**
- * Class SubmissionDetailsStates
+ * Class TranslationSubmissionStates
  * @package Smartling\TranslationRequests\Params
  */
-class SubmissionDetailsStates
+class TranslationSubmissionStates
 {
     const STATE_NEW = 'New';
     const STATE_IN_PROGRESS = 'In Progress';

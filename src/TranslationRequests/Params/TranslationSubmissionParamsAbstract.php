@@ -3,10 +3,10 @@
 namespace Smartling\TranslationRequests\Params;
 
 /**
- * Class DetailParamsAbstract
+ * Class TranslationSubmissionParamsAbstract
  * @package Smartling\TranslationRequests\Params
  */
-abstract class DetailParamsAbstract extends ParamsAbstract
+abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
 {
     /**
      * @param array $translationAssetId
@@ -25,14 +25,14 @@ abstract class DetailParamsAbstract extends ParamsAbstract
     public function setState($state)
     {
         $state = (string)$state;
-        if (in_array($state, SubmissionDetailsStates::$allowedStates, true)) {
+        if (in_array($state, TranslationSubmissionStates::$allowedStates, true)) {
             $this->set('state', $state);
         } else {
             throw new \UnexpectedValueException(
                 'Invalid \'state\' value \'%s\', expected one of: %s',
                 [
                     $state,
-                    implode('|', SubmissionDetailsStates::$allowedStates)
+                    implode('|', TranslationSubmissionStates::$allowedStates)
                 ]
             );
         }
