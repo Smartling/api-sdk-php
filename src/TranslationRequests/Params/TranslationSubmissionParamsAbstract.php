@@ -65,7 +65,7 @@ abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
      */
     public function setSubmittedDate(\DateTime $submittedDate)
     {
-        $this->set('submittedDate', $submittedDate->format(self::DATE_TIME_FORMAT));
+        $this->set('submittedDate', $submittedDate->format(static::DATE_TIME_FORMAT));
         return $this;
     }
 
@@ -75,7 +75,7 @@ abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
      */
     public function setLastExportedDate(\DateTime $lastExportDate)
     {
-        $this->set('lastExportedDate', $lastExportDate->format(self::DATE_TIME_FORMAT));
+        $this->set('lastExportedDate', $lastExportDate->format(static::DATE_TIME_FORMAT));
         return $this;
     }
 

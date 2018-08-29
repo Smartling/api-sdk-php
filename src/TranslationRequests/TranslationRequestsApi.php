@@ -27,9 +27,9 @@ class TranslationRequestsApi extends BaseApiAbstract
      */
     public static function create(AuthApiInterface $authProvider, $projectId, $logger = null)
     {
-        $client = self::initializeHttpClient(self::ENDPOINT_URL);
+        $client = static::initializeHttpClient(static::ENDPOINT_URL);
 
-        $instance = new self($projectId, $client, $logger, self::ENDPOINT_URL);
+        $instance = new self($projectId, $client, $logger, static::ENDPOINT_URL);
         $instance->setAuth($authProvider);
 
         return $instance;
@@ -45,7 +45,7 @@ class TranslationRequestsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
         $requestUri = vsprintf('buckets/%s/translation-requests', [$bucketName]);
-        return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_POST);
+        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_POST);
     }
 
 
@@ -59,7 +59,7 @@ class TranslationRequestsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('query', []);
         $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $translationRequestUid]);
-        return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
+        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_GET);
     }
 
     /**
@@ -73,7 +73,7 @@ class TranslationRequestsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
         $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $translationRequestUid]);
-        return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_PUT);
+        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_PUT);
     }
 
     /**
@@ -86,6 +86,6 @@ class TranslationRequestsApi extends BaseApiAbstract
     {
         $requestData = $this->getDefaultRequestData('query', $searchParams->exportToArray());
         $requestUri = vsprintf('buckets/%s/translation-requests', [$bucketName]);
-        return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
+        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_GET);
     }
 }
