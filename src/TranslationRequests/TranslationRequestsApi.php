@@ -44,7 +44,7 @@ class TranslationRequestsApi extends BaseApiAbstract
     public function createTranslationRequest($bucketName, CreateTranslationRequestParams $params)
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
-        $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);
+        $requestUri = vsprintf('buckets/%s/translation-requests', [$bucketName]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_POST);
     }
 
@@ -58,7 +58,7 @@ class TranslationRequestsApi extends BaseApiAbstract
     public function getTranslationRequest($bucketName, $submissionUid)
     {
         $requestData = $this->getDefaultRequestData('query', []);
-        $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
+        $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $submissionUid]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
     }
 
@@ -72,7 +72,7 @@ class TranslationRequestsApi extends BaseApiAbstract
     public function updateTranslationRequest($bucketName, $submissionUid, UpdateTranslationRequestParams $params)
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
-        $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
+        $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $submissionUid]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_PUT);
     }
 
@@ -85,7 +85,7 @@ class TranslationRequestsApi extends BaseApiAbstract
     public function searchTranslationRequests($bucketName, SearchTranslationRequestParams $searchParams)
     {
         $requestData = $this->getDefaultRequestData('query', $searchParams->exportToArray());
-        $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);
+        $requestUri = vsprintf('buckets/%s/translation-requests', [$bucketName]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
     }
 }
