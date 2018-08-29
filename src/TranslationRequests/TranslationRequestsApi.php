@@ -1,18 +1,18 @@
 <?php
 
-namespace Smartling\Submissions;
+namespace Smartling\TranslationRequests;
 
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
-use Smartling\Submissions\Params\CreateSubmissionParams;
-use Smartling\Submissions\Params\SearchSubmissionsParams;
-use Smartling\Submissions\Params\UpdateSubmissionParams;
+use Smartling\TranslationRequests\Params\CreateSubmissionParams;
+use Smartling\TranslationRequests\Params\SearchSubmissionsParams;
+use Smartling\TranslationRequests\Params\UpdateSubmissionParams;
 
 /**
  * Class SubmissionsApi
- * @package Smartling\Submissions
+ * @package Smartling\TranslationRequests
  */
 class SubmissionsApi extends BaseApiAbstract
 {

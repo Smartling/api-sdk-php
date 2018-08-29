@@ -1,10 +1,10 @@
 <?php
 
-namespace Smartling\Submissions\Params;
+namespace Smartling\TranslationRequests\Params;
 
 /**
  * Class CreateSubmissionParams
- * @package Smartling\Submissions\Params
+ * @package Smartling\TranslationRequests\Params
  */
 class CreateSubmissionParams extends SubmissionParamsAbstract
 {

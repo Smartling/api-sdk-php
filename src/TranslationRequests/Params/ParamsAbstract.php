@@ -1,12 +1,12 @@
 <?php
 
-namespace Smartling\Submissions\Params;
+namespace Smartling\TranslationRequests\Params;
 
 use Smartling\Parameters\BaseParameters;
 
 /**
  * Class ParamsAbstract
- * @package Smartling\Submissions\Params
+ * @package Smartling\TranslationRequests\Params
  */
 abstract class ParamsAbstract extends BaseParameters
 {
