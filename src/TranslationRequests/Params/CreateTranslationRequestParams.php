@@ -49,16 +49,16 @@ class CreateTranslationRequestParams extends TranslationRequestParamsAbstract
     }
 
     /**
-     * @param CreateTranslationSubmissionParams $detail
+     * @param CreateTranslationSubmissionParams $translationSubmission
      * @return $this
      */
-    public function addTranslationSubmission(CreateTranslationSubmissionParams $detail)
+    public function addTranslationSubmission(CreateTranslationSubmissionParams $translationSubmission)
     {
         if (!array_key_exists('translationSubmissions', $this->params)) {
             $this->set('translationSubmissions', []);
         }
 
-        $this->params['translationSubmissions'][] = $detail->exportToArray();
+        $this->params['translationSubmissions'][] = $translationSubmission->exportToArray();
         return $this;
     }
 }

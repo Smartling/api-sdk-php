@@ -12,7 +12,7 @@ class UpdateTranslationSubmissionParams extends TranslationSubmissionParamsAbstr
      * @param string $translationSubmissionUid
      * @return $this
      */
-    public function setDetailUid($translationSubmissionUid)
+    public function setTranslationSubmissionUid($translationSubmissionUid)
     {
         $this->set('translationSubmissionUid', (string)$translationSubmissionUid);
         return $this;
