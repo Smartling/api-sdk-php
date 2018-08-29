@@ -51,28 +51,28 @@ class TranslationRequestsApi extends BaseApiAbstract
 
     /**
      * @param string $bucketName
-     * @param string $submissionUid
+     * @param string $translationRequestUid
      * @return array
      * @throws SmartlingApiException
      */
-    public function getTranslationRequest($bucketName, $submissionUid)
+    public function getTranslationRequest($bucketName, $translationRequestUid)
     {
         $requestData = $this->getDefaultRequestData('query', []);
-        $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $submissionUid]);
+        $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $translationRequestUid]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
      * @param string $bucketName
-     * @param string $submissionUid
+     * @param string $translationRequestUid
      * @param UpdateTranslationRequestParams $params
      * @return mixed
      * @throws SmartlingApiException
      */
-    public function updateTranslationRequest($bucketName, $submissionUid, UpdateTranslationRequestParams $params)
+    public function updateTranslationRequest($bucketName, $translationRequestUid, UpdateTranslationRequestParams $params)
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
-        $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $submissionUid]);
+        $requestUri = vsprintf('buckets/%s/translation-requests/%s', [$bucketName, $translationRequestUid]);
         return $this->sendRequest($requestUri, $requestData, self::HTTP_METHOD_PUT);
     }
 
