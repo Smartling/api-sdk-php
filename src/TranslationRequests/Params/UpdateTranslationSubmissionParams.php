@@ -9,12 +9,12 @@ namespace Smartling\TranslationRequests\Params;
 class UpdateTranslationSubmissionParams extends TranslationSubmissionParamsAbstract
 {
     /**
-     * @param string $detailUid
+     * @param string $translationSubmissionUid
      * @return $this
      */
-    public function setDetailUid($detailUid)
+    public function setDetailUid($translationSubmissionUid)
     {
-        $this->set('detail_uid', (string)$detailUid);
+        $this->set('translationSubmissionUid', (string)$translationSubmissionUid);
         return $this;
     }
 }

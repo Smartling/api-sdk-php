@@ -9,16 +9,16 @@ namespace Smartling\TranslationRequests\Params;
 class UpdateTranslationRequestParams extends TranslationRequestParamsAbstract
 {
     /**
-     * @param UpdateTranslationSubmissionParams $detail
+     * @param UpdateTranslationSubmissionParams $translationSubmission
      * @return $this
      */
-    public function addDetail(UpdateTranslationSubmissionParams $detail)
+    public function addTranslationSubmission(UpdateTranslationSubmissionParams $translationSubmission)
     {
-        if (!array_key_exists('details', $this->params)) {
-            $this->set('details', []);
+        if (!array_key_exists('translationSubmissions', $this->params)) {
+            $this->set('translationSubmissions', []);
         }
 
-        $this->params['details'][] = $detail->exportToArray();
+        $this->params['translationSubmissions'][] = $translationSubmission->exportToArray();
         return $this;
     }
 

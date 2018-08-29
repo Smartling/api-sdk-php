@@ -9,12 +9,12 @@ namespace Smartling\TranslationRequests\Params;
 class CreateTranslationRequestParams extends TranslationRequestParamsAbstract
 {
     /**
-     * @param string $submissionUid
+     * @param string $translationRequestUid
      * @return $this
      */
-    public function setSubmissionUid($submissionUid)
+    public function setTranslationRequestUid($translationRequestUid)
     {
-        $this->set('submission_uid', (string)$submissionUid);
+        $this->set('translationRequestUid', (string)$translationRequestUid);
         return $this;
     }
 
@@ -24,7 +24,7 @@ class CreateTranslationRequestParams extends TranslationRequestParamsAbstract
      */
     public function setOriginalAssetId(array $originalAssetId = [])
     {
-        $this->set('original_asset_id', json_encode($originalAssetId));
+        $this->set('originalAssetId', json_encode($originalAssetId));
         return $this;
     }
 
@@ -39,26 +39,26 @@ class CreateTranslationRequestParams extends TranslationRequestParamsAbstract
     }
 
     /**
-     * @param $originalLocale
+     * @param $originalLocaleId
      * @return $this
      */
-    public function setOriginalLocale($originalLocale)
+    public function setOriginalLocaleId($originalLocaleId)
     {
-        $this->set('original_locale', (string)$originalLocale);
+        $this->set('originalLocaleId', (string)$originalLocaleId);
         return $this;
     }
 
     /**
-     * @param CreateDetailParams $detail
+     * @param CreateTranslationSubmissionParams $detail
      * @return $this
      */
-    public function addDetail(CreateDetailParams $detail)
+    public function addTranslationSubmission(CreateTranslationSubmissionParams $detail)
     {
-        if (!array_key_exists('details', $this->params)) {
-            $this->set('details', []);
+        if (!array_key_exists('translationSubmissions', $this->params)) {
+            $this->set('translationSubmissions', []);
         }
 
-        $this->params['details'][] = $detail->exportToArray();
+        $this->params['translationSubmissions'][] = $detail->exportToArray();
         return $this;
     }
 }

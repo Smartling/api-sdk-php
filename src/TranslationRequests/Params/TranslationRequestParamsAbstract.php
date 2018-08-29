@@ -24,7 +24,7 @@ class TranslationRequestParamsAbstract extends ParamsAbstract
      */
     public function setContentHash($contentHash)
     {
-        $this->set('content_hash', (string)$contentHash);
+        $this->set('contentHash', (string)$contentHash);
         return $this;
     }
 
@@ -44,7 +44,7 @@ class TranslationRequestParamsAbstract extends ParamsAbstract
      */
     public function setTotalWordCount($totalWordCount)
     {
-        $this->set('total_word_count', (int)$totalWordCount);
+        $this->set('totalWordCount', (int)$totalWordCount);
         return $this;
     }
 
@@ -54,17 +54,7 @@ class TranslationRequestParamsAbstract extends ParamsAbstract
      */
     public function setTotalStringCount($totalStringCount)
     {
-        $this->set('total_string_count', (int)$totalStringCount);
-        return $this;
-    }
-
-    /**
-     * @param \DateTime $lastModified
-     * @return $this
-     */
-    public function setLastModified(\DateTime $lastModified)
-    {
-        $this->set('last_modified', $lastModified->format(self::DATE_TIME_FORMAT));
+        $this->set('totalStringCount', (int)$totalStringCount);
         return $this;
     }
 
@@ -74,7 +64,7 @@ class TranslationRequestParamsAbstract extends ParamsAbstract
      */
     public function setCustomOriginalData(array $customOriginalData = [])
     {
-        $this->set('custom_original_data', json_encode($customOriginalData));
+        $this->set('customOriginalData', json_encode($customOriginalData));
         return $this;
     }
 }

@@ -9,22 +9,22 @@ namespace Smartling\TranslationRequests\Params;
 class CreateTranslationSubmissionParams extends TranslationSubmissionParamsAbstract
 {
     /**
-     * @param string $submissionUid
+     * @param string $translationRequestUid
      * @return $this
      */
-    public function setSubmissionUid($submissionUid)
+    public function setTranslationRequestUid($translationRequestUid)
     {
-        $this->set('submission_uid', (string)$submissionUid);
+        $this->set('translationRequestUid', (string)$translationRequestUid);
         return $this;
     }
 
     /**
-     * @param $targetLocale
+     * @param $targetLocaleId
      * @return $this
      */
-    public function setTargetLocale($targetLocale)
+    public function setTargetLocaleId($targetLocaleId)
     {
-        $this->set('target_locale', (string)$targetLocale);
+        $this->set('targetLocaleId', (string)$targetLocaleId);
         return $this;
     }
 }

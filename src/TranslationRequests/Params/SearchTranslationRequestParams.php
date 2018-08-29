@@ -17,7 +17,7 @@ class SearchTranslationRequestParams extends BaseParameters
     public function setOriginalAssetId(array $originalAssetId = [])
     {
         if (0 < count($originalAssetId)) {
-            $this->set('original_asset_id', json_encode($originalAssetId));
+            $this->set('originalAssetId', json_encode($originalAssetId));
         }
         return $this;
     }
@@ -49,7 +49,7 @@ class SearchTranslationRequestParams extends BaseParameters
     public function setCustomOriginalData(array $customOriginalData = [])
     {
         if (0 < count($customOriginalData)) {
-            $this->set('custom_original_data', json_encode($customOriginalData));
+            $this->set('customOriginalData', json_encode($customOriginalData));
         }
         return $this;
     }
@@ -61,18 +61,18 @@ class SearchTranslationRequestParams extends BaseParameters
     public function setTranslationAssetId(array $translationAssetId = [])
     {
         if (0 < count($translationAssetId)) {
-            $this->set('translation_asset_id', json_encode($translationAssetId));
+            $this->set('translationAssetId', json_encode($translationAssetId));
         }
         return $this;
     }
 
     /**
-     * @param string $targetLocale
+     * @param string $targetLocaleId
      * @return $this
      */
-    public function setTargetLocale($targetLocale)
+    public function setTargetLocaleId($targetLocaleId)
     {
-        $this->set('target_locale', (string)$targetLocale);
+        $this->set('targetLocaleId', (string)$targetLocaleId);
         return $this;
     }
 
@@ -90,12 +90,12 @@ class SearchTranslationRequestParams extends BaseParameters
     }
 
     /**
-     * @param string $submitter
+     * @param string $submitterName
      * @return $this
      */
-    public function setSubmitter($submitter)
+    public function setSubmitterName($submitterName)
     {
-        $this->set('submitter', (string)$submitter);
+        $this->set('submitterName', (string)$submitterName);
         return $this;
     }
 
@@ -106,7 +106,7 @@ class SearchTranslationRequestParams extends BaseParameters
     public function setCustomTranslationData(array $customTranslationData = [])
     {
         if (0 < count($customTranslationData)) {
-            $this->set('custom_translation_data', json_encode($customTranslationData));
+            $this->set('customTranslationData', json_encode($customTranslationData));
         }
 
         return $this;

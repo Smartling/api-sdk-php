@@ -14,7 +14,7 @@ abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
      */
     public function setTranslationAssetId(array $translationAssetId = [])
     {
-        $this->set('translation_asset_id', json_encode($translationAssetId));
+        $this->set('translationAssetId', json_encode($translationAssetId));
         return $this;
     }
 
@@ -40,12 +40,12 @@ abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
     }
 
     /**
-     * @param $submitter
+     * @param $submitterName
      * @return $this
      */
-    public function setSubmitter($submitter)
+    public function setSubmitterName($submitterName)
     {
-        $this->set('submitter', (string)$submitter);
+        $this->set('submitterName', (string)$submitterName);
         return $this;
     }
 
@@ -55,57 +55,37 @@ abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
      */
     public function setCustomTranslationData(array $customTranslationData = [])
     {
-        $this->set('custom_translation_data', json_encode($customTranslationData));
+        $this->set('customTranslationData', json_encode($customTranslationData));
         return $this;
     }
 
     /**
-     * @param $authorizedStringCount
+     * @param \DateTime $submittedDate
      * @return $this
      */
-    public function setAuthorizedStringCount($authorizedStringCount)
+    public function setSubmittedDate(\DateTime $submittedDate)
     {
-        $this->set('authorized_string_count', (int)$authorizedStringCount);
+        $this->set('submittedDate', $submittedDate->format(self::DATE_TIME_FORMAT));
         return $this;
     }
 
     /**
-     * @param $completedStringCount
+     * @param \DateTime $lastExportDate
      * @return $this
      */
-    public function setCompletedStringCount($completedStringCount)
+    public function setLastExportedDate(\DateTime $lastExportDate)
     {
-        $this->set('completed_string_count', (int)$completedStringCount);
+        $this->set('lastExportedDate', $lastExportDate->format(self::DATE_TIME_FORMAT));
         return $this;
     }
 
     /**
-     * @param \DateTime $submitted
+     * @param $lastErrorMessage
      * @return $this
      */
-    public function setSubmitted(\DateTime $submitted)
+    public function setLastErrorMessage($lastErrorMessage)
     {
-        $this->set('submitted', $submitted->format(self::DATE_TIME_FORMAT));
-        return $this;
-    }
-
-    /**
-     * @param \DateTime $applied
-     * @return $this
-     */
-    public function setApplied(\DateTime $applied)
-    {
-        $this->set('applied', $applied->format(self::DATE_TIME_FORMAT));
-        return $this;
-    }
-
-    /**
-     * @param $lastError
-     * @return $this
-     */
-    public function setLastError($lastError)
-    {
-        $this->set('last_error', (string)$lastError);
+        $this->set('lastErrorMessage', (string)$lastErrorMessage);
         return $this;
     }
 }
