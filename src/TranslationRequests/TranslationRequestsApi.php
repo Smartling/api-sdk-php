@@ -41,7 +41,7 @@ class TranslationRequestsApi extends BaseApiAbstract
      * @return mixed
      * @throws SmartlingApiException
      */
-    public function createSubmission($bucketName, CreateTranslationRequestParams $params)
+    public function createTranslationRequest($bucketName, CreateTranslationRequestParams $params)
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);
@@ -55,7 +55,7 @@ class TranslationRequestsApi extends BaseApiAbstract
      * @return array
      * @throws SmartlingApiException
      */
-    public function getSubmission($bucketName, $submissionUid)
+    public function getTranslationRequest($bucketName, $submissionUid)
     {
         $requestData = $this->getDefaultRequestData('query', []);
         $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
@@ -69,7 +69,7 @@ class TranslationRequestsApi extends BaseApiAbstract
      * @return mixed
      * @throws SmartlingApiException
      */
-    public function updateSubmission($bucketName, $submissionUid, UpdateTranslationRequestParams $params)
+    public function updateTranslationRequest($bucketName, $submissionUid, UpdateTranslationRequestParams $params)
     {
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions/%s', [$bucketName, $submissionUid]);
@@ -82,7 +82,7 @@ class TranslationRequestsApi extends BaseApiAbstract
      * @return array
      * @throws SmartlingApiException
      */
-    public function searchSubmissions($bucketName, SearchTranslationRequestParams $searchParams)
+    public function searchTranslationRequests($bucketName, SearchTranslationRequestParams $searchParams)
     {
         $requestData = $this->getDefaultRequestData('query', $searchParams->exportToArray());
         $requestUri = vsprintf('buckets/%s/submissions', [$bucketName]);
