@@ -11,10 +11,10 @@ use Smartling\TranslationRequests\Params\SearchSubmissionsParams;
 use Smartling\TranslationRequests\Params\UpdateSubmissionParams;
 
 /**
- * Class SubmissionsApi
+ * Class TranslationRequestsApi
  * @package Smartling\TranslationRequests
  */
-class SubmissionsApi extends BaseApiAbstract
+class TranslationRequestsApi extends BaseApiAbstract
 {
     const ENDPOINT_URL = 'https://api.smartling.com/submission-service-api/v2/projects';
 
@@ -23,7 +23,7 @@ class SubmissionsApi extends BaseApiAbstract
      * @param string $projectId
      * @param LoggerInterface $logger
      *
-     * @return SubmissionsApi
+     * @return TranslationRequestsApi
      */
     public static function create(AuthApiInterface $authProvider, $projectId, $logger = null)
     {
