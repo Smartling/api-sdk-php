@@ -3,12 +3,12 @@
 namespace Smartling\Tests\Unit;
 
 
-use Smartling\Submissions\Params\CreateSubmissionParams;
-use Smartling\Submissions\Params\SearchSubmissionsParams;
-use Smartling\Submissions\Params\UpdateSubmissionParams;
-use Smartling\Submissions\SubmissionsApi;
+use Smartling\TranslationRequests\Params\CreateTranslationRequestParams;
+use Smartling\TranslationRequests\Params\SearchTranslationRequestParams;
+use Smartling\TranslationRequests\Params\UpdateTranslationRequestParams;
+use Smartling\TranslationRequests\TranslationRequestsApi;
 
-class SubmissionsApiTest extends ApiTestAbstract
+class TranslationRequestsApiTest extends ApiTestAbstract
 {
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -17,18 +17,18 @@ class SubmissionsApiTest extends ApiTestAbstract
     protected function setUp()
     {
         parent::setUp();
-        $this->prepareSubmissionsApiMock();
+        $this->prepareTranslationRequestsApiMock();
     }
 
-    private function prepareSubmissionsApiMock()
+    private function prepareTranslationRequestsApiMock()
     {
-        $this->object = $this->getMockBuilder('Smartling\Submissions\SubmissionsApi')
+        $this->object = $this->getMockBuilder('Smartling\TranslationRequests\TranslationRequestsApi')
             ->setMethods(null)
             ->setConstructorArgs([
                 $this->projectId,
                 $this->client,
                 null,
-                SubmissionsApi::ENDPOINT_URL,
+                TranslationRequestsApi::ENDPOINT_URL,
             ])
             ->getMock();
 
@@ -60,38 +60,37 @@ class SubmissionsApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\Submissions\SubmissionsApi::createSubmission
+     * @covers \Smartling\TranslationRequests\TranslationRequestsApi::createTranslationRequest
      */
-    public function testCreateSubmission()
+    public function testCreateTranslationRequest()
     {
 
-        $createParams = (new CreateSubmissionParams())
+        $createParams = (new CreateTranslationRequestParams())
             ->setOriginalAssetId(['a' => '1'])
             ->setTitle('Submission 1')
             ->setFileUri('/posts/hello-world_1_1_post.xml')
-            ->setOriginalLocale('en-US');
+            ->setOriginalLocaleId('en-US');
 
         $testRawResponse = json_encode(
             [
                 "response" => [
                     "code" => "SUCCESS",
                     "data" => [
-                        "submission_uid" => "8264fd9133d3",
-                        "project_id" => $this->projectId,
-                        "bucket_name" => "name",
-                        "original_asset_id" => ["a" => "1"],
+                        "translationRequestUid" => "8264fd9133d3",
+                        "projectId" => $this->projectId,
+                        "bucketName" => "name",
+                        "originalAssetId" => ["a" => "1"],
                         "title" => "Submission 1",
                         "fileUri" => "/posts/hello-world_1_1_post.xml",
-                        "total_word_count" => "0",
-                        "total_string_count" => "0",
-                        "content_hash" => null,
-                        "original_locale" => "en-US",
+                        "totalWordCount" => "0",
+                        "totalStringCount" => "0",
+                        "contentHash" => null,
+                        "originalLocaleId" => "en-US",
                         "outdated" => "0",
-                        "last_modified" => null,
-                        "custom_original_data" => null,
-                        "createdAt" => "2018-07-31T10:37:20.839Z",
-                        "updatedAt" => "2018-07-31T10:37:20.839Z",
-                        "details" => []
+                        "customOriginalData" => null,
+                        "createdDate" => "2018-07-31T10:37:20.839Z",
+                        "modifiedDate" => "2018-07-31T10:37:20.839Z",
+                        "translationSubmissions" => []
                     ]
                 ]
             ]
@@ -102,8 +101,8 @@ class SubmissionsApiTest extends ApiTestAbstract
         $testExpectedResponse = json_decode($testRawResponse, true)['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/submissions',
-            [SubmissionsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
+        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests',
+            [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
 
 
         $requestStructure = [
@@ -122,41 +121,40 @@ class SubmissionsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, $requestStructure)
             ->willReturn($this->responseMock);
 
-        $response = $this->object->createSubmission($bucketName, $createParams);
+        $response = $this->object->createTranslationRequest($bucketName, $createParams);
         self::assertEquals($testExpectedResponse, $response);
     }
 
     /**
-     * @covers \Smartling\Submissions\SubmissionsApi::updateSubmission
+     * @covers \Smartling\TranslationRequests\TranslationRequestsApi::updateTranslationRequest
      */
-    public function testUpdateSubmission()
+    public function testUpdateTranslationRequest()
     {
 
-        $submissionUid = '8264fd9133d3';
+        $translationRequestUid = '8264fd9133d3';
 
-        $updateParams = (new UpdateSubmissionParams())->setTitle('Submission 2');
+        $updateParams = (new UpdateTranslationRequestParams())->setTitle('Submission 2');
 
         $testRawResponse = json_encode(
             [
                 "response" => [
                     "code" => "SUCCESS",
                     "data" => [
-                        "submission_uid" => $submissionUid,
-                        "project_id" => $this->projectId,
-                        "bucket_name" => "name",
-                        "original_asset_id" => ["a" => "1"],
+                        "translationRequestUid" => $translationRequestUid,
+                        "projectId" => $this->projectId,
+                        "bucketName" => "name",
+                        "originalAssetId" => ["a" => "1"],
                         "title" => "Submission 2",
                         "fileUri" => "/posts/hello-world_1_1_post.xml",
-                        "total_word_count" => "0",
-                        "total_string_count" => "0",
-                        "content_hash" => null,
-                        "original_locale" => "en-US",
+                        "totalWordCount" => "0",
+                        "totalStringCount" => "0",
+                        "contentHash" => null,
+                        "originalLocaleId" => "en-US",
                         "outdated" => "0",
-                        "last_modified" => null,
-                        "custom_original_data" => null,
-                        "createdAt" => "2018-07-31T10:37:20.839Z",
-                        "updatedAt" => "2018-07-31T10:37:20.839Z",
-                        "details" => []
+                        "customOriginalData" => null,
+                        "createdDate" => "2018-07-31T10:37:20.839Z",
+                        "modifiedDate" => "2018-07-31T10:37:20.839Z",
+                        "translationSubmissions" => []
                     ]
                 ]
             ]
@@ -167,8 +165,8 @@ class SubmissionsApiTest extends ApiTestAbstract
         $testExpectedResponse = json_decode($testRawResponse, true)['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/submissions/%s',
-            [SubmissionsApi::ENDPOINT_URL, $this->projectId, $bucketName, $submissionUid]);
+        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests/%s',
+            [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName, $translationRequestUid]);
 
 
         $requestStructure = [
@@ -187,39 +185,38 @@ class SubmissionsApiTest extends ApiTestAbstract
             ->with('put', $endpointUrl, $requestStructure)
             ->willReturn($this->responseMock);
 
-        $response = $this->object->updateSubmission($bucketName, $submissionUid, $updateParams);
+        $response = $this->object->updateTranslationRequest($bucketName, $translationRequestUid, $updateParams);
         self::assertEquals($testExpectedResponse, $response);
     }
 
     /**
-     * @covers \Smartling\Submissions\SubmissionsApi::getSubmission
+     * @covers \Smartling\TranslationRequests\TranslationRequestsApi::getTranslationRequest
      */
-    public function testGetSubmission()
+    public function testGetTranslationRequest()
     {
 
-        $submissionUid = '8264fd9133d3';
+        $translationRequestUid = '8264fd9133d3';
 
         $testRawResponse = json_encode(
             [
                 "response" => [
                     "code" => "SUCCESS",
                     "data" => [
-                        "submission_uid" => $submissionUid,
-                        "project_id" => $this->projectId,
-                        "bucket_name" => "name",
-                        "original_asset_id" => ["a" => "1"],
+                        "translationRequestUid" => $translationRequestUid,
+                        "projectId" => $this->projectId,
+                        "bucketName" => "name",
+                        "originalAssetId" => ["a" => "1"],
                         "title" => "Submission 2",
                         "fileUri" => "/posts/hello-world_1_1_post.xml",
-                        "total_word_count" => "0",
-                        "total_string_count" => "0",
-                        "content_hash" => null,
-                        "original_locale" => "en-US",
+                        "totalWordCount" => "0",
+                        "totalStringCount" => "0",
+                        "contentHash" => null,
+                        "originalLocaleId" => "en-US",
                         "outdated" => "0",
-                        "last_modified" => null,
-                        "custom_original_data" => null,
-                        "createdAt" => "2018-07-31T10:37:20.839Z",
-                        "updatedAt" => "2018-07-31T10:37:20.839Z",
-                        "details" => []
+                        "customOriginalData" => null,
+                        "createdDate" => "2018-07-31T10:37:20.839Z",
+                        "modifiedDate" => "2018-07-31T10:37:20.839Z",
+                        "translationSubmissions" => []
                     ]
                 ]
             ]
@@ -230,8 +227,8 @@ class SubmissionsApiTest extends ApiTestAbstract
         $testExpectedResponse = json_decode($testRawResponse, true)['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/submissions/%s',
-            [SubmissionsApi::ENDPOINT_URL, $this->projectId, $bucketName, $submissionUid]);
+        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests/%s',
+            [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName, $translationRequestUid]);
 
 
         $requestStructure = [
@@ -250,15 +247,15 @@ class SubmissionsApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, $requestStructure)
             ->willReturn($this->responseMock);
 
-        $response = $this->object->getSubmission($bucketName, $submissionUid);
+        $response = $this->object->getTranslationRequest($bucketName, $translationRequestUid);
         self::assertEquals($testExpectedResponse, $response);
     }
 
-    public function searchSubmissionTestDataProvider()
+    public function searchTranslationRequestTestDataProvider()
     {
         return [
             [
-                (new SearchSubmissionsParams())->setFileUri('file.xml'),
+                (new SearchTranslationRequestParams())->setFileUri('file.xml'),
                 [
                     'fileUri' => 'file.xml'
                 ],
@@ -267,22 +264,21 @@ class SubmissionsApiTest extends ApiTestAbstract
                         "code" => "SUCCESS",
                         "data" => [
                             [
-                                "submission_uid" => 'abc',
-                                "project_id" => $this->projectId,
-                                "bucket_name" => "name",
-                                "original_asset_id" => ["a" => "1"],
+                                "translationRequestUid" => 'abc',
+                                "projectId" => $this->projectId,
+                                "bucketName" => "name",
+                                "originalAssetId" => ["a" => "1"],
                                 "title" => "Submission 2",
                                 "fileUri" => "file.xml",
-                                "total_word_count" => "0",
-                                "total_string_count" => "0",
-                                "content_hash" => null,
-                                "original_locale" => "en-US",
+                                "totalWordCount" => "0",
+                                "totalStringCount" => "0",
+                                "contentHash" => null,
+                                "originalLocaleId" => "en-US",
                                 "outdated" => "0",
-                                "last_modified" => null,
-                                "custom_original_data" => null,
-                                "createdAt" => "2018-07-31T10:37:20.839Z",
-                                "updatedAt" => "2018-07-31T10:37:20.839Z",
-                                "details" => []
+                                "customOriginalData" => null,
+                                "createdDate" => "2018-07-31T10:37:20.839Z",
+                                "modifiedDate" => "2018-07-31T10:37:20.839Z",
+                                "translationSubmissions" => []
                             ]
                         ]
                     ]
@@ -290,31 +286,30 @@ class SubmissionsApiTest extends ApiTestAbstract
                 ]
             ],
             [
-                (new SearchSubmissionsParams())->setOriginalAssetId(["a" => "1"]),
+                (new SearchTranslationRequestParams())->setOriginalAssetId(["a" => "1"]),
                 [
-                    'original_asset_id' => json_encode(["a" => "1"])
+                    'originalAssetId' => json_encode(["a" => "1"])
                 ],
                 [
                     "response" => [
                         "code" => "SUCCESS",
                         "data" => [
                             [
-                                "submission_uid" => 'abc',
-                                "project_id" => $this->projectId,
-                                "bucket_name" => "name",
-                                "original_asset_id" => ["a" => "1"],
+                                "translationRequestUid" => 'abc',
+                                "projectId" => $this->projectId,
+                                "bucketName" => "name",
+                                "originalAssetId" => ["a" => "1"],
                                 "title" => "Submission 2",
                                 "fileUri" => "file.xml",
-                                "total_word_count" => "0",
-                                "total_string_count" => "0",
-                                "content_hash" => null,
-                                "original_locale" => "en-US",
+                                "totalWordCount" => "0",
+                                "totalStringCount" => "0",
+                                "contentHash" => null,
+                                "originalLocaleId" => "en-US",
                                 "outdated" => "0",
-                                "last_modified" => null,
-                                "custom_original_data" => null,
-                                "createdAt" => "2018-07-31T10:37:20.839Z",
-                                "updatedAt" => "2018-07-31T10:37:20.839Z",
-                                "details" => []
+                                "customOriginalData" => null,
+                                "createdDate" => "2018-07-31T10:37:20.839Z",
+                                "modifiedDate" => "2018-07-31T10:37:20.839Z",
+                                "translationSubmissions" => []
                             ]
                         ]
                     ]
@@ -322,29 +317,28 @@ class SubmissionsApiTest extends ApiTestAbstract
                 ]
             ],
             [
-                (new SearchSubmissionsParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml'),
-                (new SearchSubmissionsParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml')->exportToArray(),
+                (new SearchTranslationRequestParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml'),
+                (new SearchTranslationRequestParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml')->exportToArray(),
                 [
                     "response" => [
                         "code" => "SUCCESS",
                         "data" => [
                             [
-                                "submission_uid" => 'abc',
-                                "project_id" => $this->projectId,
-                                "bucket_name" => "name",
-                                "original_asset_id" => ["a" => "1"],
+                                "translationRequestUid" => 'abc',
+                                "projectId" => $this->projectId,
+                                "bucketName" => "name",
+                                "originalAssetId" => ["a" => "1"],
                                 "title" => "Submission 2",
                                 "fileUri" => "file.xml",
-                                "total_word_count" => "0",
-                                "total_string_count" => "0",
-                                "content_hash" => null,
-                                "original_locale" => "en-US",
+                                "totalWordCount" => "0",
+                                "totalStringCount" => "0",
+                                "contentHash" => null,
+                                "originalLocaleId" => "en-US",
                                 "outdated" => "0",
-                                "last_modified" => null,
-                                "custom_original_data" => null,
-                                "createdAt" => "2018-07-31T10:37:20.839Z",
-                                "updatedAt" => "2018-07-31T10:37:20.839Z",
-                                "details" => []
+                                "customOriginalData" => null,
+                                "createdDate" => "2018-07-31T10:37:20.839Z",
+                                "modifiedDate" => "2018-07-31T10:37:20.839Z",
+                                "translationSubmissions" => []
                             ]
                         ]
                     ]
@@ -352,27 +346,27 @@ class SubmissionsApiTest extends ApiTestAbstract
                 ]
             ],
             [
-                (new SearchSubmissionsParams())
+                (new SearchTranslationRequestParams())
                     ->setOriginalAssetId(["a" => "1"])
                     ->setFileUri("%.xml")
                     ->setOutdated(0)
                     ->setCustomOriginalData(["b" => "2"])
                     ->setTranslationAssetId(["c" => "3"])
-                    ->setTargetLocale('es')
+                    ->setTargetLocaleId('es')
                     ->setState('New')
-                    ->setSubmitter('wp')
+                    ->setSubmitterName('wp')
                     ->setCustomTranslationData(["d" => "4"])
                     ->setLimit(5)
                     ->setOffset(6),
-                (new SearchSubmissionsParams())
+                (new SearchTranslationRequestParams())
                     ->setOriginalAssetId(["a" => "1"])
                     ->setFileUri("%.xml")
                     ->setOutdated(0)
                     ->setCustomOriginalData(["b" => "2"])
                     ->setTranslationAssetId(["c" => "3"])
-                    ->setTargetLocale('es')
+                    ->setTargetLocaleId('es')
                     ->setState('New')
-                    ->setSubmitter('wp')
+                    ->setSubmitterName('wp')
                     ->setCustomTranslationData(["d" => "4"])
                     ->setLimit(5)
                     ->setOffset(6)
@@ -393,16 +387,15 @@ class SubmissionsApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers       \Smartling\Submissions\SubmissionsApi::searchSubmissions
-     * @dataProvider searchSubmissionTestDataProvider
-     * @param SearchSubmissionsParams $searchParams
+     * @covers       \Smartling\TranslationRequests\TranslationRequestsApi::searchTranslationRequests
+     * @dataProvider searchTranslationRequestTestDataProvider
+     * @param SearchTranslationRequestParams $searchParams
      * @param array $queryParams
      * @param array $rawResponse
      * @throws \Smartling\Exceptions\InvalidAccessTokenException
      */
-    public function testSearchSubmissions(SearchSubmissionsParams $searchParams, array $queryParams, array $rawResponse)
+    public function testSearchTranslationRequests(SearchTranslationRequestParams $searchParams, array $queryParams, array $rawResponse)
     {
-
         $testRawResponse = json_encode($rawResponse);
 
         $this->mockClientResponse(200, $testRawResponse);
@@ -410,8 +403,8 @@ class SubmissionsApiTest extends ApiTestAbstract
         $testExpectedResponse = $rawResponse['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/submissions',
-            [SubmissionsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
+        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests',
+            [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
 
         $requestStructure = [
             'headers' => [
@@ -429,7 +422,7 @@ class SubmissionsApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, $requestStructure)
             ->willReturn($this->responseMock);
 
-        $response = $this->object->searchSubmissions($bucketName, $searchParams);
+        $response = $this->object->searchTranslationRequests($bucketName, $searchParams);
         self::assertEquals($testExpectedResponse, $response);
     }
 }
