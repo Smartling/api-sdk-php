@@ -48,17 +48,17 @@ $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $u
  * @param $demoCreateParams
  * @return array
  */
-function createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoCreateParams)
+function createTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $demoCreateParams)
 {
-    echo "--- Create Submission ---\n";
+    echo "--- Create Translation Request ---\n";
 
     $response = [];
-    $submissionApi = \Smartling\Submissions\SubmissionsApi::create($authProvider, $projectId);
+    $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
     $st = microtime(true);
 
     try {
-        $response = $submissionApi->createSubmission($demoBucketName, $demoCreateParams);
+        $response = $translationRequestsApi->createTranslationRequest($demoBucketName, $demoCreateParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -79,21 +79,21 @@ function createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoC
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param $projectId
  * @param $demoBucketName
- * @param $submissionUid
+ * @param $translationRequestUid
  * @param $demoUpdateParams
  * @return array|mixed
  */
-function updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid, $demoUpdateParams)
+function updateTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $translationRequestUid, $demoUpdateParams)
 {
-    echo "--- Update Submission ---\n";
+    echo "--- Update Translation Request ---\n";
 
     $response = [];
-    $submissionApi = \Smartling\Submissions\SubmissionsApi::create($authProvider, $projectId);
+    $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
     $st = microtime(true);
 
     try {
-        $response = $submissionApi->updateSubmission($demoBucketName, $submissionUid, $demoUpdateParams);
+        $response = $translationRequestsApi->updateTranslationRequest($demoBucketName, $translationRequestUid, $demoUpdateParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -114,20 +114,20 @@ function updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submi
  * @param Smartling\AuthApi\AuthApiInterface $authProvider
  * @param $projectId
  * @param $demoBucketName
- * @param $submissionUid
+ * @param $translationRequestUid
  * @return array
  */
-function getSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid)
+function getTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $translationRequestUid)
 {
-    echo "--- Get Submission ---\n";
+    echo "--- Get Translation Request ---\n";
 
     $response = [];
-    $submissionApi = \Smartling\Submissions\SubmissionsApi::create($authProvider, $projectId);
+    $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
     $st = microtime(true);
 
     try {
-        $response = $submissionApi->getSubmission($demoBucketName, $submissionUid);
+        $response = $translationRequestsApi->getTranslationRequest($demoBucketName, $translationRequestUid);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -144,17 +144,17 @@ function getSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissi
     return $response;
 }
 
-function searchSubmissionDemo($authProvider, $projectId, $demoBucketName, $searchParams)
+function searchTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $searchParams)
 {
-    echo "--- Search Submission ---\n";
+    echo "--- Search Translation Request ---\n";
 
     $response = [];
-    $submissionApi = \Smartling\Submissions\SubmissionsApi::create($authProvider, $projectId);
+    $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
     $st = microtime(true);
 
     try {
-        $response = $submissionApi->searchSubmissions($demoBucketName, $searchParams);
+        $response = $translationRequestsApi->searchTranslationRequests($demoBucketName, $searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -177,24 +177,24 @@ $demoBucketName = 'tst-bucket';
 
 $time = (string)microtime(true);
 
-$demoCreateParams = (new \Smartling\Submissions\Params\CreateSubmissionParams())
+$demoCreateParams = (new \Smartling\TranslationRequests\Params\CreateTranslationRequestParams())
     ->setOriginalAssetId(['a' => $time])
     ->setTitle(vsprintf('Submission %s', [$time]))
     ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
-    ->setOriginalLocale('en-US');
+    ->setOriginalLocaleId('en-US');
 
-$demoUpdateParams = (new \Smartling\Submissions\Params\UpdateSubmissionParams())
+$demoUpdateParams = (new \Smartling\TranslationRequests\Params\UpdateTranslationRequestParams())
     ->setTitle('Updated Title');
 
 
-$response = createSubmissionDemo($authProvider, $projectId, $demoBucketName, $demoCreateParams);
-$submissionUid = $response['submission_uid'];
-$response = updateSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid, $demoUpdateParams);
+$response = createTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $demoCreateParams);
+$translationRequestUid = $response['translationRequestUid'];
+$response = updateTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $translationRequestUid, $demoUpdateParams);
 
-$response = getSubmissionDemo($authProvider, $projectId, $demoBucketName, $submissionUid);
+$response = getTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $translationRequestUid);
 
-$searchParams = (new \Smartling\Submissions\Params\SearchSubmissionsParams())
+$searchParams = (new \Smartling\TranslationRequests\Params\SearchTranslationRequestParams())
     ->setFileUri('%' . $time . '%');
 
 
-$response = searchSubmissionDemo($authProvider, $projectId, $demoBucketName, $searchParams);
+$response = searchTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $searchParams);
