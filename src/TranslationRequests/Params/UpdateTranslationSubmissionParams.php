@@ -17,4 +17,13 @@ class UpdateTranslationSubmissionParams extends TranslationSubmissionParamsAbstr
         $this->set('translationSubmissionUid', (string)$translationSubmissionUid);
         return $this;
     }
+
+    /**
+     * @param $localeLastModified
+     * @return $this
+     */
+    public function setLocaleLastModified(\DateTime $localeLastModified) {
+        $this->set('localeLastModified', $localeLastModified->format(self::DATE_TIME_FORMAT));
+        return $this;
+    }
 }
