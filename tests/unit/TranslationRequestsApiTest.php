@@ -66,7 +66,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
     {
 
         $createParams = (new CreateTranslationRequestParams())
-            ->setOriginalAssetId(['a' => '1'])
+            ->setOriginalAssetKey(['a' => '1'])
             ->setTitle('Submission 1')
             ->setFileUri('/posts/hello-world_1_1_post.xml')
             ->setOriginalLocaleId('en-US');
@@ -286,9 +286,9 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                 ]
             ],
             [
-                (new SearchTranslationRequestParams())->setOriginalAssetId(["a" => "1"]),
+                (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"]),
                 [
-                    'originalAssetId' => json_encode(["a" => "1"])
+                    'originalAssetKey' => json_encode(["a" => "1"])
                 ],
                 [
                     "response" => [
@@ -317,8 +317,8 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                 ]
             ],
             [
-                (new SearchTranslationRequestParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml'),
-                (new SearchTranslationRequestParams())->setOriginalAssetId(["a" => "1"])->setFileUri('%.xml')->exportToArray(),
+                (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"])->setFileUri('%.xml'),
+                (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"])->setFileUri('%.xml')->exportToArray(),
                 [
                     "response" => [
                         "code" => "SUCCESS",
@@ -347,11 +347,11 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             ],
             [
                 (new SearchTranslationRequestParams())
-                    ->setOriginalAssetId(["a" => "1"])
+                    ->setOriginalAssetKey(["a" => "1"])
                     ->setFileUri("%.xml")
                     ->setOutdated(0)
                     ->setCustomOriginalData(["b" => "2"])
-                    ->setTranslationAssetId(["c" => "3"])
+                    ->setTranslationAssetKey(["c" => "3"])
                     ->setTargetLocaleId('es')
                     ->setState('New')
                     ->setSubmitterName('wp')
@@ -359,11 +359,11 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                     ->setLimit(5)
                     ->setOffset(6),
                 (new SearchTranslationRequestParams())
-                    ->setOriginalAssetId(["a" => "1"])
+                    ->setOriginalAssetKey(["a" => "1"])
                     ->setFileUri("%.xml")
                     ->setOutdated(0)
                     ->setCustomOriginalData(["b" => "2"])
-                    ->setTranslationAssetId(["c" => "3"])
+                    ->setTranslationAssetKey(["c" => "3"])
                     ->setTargetLocaleId('es')
                     ->setState('New')
                     ->setSubmitterName('wp')

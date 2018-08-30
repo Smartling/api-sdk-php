@@ -9,12 +9,12 @@ namespace Smartling\TranslationRequests\Params;
 abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
 {
     /**
-     * @param array $translationAssetId
+     * @param array $translationAssetKey
      * @return $this
      */
-    public function setTranslationAssetId(array $translationAssetId = [])
+    public function setTranslationAssetKey(array $translationAssetKey = [])
     {
-        $this->set('translationAssetId', json_encode($translationAssetId));
+        $this->set('translationAssetKey', json_encode($translationAssetKey));
         return $this;
     }
 

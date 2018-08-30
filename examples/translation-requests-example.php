@@ -178,7 +178,7 @@ $demoBucketName = 'tst-bucket';
 $time = (string)microtime(true);
 
 $demoCreateParams = (new \Smartling\TranslationRequests\Params\CreateTranslationRequestParams())
-    ->setOriginalAssetId(['a' => $time])
+    ->setOriginalAssetKey(['a' => $time])
     ->setTitle(vsprintf('Submission %s', [$time]))
     ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
     ->setOriginalLocaleId('en-US');

@@ -47,7 +47,7 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         $time = (string)microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
-            ->setOriginalAssetId(['a' => $time])
+            ->setOriginalAssetKey(['a' => $time])
             ->setTitle(vsprintf('Submission %s', [$time]))
             ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
@@ -66,7 +66,7 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         $time = (string)microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
-            ->setOriginalAssetId(['a' => $time])
+            ->setOriginalAssetKey(['a' => $time])
             ->setTitle(vsprintf('Submission %s', [$time]))
             ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
@@ -97,7 +97,7 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         $time = (string)microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
-            ->setOriginalAssetId(['a' => $time])
+            ->setOriginalAssetKey(['a' => $time])
             ->setTitle(vsprintf('Submission %s', [$time]))
             ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
@@ -123,7 +123,7 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         $time = (string)microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
-            ->setOriginalAssetId(['a' => $time])
+            ->setOriginalAssetKey(['a' => $time])
             ->setTitle(vsprintf('Submission %s', [$time]))
             ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');

@@ -11,13 +11,13 @@ use Smartling\Parameters\BaseParameters;
 class SearchTranslationRequestParams extends BaseParameters
 {
     /**
-     * @param array $originalAssetId
+     * @param array $originalAssetKey
      * @return $this
      */
-    public function setOriginalAssetId(array $originalAssetId = [])
+    public function setOriginalAssetKey(array $originalAssetKey = [])
     {
-        if (0 < count($originalAssetId)) {
-            $this->set('originalAssetId', json_encode($originalAssetId));
+        if (0 < count($originalAssetKey)) {
+            $this->set('originalAssetKey', json_encode($originalAssetKey));
         }
         return $this;
     }
@@ -55,13 +55,13 @@ class SearchTranslationRequestParams extends BaseParameters
     }
 
     /**
-     * @param array $translationAssetId
+     * @param array $translationAssetKey
      * @return $this
      */
-    public function setTranslationAssetId(array $translationAssetId = [])
+    public function setTranslationAssetKey(array $translationAssetKey = [])
     {
-        if (0 < count($translationAssetId)) {
-            $this->set('translationAssetId', json_encode($translationAssetId));
+        if (0 < count($translationAssetKey)) {
+            $this->set('translationAssetKey', json_encode($translationAssetKey));
         }
         return $this;
     }

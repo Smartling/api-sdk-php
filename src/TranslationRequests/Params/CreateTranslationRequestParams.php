@@ -19,12 +19,12 @@ class CreateTranslationRequestParams extends TranslationRequestParamsAbstract
     }
 
     /**
-     * @param array $originalAssetId
+     * @param array $originalAssetKey
      * @return $this
      */
-    public function setOriginalAssetId(array $originalAssetId = [])
+    public function setOriginalAssetKey(array $originalAssetKey = [])
     {
-        $this->set('originalAssetId', json_encode($originalAssetId));
+        $this->set('originalAssetKey', json_encode($originalAssetKey));
         return $this;
     }
 
