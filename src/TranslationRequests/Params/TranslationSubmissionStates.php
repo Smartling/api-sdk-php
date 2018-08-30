@@ -1,12 +1,12 @@
 <?php
 
-namespace Smartling\Submissions\Params;
+namespace Smartling\TranslationRequests\Params;
 
 /**
- * Class SubmissionDetailsStates
- * @package Smartling\Submissions\Params
+ * Class TranslationSubmissionStates
+ * @package Smartling\TranslationRequests\Params
  */
-class SubmissionDetailsStates
+class TranslationSubmissionStates
 {
     const STATE_NEW = 'New';
     const STATE_IN_PROGRESS = 'In Progress';
