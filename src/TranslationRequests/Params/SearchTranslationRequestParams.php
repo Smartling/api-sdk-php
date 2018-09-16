@@ -131,5 +131,11 @@ class SearchTranslationRequestParams extends BaseParameters
         $this->set('offset', (int)$offset);
         return $this;
     }
+
+    public function setTranslationRequestUid($translationRequestUid)
+    {
+        $this->set('translationRequestUid', $translationRequestUid);
+        return $this;
+    }
 }
 
