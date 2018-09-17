@@ -132,9 +132,9 @@ class SearchTranslationRequestParams extends BaseParameters
         return $this;
     }
 
-    public function setTranslationRequestUid($translationRequestUid)
+    public function setTranslationSubmissionUid($translationSubmissionUid)
     {
-        $this->set('translationRequestUid', $translationRequestUid);
+        $this->set('translationSubmissionUid', $translationSubmissionUid);
         return $this;
     }
 }
