@@ -1,8 +1,7 @@
 <?php
 
-namespace Smartling\Tests;
+namespace Smartling\Tests\Unit;
 
-use Smartling\BaseApiAbstract;
 use Smartling\File\FileApi;
 use Smartling\File\Params\DownloadFileParameters;
 use Smartling\File\Params\UploadFileParameters;
@@ -10,7 +9,7 @@ use Smartling\File\Params\UploadFileParameters;
 /**
  * Test class for Smartling\File\FileApi.
  */
-class SmartlingApiTest extends ApiTestAbstract
+class FileApiTest extends ApiTestAbstract
 {
     private function prepareFileApiMock()
     {
@@ -24,7 +23,7 @@ class SmartlingApiTest extends ApiTestAbstract
             ])
             ->getMock();
 
-        $this->object->expects(self::any())
+        $this->object->expects($this->any())
             ->method('readFile')
             ->willReturn($this->streamPlaceholder);
 
@@ -43,7 +42,8 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     protected function setUp()
     {
-        parent::setUp();
+        $this->prepareHttpClientMock();
+        $this->prepareAuthProviderMock();
         $this->prepareFileApiMock();
     }
 
@@ -63,12 +63,13 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testConstructor($projectId, $client, $expected_base_url)
     {
+        $this->prepareClientResponseMock();
         $fileApi = new FileApi($projectId, $client, null, $expected_base_url);
 
-        self::assertEquals(rtrim($expected_base_url, '/') . '/' . $projectId,
+        $this->assertEquals(rtrim($expected_base_url, '/') . '/' . $projectId,
             $this->invokeMethod($fileApi, 'getBaseUrl'));
-        self::assertEquals($projectId, $this->invokeMethod($fileApi, 'getProjectId'));
-        self::assertEquals($client, $this->invokeMethod($fileApi, 'getHttpClient'));
+        $this->assertEquals($projectId, $this->invokeMethod($fileApi, 'getProjectId'));
+        $this->assertEquals($client, $this->invokeMethod($fileApi, 'getHttpClient'));
     }
 
     /**
@@ -98,9 +99,10 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testUploadFile()
     {
+        $this->prepareClientResponseMock();
         $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+            ->expects($this->once())
+            ->method('request')
             ->with('post', FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -110,29 +112,33 @@ class SmartlingApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => false,
-                'body' => [
-                    'smartling.client_lib_id' =>
-                        json_encode(
-                            [
-                                'client' => BaseApiAbstract::CLIENT_LIB_ID_SDK,
-                                'version' => BaseApiAbstract::CLIENT_LIB_ID_VERSION,
-                            ],
-                            JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE
-                        ),
-                    'authorize' => 0,
-
-                    'file' => $this->streamPlaceholder,
-                    'fileUri' => 'test.xml',
-                    'fileType' => 'xml',
-                    'localeIdsToAuthorize' => ['es'],
+                'multipart' => [
+                    [
+                        'name' => 'authorize',
+                        'contents' => 0,
+                    ],
+                    [
+                        'name' => 'smartling.client_lib_id',
+                        'contents' => '{"client":"smartling-api-sdk-php","version":"3.0.0"}',
+                    ],
+                    [
+                        'name' => 'localeIdsToAuthorize[]',
+                        'contents' => 'es',
+                    ],
+                    [
+                        'name' => 'file',
+                        'contents' => $this->streamPlaceholder,
+                    ],
+                    [
+                        'name' => 'fileUri',
+                        'contents' => 'test.xml',
+                    ],
+                    [
+                        'name' => 'fileType',
+                        'contents' => 'xml',
+                    ],
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client
-            ->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $params = new UploadFileParameters();
@@ -148,25 +154,26 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testFileUploadParams()
     {
+        $this->prepareClientResponseMock();
         $fileUploadParams = new UploadFileParameters();
 
         $fileUploadParams->setAuthorized(false);
         $exportedSettings = $fileUploadParams->exportToArray();
-        self::assertEquals($exportedSettings['authorize'], false);
+        $this->assertEquals($exportedSettings['authorize'], false);
 
         $fileUploadParams->setAuthorized(true);
         $exportedSettings = $fileUploadParams->exportToArray();
-        self::assertEquals($exportedSettings['authorize'], true);
+        $this->assertEquals($exportedSettings['authorize'], true);
 
         $fileUploadParams->setLocalesToApprove('locale');
 
         $fileUploadParams->setAuthorized(false);
         $exportedSettings = $fileUploadParams->exportToArray();
-        self::assertEquals($exportedSettings['authorize'], false);
+        $this->assertEquals($exportedSettings['authorize'], false);
 
         $fileUploadParams->setAuthorized(true);
         $exportedSettings = $fileUploadParams->exportToArray();
-        self::assertEquals($exportedSettings['authorize'], false);
+        $this->assertEquals($exportedSettings['authorize'], false);
     }
 
     /**
@@ -181,7 +188,7 @@ class SmartlingApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock(false);
 
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getBody')
             ->willReturn($expected_translated_file);
 
@@ -201,8 +208,8 @@ class SmartlingApiTest extends ApiTestAbstract
         $params['fileUri'] = 'test.xml';
 
         $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+            ->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Authorization' => vsprintf('%s %s', [
@@ -213,17 +220,11 @@ class SmartlingApiTest extends ApiTestAbstract
                 'exceptions' => false,
                 'query' => $params,
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client
-            ->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $actual_xml = $this->object->downloadFile('test.xml', $locale, $options);
 
-        self::assertEquals($expected_translated_file, $actual_xml);
+        $this->assertEquals($expected_translated_file, $actual_xml);
     }
 
     public function downloadFileParams()
@@ -257,6 +258,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testDownloadFileLocaleCheckFails($options, $locale)
     {
+        $this->prepareClientResponseMock();
         $this->object->downloadFile('test.xml', $locale, $options);
     }
 
@@ -288,9 +290,136 @@ class SmartlingApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\File\FileApi::lastModified
+     * @expectedException \Smartling\Exceptions\SmartlingApiException
+     * @expectedExceptionMessage No data found for file test.xml.
+     */
+    public function testLastModifiedInvalidResponseNoDataFoundNoItems()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->willReturn($this->responseMock);
+
+        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{}}}';
+
+        $this->responseMock->expects(self::any())
+              ->method('getBody')
+              ->willReturn($response);
+
+        $this->object->lastModified('test.xml');
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::lastModified
+     * @expectedException \Smartling\Exceptions\SmartlingApiException
+     * @expectedExceptionMessage No data found for file test.xml.
+     */
+    public function testLastModifiedInvalidResponseNoDataFoundItemsNotArray()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->willReturn($this->responseMock);
+
+        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": "not_array"}}}';
+
+        $this->responseMock->expects(self::any())
+            ->method('getBody')
+            ->willReturn($response);
+
+        $this->object->lastModified('test.xml');
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::lastModified
+     * @expectedException \Smartling\Exceptions\SmartlingApiException
+     * @expectedExceptionMessage Can't parse formatted time string: test.
+     */
+    public function testLastModifiedInvalidResponseCantParseFormattedTimeString()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->willReturn($this->responseMock);
+
+        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "test"}]}}}';
+
+        $this->responseMock->expects(self::any())
+            ->method('getBody')
+            ->willReturn($response);
+
+        $this->object->lastModified('test.xml');
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::lastModified
+     * @expectedException \Smartling\Exceptions\SmartlingApiException
+     * @expectedExceptionMessage Property "lastModified" is not found.
+     */
+    public function testLastModifiedInvalidResponseLastModifiedIsNotSet()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->willReturn($this->responseMock);
+
+        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test"}]}}}';
+
+        $this->responseMock->expects(self::any())
+            ->method('getBody')
+            ->willReturn($response);
+
+        $this->object->lastModified('test.xml');
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::lastModified
+     */
+    public function testLastModifiedTimeZone()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $this->client->expects($this->exactly(2))
+            ->method('request')
+            ->willReturn($this->responseMock);
+
+        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "2018-01-01T00:00:00Z"}]}}}';
+
+        $this->responseMock->expects(self::any())
+            ->method('getBody')
+            ->willReturn($response);
+
+        date_default_timezone_set('UTC');
+        $result_default_utc = $this->object->lastModified('test.xml');
+        date_default_timezone_set('Pacific/Auckland');
+        $result_default_auckland = $this->object->lastModified('test.xml');
+
+        $this->assertEquals(
+            $result_default_utc['items'][0]['lastModified']->getTimestamp(),
+            $result_default_auckland['items'][0]['lastModified']->getTimestamp()
+        );
+
+        $this->assertEquals(
+            $result_default_utc['items'][0]['lastModified']->getTimeZone()->getName(),
+            'UTC'
+        );
+
+        $this->assertEquals(
+            $result_default_auckland['items'][0]['lastModified']->getTimeZone()->getName(),
+            'UTC'
+        );
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::lastModified
      */
     public function testLastModified()
     {
+        $this->prepareClientResponseMock(false);
         $endpointUrl = vsprintf(
             '%s/%s/file/last-modified',
             [
@@ -299,9 +428,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -315,12 +443,13 @@ class SmartlingApiTest extends ApiTestAbstract
                     'fileUri' => 'test.xml',
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
+
+        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "1970-01-01T00:00:00Z"}]}}}';
+
+        $this->responseMock->expects(self::any())
+            ->method('getBody')
+            ->willReturn($response);
 
         $this->object->lastModified('test.xml');
     }
@@ -330,6 +459,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testGetStatusForAllLocales()
     {
+        $this->prepareClientResponseMock();
         $endpointUrl = vsprintf(
             '%s/%s/file/status',
             [
@@ -338,9 +468,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -354,11 +483,6 @@ class SmartlingApiTest extends ApiTestAbstract
                     'fileUri' => 'test.xml',
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getStatusForAllLocales('test.xml');
@@ -369,6 +493,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testGetStatus()
     {
+        $this->prepareClientResponseMock();
         $endpointUrl = vsprintf(
             '%s/%s/locales/%s/file/status',
             [
@@ -378,9 +503,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -394,11 +518,6 @@ class SmartlingApiTest extends ApiTestAbstract
                     'fileUri' => 'test.xml',
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getStatus('test.xml', 'en-EN');
@@ -409,6 +528,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testGetList()
     {
+        $this->prepareClientResponseMock();
         $endpointUrl = vsprintf(
             '%s/%s/files/list',
             [
@@ -417,9 +537,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -431,11 +550,6 @@ class SmartlingApiTest extends ApiTestAbstract
                 'exceptions' => false,
                 'query' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getList();
@@ -447,6 +561,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testGetExtendedList()
     {
+        $this->prepareClientResponseMock();
         $locale = 'nl-NL';
         $endpointUrl = vsprintf(
             '%s/%s/locales/%s/files/list',
@@ -457,9 +572,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -471,11 +585,6 @@ class SmartlingApiTest extends ApiTestAbstract
                 'exceptions' => false,
                 'query' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getExtendedList($locale);
@@ -490,15 +599,12 @@ class SmartlingApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock(false);
 
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getStatusCode')
             ->willReturn(400);
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getBody')
             ->willReturn($this->responseWithException);
-        $this->responseMock->expects(self::any())
-            ->method('json')
-            ->willReturn(json_decode($this->responseWithException, self::JSON_OBJECT_AS_ARRAY));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -508,9 +614,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -522,18 +627,12 @@ class SmartlingApiTest extends ApiTestAbstract
                 'exceptions' => false,
                 'query' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -545,15 +644,12 @@ class SmartlingApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock(false);
 
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getStatusCode')
             ->willReturn(400);
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getBody')
             ->willReturn(rtrim($this->responseWithException, '}'));
-        $this->responseMock->expects(self::any())
-            ->method('json')
-            ->willThrowException(new \RuntimeException(''));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -563,9 +659,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -577,18 +672,12 @@ class SmartlingApiTest extends ApiTestAbstract
                 'exceptions' => false,
                 'query' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -600,15 +689,12 @@ class SmartlingApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock(false);
 
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getStatusCode')
             ->willReturn(401);
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getBody')
             ->willReturn(rtrim($this->responseWithException, '}'));
-        $this->responseMock->expects(self::any())
-            ->method('json')
-            ->willThrowException(new \RuntimeException(''));
 
         $endpointUrl = vsprintf(
             '%s/%s/context/html',
@@ -618,9 +704,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -632,18 +717,12 @@ class SmartlingApiTest extends ApiTestAbstract
                 'exceptions' => false,
                 'query' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', ['context/html', $requestData, 'get']);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
-        $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
     }
 
     /**
@@ -657,6 +736,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testSendRequest($uri, $requestData, $method, $params, $paramsType)
     {
+        $this->prepareClientResponseMock();
         $defaultRequestData = $this->invokeMethod($this->object, 'getDefaultRequestData', [$paramsType, $requestData]);
 
         $params['headers']['Authorization'] = vsprintf('%s %s', [
@@ -664,23 +744,14 @@ class SmartlingApiTest extends ApiTestAbstract
             $this->authProvider->getAccessToken(),
         ]);
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with($method, FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $params)
-            ->willReturn($this->requestMock);
-
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
 
-        $request = $this->invokeMethod($this->object, 'prepareHttpRequest', [$uri, $defaultRequestData, $method]);
-
-        $result = $this->invokeMethod($this->object, 'sendRequest', [$request]);
+        $result = $this->invokeMethod($this->object, 'sendRequest', [$uri, $defaultRequestData, $method]);
         self::assertEquals(['wordCount' => 1629, 'stringCount' => 503, 'overWritten' => false], $result);
     }
 
@@ -719,14 +790,26 @@ class SmartlingApiTest extends ApiTestAbstract
                         'Accept' => 'application/json',
                     ],
                     'exceptions' => false,
-                    'body' => [
-                        'file' => $this->streamPlaceholder,
-                        'key' => 'value',
-                        'boolean_false' => '0',
-                        'boolean_true' => '1',
+                    'multipart' => [
+                        [
+                            'name' => 'key',
+                            'contents' => 'value',
+                        ],
+                      [
+                        'name' => 'boolean_false',
+                        'contents' => '0',
+                      ],
+                      [
+                        'name' => 'boolean_true',
+                        'contents' => '1',
+                      ],
+                      [
+                        'name' => 'file',
+                        'contents' => $this->streamPlaceholder,
+                      ],
                     ],
                 ],
-                'body',
+                'multipart',
             ],
         ];
     }
@@ -736,6 +819,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testRenameFile()
     {
+        $this->prepareClientResponseMock();
         $endpointUrl = vsprintf(
             '%s/%s/file/rename',
             [
@@ -744,9 +828,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -756,16 +839,11 @@ class SmartlingApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => false,
-                'body' => [
+                'form_params' => [
                     'fileUri' => 'test.xml',
                     'newFileUri' => 'new_test.xml',
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->renameFile('test.xml', 'new_test.xml');
@@ -776,6 +854,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testGetAuthorizedLocales()
     {
+        $this->prepareClientResponseMock();
         $endpointUrl = vsprintf(
             '%s/%s/file/authorized-locales',
             [
@@ -784,9 +863,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -800,11 +878,6 @@ class SmartlingApiTest extends ApiTestAbstract
                     'fileUri' => 'test.xml',
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getAuthorizedLocales('test.xml');
@@ -815,11 +888,11 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testDeleteFile()
     {
+        $this->prepareClientResponseMock();
         $endpointUrl = vsprintf('%s/%s/file/delete', [FileApi::ENDPOINT_URL, $this->projectId]);
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -829,16 +902,10 @@ class SmartlingApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => false,
-                'body' => [
+                'form_params' => [
                     'fileUri' => 'test.xml',
-
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->deleteFile('test.xml');
@@ -849,6 +916,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testImport()
     {
+        $this->prepareClientResponseMock();
         $locale = 'en-EN';
         $endpointUrl = vsprintf(
             '%s/%s/locales/%s/file/import',
@@ -859,9 +927,8 @@ class SmartlingApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
+        $this->client->expects($this->once())
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -871,20 +938,29 @@ class SmartlingApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => false,
-                'body' => [
-                    'file' => $this->streamPlaceholder,
-                    'fileUri' => 'test.xml',
-                    'fileType' => 'xml',
-                    'translationState' => 'PUBLISHED',
-                    'overwrite' => '0',
-
+                'multipart' => [
+                    [
+                        'name' => 'fileUri',
+                        'contents' => 'test.xml',
+                    ],
+                    [
+                        'name' => 'fileType',
+                        'contents' => 'xml',
+                    ],
+                    [
+                        'name' => 'file',
+                        'contents' => $this->streamPlaceholder,
+                    ],
+                    [
+                        'name' => 'translationState',
+                        'contents' => 'PUBLISHED',
+                    ],
+                    [
+                        'name' => 'overwrite',
+                        'contents' => '0',
+                    ],
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->import(
@@ -902,7 +978,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testReadFile()
     {
-
+        $this->prepareClientResponseMock();
         $validFilePath = './tests/resources/test.xml';
 
         /**
@@ -914,7 +990,7 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $stream = $this->invokeMethod($fileApi, 'readFile', [$validFilePath]);
 
-        self::assertEquals('stream', get_resource_type($stream));
+        $this->assertEquals('stream', get_resource_type($stream));
     }
 
     /**
@@ -925,6 +1001,7 @@ class SmartlingApiTest extends ApiTestAbstract
      */
     public function testFailedReadFile()
     {
+        $this->prepareClientResponseMock();
         $invalidFilePath = 'unexisted';
 
         /**
@@ -936,7 +1013,7 @@ class SmartlingApiTest extends ApiTestAbstract
 
         $stream = $this->invokeMethod($fileApi, 'readFile', [$invalidFilePath]);
 
-        self::assertEquals('stream', get_resource_type($stream));
+        $this->assertEquals('stream', get_resource_type($stream));
     }
 
     /**
@@ -945,6 +1022,7 @@ class SmartlingApiTest extends ApiTestAbstract
      * It should not throw "Bad response format" exception.
      */
     public function testAcceptResponse() {
+        $this->prepareClientResponseMock();
         $responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
             ->setMethods(
                 array_merge(
@@ -969,13 +1047,8 @@ class SmartlingApiTest extends ApiTestAbstract
                 json_decode($this->responseAsync, true)
             );
 
-        $this->client
-            ->expects(self::any())
-            ->method('createRequest')
-            ->willReturn($this->requestMock);
-
         $this->client->expects(self::once())
-            ->method('send')
+            ->method('request')
             ->willReturn($responseMock);
 
         // Just random api call to mock async response of 'send' method.

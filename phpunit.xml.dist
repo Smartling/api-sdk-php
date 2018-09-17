@@ -3,8 +3,11 @@
         <ini name="error_reporting" value="-1"/>
     </php>
     <testsuites>
-        <testsuite name="Smartling API SDK PHP Test Suite">
-            <directory suffix="Test.php">./tests/</directory>
+        <testsuite name="unit">
+            <directory suffix="Test.php">./tests/unit</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory suffix="Test.php">./tests/functional</directory>
         </testsuite>
     </testsuites>
     <filter>

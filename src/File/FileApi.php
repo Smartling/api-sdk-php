@@ -2,8 +2,6 @@
 
 namespace Smartling\File;
 
-use GuzzleHttp\Post\PostBody;
-use GuzzleHttp\Query;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
@@ -13,7 +11,6 @@ use Smartling\File\Params\ListFilesParameters;
 use Smartling\File\Params\ExtendedListFilesParameters;
 use Smartling\Parameters\ParameterInterface;
 use Smartling\File\Params\UploadFileParameters;
-
 
 /**
  * Class FileApi
@@ -50,11 +47,15 @@ class FileApi extends BaseApiAbstract
         $opts = parent::processBodyOptions($requestData);
         $key = 'file';
 
-        if (array_key_exists($key, $opts)) {
-            $opts[$key] = $this->readFile($opts[$key]);
+        if (!empty($opts['multipart'])) {
+            foreach ($opts['multipart'] as &$data) {
+                if ($data['name'] == $key) {
+                    $data['contents'] = $this->readFile($data['contents']);
+                }
+            }
         }
 
-      return $opts;
+        return $opts;
     }
 
     /**
@@ -95,60 +96,10 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $file_name;
         $params['fileType'] = $file_type;
 
-        $requestData = $this->getDefaultRequestData('body', $params);
-        $request = $this->prepareHttpRequest('file', $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('multipart', $params);
 
-        $body = $request->getBody();
-
-        if ($body instanceof PostBody) {
-            $body->setAggregator(Query::phpAggregator(false));
-        }
-
-        return $this->sendRequest($request);
+        return $this->sendRequest('file', $requestData, self::HTTP_METHOD_POST);
     }
-
-    /**
-     * Requests last-modified value for all locales for file
-     * @param string $fileUri
-     *   Value that uniquely identifies the uploaded file. This ID can be used to
-     *   request the file back.
-     * @return array
-     *   Data about uploaded file.
-     *
-     * @throws \Smartling\Exceptions\SmartlingApiException
-     *
-     * @see http://docs.smartling.com/pages/API/v2/FileAPI/Last-Modified/All-Locales/
-     */
-    public function lastModified($fileUri)
-    {
-        $params['fileUri'] = $fileUri;
-
-        $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
-
-        $result = $this->sendRequest($request);
-
-        /** @noinspection OffsetOperationsInspection */
-        if (is_array($result) && array_key_exists('items', $result) && is_array($result['items']))
-        {
-            /** @noinspection OffsetOperationsInspection */
-            foreach ($result['items'] as &$item)
-            {
-
-                $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, $item['lastModified']);
-
-                if (!($date instanceof \DateTime))
-                {
-                    $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, '1970-01-01T00:00:00Z');
-                }
-
-                $item['lastModified'] = $date;
-            }
-        }
-
-        return $result;
-    }
-
 
     /**
      * Downloads the requested file from Smartling.
@@ -198,9 +149,8 @@ class FileApi extends BaseApiAbstract
 
         $requestData = $this->getDefaultRequestData('query', $params);
         unset($requestData['headers']['Accept']);
-        $request = $this->prepareHttpRequest("locales/{$locale}/file", $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request, true);
+        return $this->sendRequest("locales/{$locale}/file", $requestData, self::HTTP_METHOD_GET, true);
     }
 
     /**
@@ -224,9 +174,8 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest("locales/$locale/file/status", $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest("locales/$locale/file/status", $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -248,9 +197,8 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest("/file/status", $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest("/file/status", $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -288,9 +236,8 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
 
         $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest('files/list', $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('files/list', $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -305,9 +252,8 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
 
         $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest("locales/$locale/files/list", $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest("locales/$locale/files/list", $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -334,10 +280,9 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
         $params['newFileUri'] = $newFileUri;
 
-        $requestData = $this->getDefaultRequestData('body', $params);
-        $request = $this->prepareHttpRequest('file/rename', $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('form_params', $params);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('file/rename', $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -360,10 +305,9 @@ class FileApi extends BaseApiAbstract
         $params = (is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData('body', $params);
-        $request = $this->prepareHttpRequest('file/delete', $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('form_params', $params);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('file/delete', $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -404,10 +348,9 @@ class FileApi extends BaseApiAbstract
         $params['translationState'] = $translationState;
         $params['overwrite'] = $overwrite;
 
-        $requestData = $this->getDefaultRequestData('body', $params);
-        $request = $this->prepareHttpRequest("/locales/$locale/file/import", $requestData, self::HTTP_METHOD_POST);
+        $requestData = $this->getDefaultRequestData('multipart', $params);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest("/locales/$locale/file/import", $requestData, self::HTTP_METHOD_POST);
     }
 
     /**
@@ -425,9 +368,8 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest('file/authorized-locales', $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('file/authorized-locales', $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
@@ -445,9 +387,8 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest('file/status', $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('file/status', $requestData, self::HTTP_METHOD_GET);
     }
 
 
@@ -466,8 +407,58 @@ class FileApi extends BaseApiAbstract
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
-        $request = $this->prepareHttpRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
 
-        return $this->sendRequest($request);
+        return $this->sendRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
+    }
+
+    /**
+     * Requests last-modified value for all locales for file
+     * @param string $fileUri
+     *   Value that uniquely identifies the uploaded file. This ID can be used to
+     *   request the file back.
+     * @param ParameterInterface $params
+     * @return array
+     *   Data about uploaded file.
+     *
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     *
+     * @see http://docs.smartling.com/pages/API/v2/FileAPI/Last-Modified/All-Locales/
+     */
+    public function lastModified($fileUri, ParameterInterface $params = null)
+    {
+        $result = $this->getLastModified($fileUri, $params);
+
+        if (!is_array($result) || !array_key_exists('items', $result) || !is_array($result['items'])) {
+            throw new SmartlingApiException(vsprintf(
+                'No data found for file %s.', [
+                    $fileUri,
+                ]
+            ));
+        }
+
+        /** @noinspection OffsetOperationsInspection */
+        foreach ($result['items'] as &$item)
+        {
+            if (!isset($item['lastModified'])) {
+                throw new SmartlingApiException('Property "lastModified" is not found.');
+            }
+
+            // Smartling returns UTC dates. Let's define this explicitly and
+            // avoid issues when default php timezone is not UTC.
+            $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, $item['lastModified'], new \DateTimeZone('UTC'));
+
+            if (!($date instanceof \DateTime))
+            {
+                throw new SmartlingApiException(vsprintf(
+                    'Can\'t parse formatted time string: %s.', [
+                        $item['lastModified'],
+                    ]
+                ));
+            }
+
+            $item['lastModified'] = $date;
+        }
+
+        return $result;
     }
 }

@@ -5,15 +5,13 @@ namespace Smartling;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Utils;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Logger\DevNullLogger;
-use Smartling\Parameters\BaseParameters;
 
 /**
  * Class BaseApiAbstract
@@ -22,9 +20,10 @@ use Smartling\Parameters\BaseParameters;
  */
 abstract class BaseApiAbstract
 {
+
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
-    const CLIENT_LIB_ID_VERSION = '2.0.0';
+    const CLIENT_LIB_ID_VERSION = '3.0.0';
 
     const HTTP_METHOD_GET = 'get';
 
@@ -222,18 +221,16 @@ abstract class BaseApiAbstract
             [
                 'base_uri' => $serviceUrl,
                 'debug' => $debug,
-                'defaults' => [
-                    'headers' => [
-                        'User-Agent' => vsprintf(
-                            '%s/%s %s',
-                            [
-                                self::getCurrentClientId(),
-                                self::getCurrentClientVersion(),
-                                Utils::getDefaultUserAgent()
-                            ]
-                        ),
-                    ],
-                ]
+                'headers' => [
+                    'User-Agent' => vsprintf(
+                        '%s/%s %s',
+                        [
+                            self::getCurrentClientId(),
+                            self::getCurrentClientVersion(),
+                            GuzzleHttp\default_user_agent()
+                        ]
+                    ),
+                ],
             ]
         );
 
@@ -292,15 +289,35 @@ abstract class BaseApiAbstract
      */
     protected function processBodyOptions($requestData = [])
     {
-        $opts = [];
-        foreach ($requestData as $key => $value) {
-            // Hack to cast FALSE to '0' instead of empty string.
-            if (is_bool($value)) {
-                $value = (int)$value;
+        if (!empty($requestData['multipart'])) {
+            $body = [];
+
+            foreach ($requestData['multipart'] as $key => $value) {
+                // Hack to cast FALSE to '0' instead of empty string.
+                if (is_bool($value)) {
+                    $value = (int) $value;
+                }
+
+                if (is_array($value)) {
+                    foreach ($value as $_item) {
+                        $body[] = [
+                            'name' => $key . '[]',
+                            'contents' => (string) $_item,
+                        ];
+                    }
+                }
+                else {
+                    $body[] = [
+                        'name' => $key,
+                        'contents' => $value,
+                    ];
+                }
             }
-            $opts[$key] = $value;
+
+            $requestData['multipart'] = $body;
         }
-        return $opts;
+
+      return $requestData;
     }
 
     /**
@@ -314,10 +331,10 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param Response $response
      * @throws SmartlingApiException
      */
-    private function checkAuthenticationError(ResponseInterface $response)
+    private function checkAuthenticationError(Response $response)
     {
         //Special handling for 401 error - authentication error => expire token
         if (401 === (int)$response->getStatusCode()) {
@@ -326,8 +343,7 @@ abstract class BaseApiAbstract
                 if ('object' === $type) {
                     $type .= '::' . get_class($this->getAuth());
                 }
-                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type,
-                    401);
+                throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type, 401);
             } else {
                 $this->getAuth()->resetToken();
             }
@@ -335,10 +351,10 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param Response $response
      * @throws SmartlingApiException
      */
-    private function processErrors(ResponseInterface $response)
+    private function processErrors(Response $response)
     {
         // Catch all errors from Smartling and throw appropriate exception.
         if (400 <= (int)$response->getStatusCode()) {
@@ -347,13 +363,13 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param Response $response
      * @throws SmartlingApiException
      */
-    private function processError($response)
+    private function processError(Response $response)
     {
         try {
-            $json = $response->json();
+            $json = json_decode($response->getBody(), true);
 
             if (is_null($json)
                 || !array_key_exists('response', $json)
@@ -386,19 +402,19 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param string $uri
+     * @param $uri
      * @param array $options
-     * @param string $method
-     * @return RequestInterface
+     * @param $method
+     * @param bool $returnRawResponseBody
+     * @return  mixed.
+     *          true on SUCCESS and empty data
+     *          string on $returnRawResponseBody = true
+     *          array otherwise
+     * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    protected function prepareHttpRequest($uri, array $options, $method)
+    protected function sendRequest($uri, array $options, $method, $returnRawResponseBody = false)
     {
-        if (!empty($options['body'])) {
-            $options['body'] = $this->processBodyOptions($options['body']);
-        }
-
         $endpoint = $this->normalizeUri($uri);
-        $clientRequest = $this->getHttpClient()->createRequest($method, $endpoint, $options);
 
         // Dump full request data to log except sensitive data.
         $logRequestData = $options;
@@ -414,7 +430,6 @@ abstract class BaseApiAbstract
                     5) . '*****';
             $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
         }
-
         $toLog = [
             'request' => [
                 'endpoint' => $endpoint,
@@ -422,33 +437,17 @@ abstract class BaseApiAbstract
                 'requestData' => $logRequestData,
             ],
         ];
-
         $serialized = var_export($toLog, true);
-
         $this->getLogger()->debug($serialized);
 
-        return $clientRequest;
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @param bool $returnRawResponseBody
-     *
-     * @return  mixed.
-     *          true on SUCCESS and empty data
-     *          string on $returnRawResponseBody = true
-     *          array otherwise
-     * @throws SmartlingApiException
-     */
-    protected function sendRequest(RequestInterface $request, $returnRawResponseBody = false)
-    {
         try {
-            $response = $this->getHttpClient()->send($request);
+            $options = $this->processBodyOptions($options);
+            $response = $this->getHttpClient()->request($method, $endpoint, $options);
 
-            if (401 === (int) $response->getStatusCode()) {
+            if (401 === (int) $response->getStatusCode() && !($this instanceof AuthApiInterface)) {
                 $this->getLogger()->notice('Got unexpected 401 response code, trying to reauth carefully...');
                 $this->getAuth()->resetToken();
-                $response = $this->getHttpClient()->send($request);
+                $response = $this->getHttpClient()->request($method, $endpoint, $options);
             }
         } catch (RequestException $e) {
             $message = vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
@@ -491,7 +490,7 @@ abstract class BaseApiAbstract
         }
         else {
             try {
-                $json = $response->json();
+                $json = json_decode($response->getBody(), true);
 
                 if (!array_key_exists('response', $json)
                     || !is_array($json['response'])

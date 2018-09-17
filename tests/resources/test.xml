@@ -6,7 +6,7 @@
     <string name="name1">non-translatable-1</string>
     <string name="name2">non-translatable-2</string>
     <localize title="Menu">
-        <string name="name1">Hello</string>
+        <string name="name1">Hello World</string>
         <string name="name2">How are you?</string>
     </localize>
     <localize title="Options">

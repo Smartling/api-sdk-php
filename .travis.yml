@@ -5,18 +5,12 @@ php:
   - 5.6
   - 7.0
   - 7.1
-  - nightly
-
-matrix:
-    allow_failures:
-        - php:
-          - nightly
 
 before_script:
-    - travis_retry composer self-update
-    - travis_retry composer --prefer-source --dev install
+  - travis_retry composer self-update
+  - travis_retry composer --prefer-source --dev install
 
-script: vendor/bin/phpunit --coverage-text --debug --verbose
+script: vendor/bin/phpunit --coverage-text --debug --verbose --testsuite unit
 
 notifications:
   email:

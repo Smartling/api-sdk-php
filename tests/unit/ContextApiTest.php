@@ -1,9 +1,11 @@
 <?php
 
 namespace Smartling\Tests;
+
 use Smartling\Context\ContextApi;
 use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
+use Smartling\Tests\Unit\ApiTestAbstract;
 use Smartling\Context\Params\UploadResourceParameters;
 
 
@@ -54,6 +56,7 @@ class ContextApiTest extends ApiTestAbstract
     public function testUploadContext() {
         $params = new UploadContextParameters();
         $params->setContextFileUri('./tests/resources/context.html');
+        $params->setName('test_context.html');
         $endpointUrl = vsprintf('%s/%s/contexts', [
             ContextApi::ENDPOINT_URL,
             $this->projectId
@@ -61,7 +64,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -69,19 +72,20 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
-                    'Content-Type' => 'application/json',
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
                 ],
                 'exceptions' => FALSE,
-                'body' => [
-                    'content' => $this->streamPlaceholder,
+                'multipart' => [
+                    [
+                        'name' => 'content',
+                        'contents' => $this->streamPlaceholder,
+                    ],
+                    [
+                        'name' => 'name',
+                        'contents' => 'test_context.html',
+                    ],
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->uploadContext($params);
@@ -100,7 +104,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -112,13 +116,8 @@ class ContextApiTest extends ApiTestAbstract
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
               ],
               'exceptions' => FALSE,
-              'body' => '',
+              'form_params' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->matchContext($contextUid);
@@ -137,7 +136,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -145,22 +144,50 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
-                    'Content-Type' => 'application/json',
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
                 ],
                 'exceptions' => FALSE,
-                'body' => [
-                    'content' => $this->streamPlaceholder,
+                'multipart' => [
+                    [
+                        'name' => 'content',
+                        'contents' => $this->streamPlaceholder,
+                    ],
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->uploadAndMatchContext($params);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::getMissingResources
+     */
+    public function testGetMatchStatus() {
+        $matchId = 'test_match_id';
+        $endpointUrl = vsprintf('%s/%s/match/%s', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId,
+            $matchId,
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'query' => [],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->getMatchStatus($matchId);
     }
 
     /**
@@ -177,7 +204,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -192,11 +219,6 @@ class ContextApiTest extends ApiTestAbstract
                     'offset' => $offset,
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->getMissingResources($params);
@@ -217,7 +239,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('put', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -225,19 +247,16 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
-                    'Content-Type' => 'application/json',
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
                 ],
                 'exceptions' => FALSE,
-                'body' => [
-                    'resource' => $this->streamPlaceholder,
+                'multipart' => [
+                    [
+                        'name' => 'resource',
+                        'contents' => $this->streamPlaceholder,
+                    ],
                 ],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->uploadResource($resourceId, $params);
@@ -256,7 +275,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->client
             ->expects(self::once())
-            ->method('createRequest')
+            ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -267,13 +286,8 @@ class ContextApiTest extends ApiTestAbstract
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
                 ],
                 'exceptions' => FALSE,
-                'body' => '',
+                'form_params' => [],
             ])
-            ->willReturn($this->requestMock);
-
-        $this->client->expects(self::once())
-            ->method('send')
-            ->with($this->requestMock)
             ->willReturn($this->responseMock);
 
         $this->object->renderContext($contextUid);

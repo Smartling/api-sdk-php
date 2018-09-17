@@ -1,11 +1,10 @@
 <?php
 
-namespace Smartling\Tests;
+namespace Smartling\Tests\Unit;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
 use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Http\Message\ResponseInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 
@@ -126,6 +125,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
         'post',
         'options',
         'send',
+        'request',
         'getDefaultOption',
         'setDefaultOption',
         'getBaseUrl'
@@ -186,18 +186,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
 
     protected function prepareHttpClientMock()
     {
-        $this->requestMock = $this->getMockBuilder('GuzzleHttp\Message\RequestInterface')
-            ->setMethods(
-                array_merge(
-                    self::$requestInterfaceMethods,
-                    self::$hasEmitterInterfaceMethods,
-                    self::$messageInterfaceMethods
-                )
-            )
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->client = $this->getMockBuilder('GuzzleHttp\ClientInterface')
+        $this->client = $this->getMockBuilder('GuzzleHttp\Client')
             ->setMethods(
                 array_merge(
                     self::$clientInterfaceMethods,
@@ -221,14 +210,14 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
             ->setConstructorArgs([$this->userIdentifier, $this->secretKey, $this->client])
             ->getMock();
 
-        $this->authProvider->expects(self::any())->method('getAccessToken')->willReturn('fakeToken');
-        $this->authProvider->expects(self::any())->method('getTokenType')->willReturn('Bearer');
-        $this->authProvider->expects(self::any())->method('resetToken');
+        $this->authProvider->expects($this->any())->method('getAccessToken')->willReturn('fakeToken');
+        $this->authProvider->expects($this->any())->method('getTokenType')->willReturn('Bearer');
+        $this->authProvider->expects($this->any())->method('resetToken');
     }
 
     protected function prepareClientResponseMock($setDefaultResponse = true)
     {
-        $this->responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
+        $this->responseMock = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
             ->setMethods(
                 array_merge(
                     self::$responseInterfaceMethods,
@@ -254,7 +243,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
                 ->willReturn($this->validResponse);
         }
 
-        $this->responseMock->expects(self::any())
+        $this->responseMock->expects($this->any())
             ->method('getStatusCode')
             ->willReturn(200);
     }
@@ -269,4 +258,5 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
         $this->prepareAuthProviderMock();
         $this->prepareClientResponseMock();
     }
+
 }

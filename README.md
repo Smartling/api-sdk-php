@@ -1,4 +1,4 @@
-![Build Status](https://api.travis-ci.org/Smartling/api-sdk-php.svg?branch=2.0.0-g5)(http://travis-ci.org/Smartling/api-sdk-php)
+[![Build Status](https://travis-ci.org/Smartling/api-sdk-php.svg?branch=3.0.0-g6)](https://travis-ci.org/Smartling/api-sdk-php)
 
 
 [Smartling Translation API](http://docs.smartling.com)
@@ -29,6 +29,11 @@ To get source code, clone the repo:
 
 To contribute, fork it and follow [general GitHub guidelines](http://help.github.com/fork-a-repo/) with pull request.
 
+Run tests
+---------
+`composer install`
+
+`project_id=project_id user_id=user_id user_key=user_key ./vendor/bin/phpunit`
 
 Copyright and license
 ---------------------
