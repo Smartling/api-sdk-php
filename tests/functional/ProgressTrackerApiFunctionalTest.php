@@ -53,7 +53,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
             ]);
             $result = $this->progressTrackerApi->createRecord("space", "object", $params);
 
-            $this->assertArrayHasKey('recordId', $result);
+            $this->assertArrayHasKey('recordUid', $result);
         } catch (SmartlingApiException $e) {
             $result = false;
         }
@@ -73,7 +73,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
                 "foo" => "bar"
             ]);
             $result = $this->progressTrackerApi->createRecord("space", "object", $params);
-            $result = $this->progressTrackerApi->deleteRecord("space", "object", $result["recordId"]);
+            $result = $this->progressTrackerApi->deleteRecord("space", "object", $result["recordUid"]);
 
             $this->assertTrue($result);
         } catch (SmartlingApiException $e) {
