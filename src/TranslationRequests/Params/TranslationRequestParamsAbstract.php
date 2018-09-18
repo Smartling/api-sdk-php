@@ -64,7 +64,7 @@ class TranslationRequestParamsAbstract extends ParamsAbstract
      */
     public function setCustomOriginalData(array $customOriginalData = [])
     {
-        $this->set('customOriginalData', json_encode($customOriginalData));
+        $this->set('customOriginalData', $customOriginalData);
         return $this;
     }
 }

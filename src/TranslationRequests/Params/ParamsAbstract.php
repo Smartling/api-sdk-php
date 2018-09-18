@@ -10,5 +10,5 @@ use Smartling\Parameters\BaseParameters;
  */
 abstract class ParamsAbstract extends BaseParameters
 {
-    const DATE_TIME_FORMAT = "Y-m-d H:i:s";
+    const DATE_TIME_FORMAT = "Y-m-d\TH:i:s\Z";
 }

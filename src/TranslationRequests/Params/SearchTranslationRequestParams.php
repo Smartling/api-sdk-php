@@ -55,13 +55,13 @@ class SearchTranslationRequestParams extends BaseParameters
     }
 
     /**
-     * @param array $translationAssetKey
+     * @param array $targetAssetKey
      * @return $this
      */
-    public function setTranslationAssetKey(array $translationAssetKey = [])
+    public function setTargetAssetKey(array $targetAssetKey = [])
     {
-        if (0 < count($translationAssetKey)) {
-            $this->set('translationAssetKey', json_encode($translationAssetKey));
+        if (0 < count($targetAssetKey)) {
+            $this->set('targetAssetKey', json_encode($targetAssetKey));
         }
         return $this;
     }

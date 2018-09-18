@@ -24,7 +24,7 @@ class CreateTranslationRequestParams extends TranslationRequestParamsAbstract
      */
     public function setOriginalAssetKey(array $originalAssetKey = [])
     {
-        $this->set('originalAssetKey', json_encode($originalAssetKey));
+        $this->set('originalAssetKey', $originalAssetKey);
         return $this;
     }
 
