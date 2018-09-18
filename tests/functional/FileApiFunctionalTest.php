@@ -130,6 +130,14 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
 
             $this->assertArrayHasKey('totalCount', $result);
             $this->assertArrayHasKey('items', $result);
+
+            date_default_timezone_set('Pacific/Auckland');
+            $result_new_timezone = $this->fileApi->lastModified(self::FILE_NAME);
+
+            $this->assertEquals(
+                $result['items'][0]['lastModified']->getTimestamp(),
+                $result_new_timezone['items'][0]['lastModified']->getTimestamp()
+            );
         } catch (SmartlingApiException $e) {
             $this->fail($e->getMessage());
         }

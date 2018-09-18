@@ -102,48 +102,6 @@ class FileApi extends BaseApiAbstract
     }
 
     /**
-     * Requests last-modified value for all locales for file
-     * @param string $fileUri
-     *   Value that uniquely identifies the uploaded file. This ID can be used to
-     *   request the file back.
-     * @return array
-     *   Data about uploaded file.
-     *
-     * @throws \Smartling\Exceptions\SmartlingApiException
-     *
-     * @see http://docs.smartling.com/pages/API/v2/FileAPI/Last-Modified/All-Locales/
-     */
-    public function lastModified($fileUri)
-    {
-        $params['fileUri'] = $fileUri;
-
-        $requestData = $this->getDefaultRequestData('query', $params);
-
-        $result = $this->sendRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
-
-        /** @noinspection OffsetOperationsInspection */
-        if (is_array($result) && array_key_exists('items', $result) && is_array($result['items']))
-        {
-            /** @noinspection OffsetOperationsInspection */
-            foreach ($result['items'] as &$item)
-            {
-
-                $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, $item['lastModified']);
-
-                if (!($date instanceof \DateTime))
-                {
-                    $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, '1970-01-01T00:00:00Z');
-                }
-
-                $item['lastModified'] = $date;
-            }
-        }
-
-        return $result;
-    }
-
-
-    /**
      * Downloads the requested file from Smartling.
      *
      * It is important to check the HTTP response status code. If Smartling finds
@@ -451,5 +409,56 @@ class FileApi extends BaseApiAbstract
         $requestData = $this->getDefaultRequestData('query', $params);
 
         return $this->sendRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
+    }
+
+    /**
+     * Requests last-modified value for all locales for file
+     * @param string $fileUri
+     *   Value that uniquely identifies the uploaded file. This ID can be used to
+     *   request the file back.
+     * @param ParameterInterface $params
+     * @return array
+     *   Data about uploaded file.
+     *
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     *
+     * @see http://docs.smartling.com/pages/API/v2/FileAPI/Last-Modified/All-Locales/
+     */
+    public function lastModified($fileUri, ParameterInterface $params = null)
+    {
+        $result = $this->getLastModified($fileUri, $params);
+
+        if (!is_array($result) || !array_key_exists('items', $result) || !is_array($result['items'])) {
+            throw new SmartlingApiException(vsprintf(
+                'No data found for file %s.', [
+                    $fileUri,
+                ]
+            ));
+        }
+
+        /** @noinspection OffsetOperationsInspection */
+        foreach ($result['items'] as &$item)
+        {
+            if (!isset($item['lastModified'])) {
+                throw new SmartlingApiException('Property "lastModified" is not found.');
+            }
+
+            // Smartling returns UTC dates. Let's define this explicitly and
+            // avoid issues when default php timezone is not UTC.
+            $date = \DateTime::createFromFormat(self::PATTERN_DATE_TIME_ISO_8601, $item['lastModified'], new \DateTimeZone('UTC'));
+
+            if (!($date instanceof \DateTime))
+            {
+                throw new SmartlingApiException(vsprintf(
+                    'Can\'t parse formatted time string: %s.', [
+                        $item['lastModified'],
+                    ]
+                ));
+            }
+
+            $item['lastModified'] = $date;
+        }
+
+        return $result;
     }
 }
