@@ -137,5 +137,17 @@ class SearchTranslationRequestParams extends BaseParameters
         $this->set('translationSubmissionUid', $translationSubmissionUid);
         return $this;
     }
+
+    public function setWithBatchUid()
+    {
+        $this->set('withBatchUid', 1);
+        return $this;
+    }
+
+    public function setWithoutBatchUid()
+    {
+        $this->set('withoutBatchUid', 1);
+        return $this;
+    }
 }
 

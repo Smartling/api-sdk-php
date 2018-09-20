@@ -29,11 +29,13 @@ abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
             $this->set('state', $state);
         } else {
             throw new \UnexpectedValueException(
-                'Invalid \'state\' value \'%s\', expected one of: %s',
-                [
-                    $state,
-                    implode('|', TranslationSubmissionStates::$allowedStates)
-                ]
+                vsprintf(
+                    'Invalid \'state\' value \'%s\', expected one of: %s',
+                    [
+                        $state,
+                        implode('|', TranslationSubmissionStates::$allowedStates)
+                    ]
+                )
             );
         }
         return $this;
