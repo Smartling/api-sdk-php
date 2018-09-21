@@ -14,6 +14,7 @@ class TranslationSubmissionStates
     const STATE_CHANGED = 'Changed';
     const STATE_FAILED = 'Failed';
     const STATE_DELETED = 'Deleted';
+    const STATE_COMPLETED = 'Completed';
 
     /**
      * @var array
@@ -24,6 +25,7 @@ class TranslationSubmissionStates
         self::STATE_TRANSLATED,
         self::STATE_CHANGED,
         self::STATE_FAILED,
-        self::STATE_DELETED
+        self::STATE_DELETED,
+        self::STATE_COMPLETED,
     ];
 }
