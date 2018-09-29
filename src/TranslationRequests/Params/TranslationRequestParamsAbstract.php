@@ -34,7 +34,7 @@ class TranslationRequestParamsAbstract extends ParamsAbstract
      */
     public function setOutdated($outdated)
     {
-        $this->set('outdated', (string)$outdated);
+        $this->set('outdated', $outdated);
         return $this;
     }
 
