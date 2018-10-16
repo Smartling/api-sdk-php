@@ -89,7 +89,7 @@ function createRecordDemo($authProvider, $projectId, $spaceId, $objectId)
     $progressTracker = \Smartling\ProgressTracker\ProgressTrackerApi::create($authProvider, $projectId);
     $st = microtime(true);
 
-    $params = new \Smartling\ProgressTracker\Params\CreateRecordParameters();
+    $params = new \Smartling\ProgressTracker\Params\RecordParameters();
     $params->setTtl(15);
     $params->setData([
       "foo" => "bar"

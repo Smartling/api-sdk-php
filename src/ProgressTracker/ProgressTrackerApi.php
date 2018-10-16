@@ -6,7 +6,7 @@ use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
-use Smartling\ProgressTracker\Params\CreateRecordParameters;
+use Smartling\ProgressTracker\Params\RecordParameters;
 
 /**
  * Class ProgressTrackerApi
@@ -66,12 +66,12 @@ class ProgressTrackerApi extends BaseApiAbstract
      *
      * @param $spaceId
      * @param $objectId
-     * @param CreateRecordParameters $parameters
+     * @param RecordParameters $parameters
      *
      * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    public function createRecord($spaceId, $objectId, CreateRecordParameters $parameters)
+    public function createRecord($spaceId, $objectId, RecordParameters $parameters)
     {
         $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $endpoint = vsprintf('projects/%s/spaces/%s/objects/%s/records', [
@@ -104,5 +104,27 @@ class ProgressTrackerApi extends BaseApiAbstract
         ]);
 
         return $this->sendRequest($endpoint, $requestData, static::HTTP_METHOD_DELETE);
+    }
+
+    /**
+     * Updates record
+     * @param $spaceId
+     * @param $objectId
+     * @param $recordId
+     * @param RecordParameters $parameters
+     * @return mixed
+     * @throws \Smartling\Exceptions\SmartlingApiException
+     */
+    public function updateRecord($spaceId, $objectId, $recordId, RecordParameters $parameters)
+    {
+        $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
+        $endpoint = vsprintf('projects/%s/spaces/%s/objects/%s/records/%s', [
+            $this->getProjectId(),
+            $spaceId,
+            $objectId,
+            $recordId
+        ]);
+
+        return $this->sendRequest($endpoint, $requestData, static::HTTP_METHOD_PUT);
     }
 }

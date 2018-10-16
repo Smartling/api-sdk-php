@@ -2,7 +2,7 @@
 
 namespace Smartling\Tests\Unit;
 
-use Smartling\ProgressTracker\Params\CreateRecordParameters;
+use Smartling\ProgressTracker\Params\RecordParameters;
 use Smartling\ProgressTracker\ProgressTrackerApi;
 
 /**
@@ -63,7 +63,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ]
         );
 
-        $params = new CreateRecordParameters();
+        $params = new RecordParameters();
         $params->setTtl($ttl);
         $params->setData($data);
 
@@ -123,6 +123,54 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $this->object->deleteRecord($spaceId, $objectId, $recordId);
+    }
+
+    /**
+     * @covers \Smartling\ProgressTracker\ProgressTrackerApi::updateRecord
+     */
+    public function testUpdateRecord()
+    {
+        $spaceId = "space";
+        $objectId = "object";
+        $recordId = "record";
+        $ttl = 5;
+        $data = [
+            "foo" => "bar",
+        ];
+        $endpointUrl = vsprintf(
+            '%s/projects/%s/spaces/%s/objects/%s/records/%s',
+            [
+                ProgressTrackerApi::ENDPOINT_URL,
+                $this->projectId,
+                $spaceId,
+                $objectId,
+                $recordId,
+            ]
+        );
+
+        $params = new RecordParameters();
+        $params->setTtl($ttl);
+        $params->setData($data);
+
+        $this->client->expects($this->any())
+            ->method('request')
+            ->with('put', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'json' => [
+                    "ttl" => $ttl,
+                    "data" => $data,
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->updateRecord($spaceId, $objectId, $recordId, $params);
     }
 
     /**

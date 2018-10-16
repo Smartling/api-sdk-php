@@ -5,7 +5,7 @@ namespace Smartling\Tests\Functional;
 use PHPUnit_Framework_TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
-use Smartling\ProgressTracker\Params\CreateRecordParameters;
+use Smartling\ProgressTracker\Params\RecordParameters;
 use Smartling\ProgressTracker\ProgressTrackerApi;
 
 /**
@@ -46,7 +46,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testCreateRecord()
     {
         try {
-            $params = new CreateRecordParameters();
+            $params = new RecordParameters();
             $params->setTtl(15);
             $params->setData([
               "foo" => "bar"
@@ -62,12 +62,41 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests for create record.
+     */
+    public function testUpdateRecord()
+    {
+        try {
+            $params = new RecordParameters();
+            $params->setTtl(15);
+            $params->setData([
+                "foo" => "bar"
+            ]);
+            $result = $this->progressTrackerApi->createRecord("space", "object", $params);
+
+            $recordId = $result['recordUid'];
+
+            $params->setData([
+                "bar" => "foo"
+            ]);
+
+            $result2 = $this->progressTrackerApi->updateRecord("space", "object", $recordId, $params);
+
+            $this->assertArrayHasKey('recordUid', $result2);
+        } catch (SmartlingApiException $e) {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
      * Tests for delete record.
      */
     public function testDeleteRecord()
     {
         try {
-            $params = new CreateRecordParameters();
+            $params = new RecordParameters();
             $params->setTtl(15);
             $params->setData([
                 "foo" => "bar"

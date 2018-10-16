@@ -5,10 +5,10 @@ namespace Smartling\ProgressTracker\Params;
 use Smartling\Parameters\BaseParameters;
 
 /**
- * Class CreateRecordParameters
+ * Class RecordParameters
  * @package ProgressTracker\Params
  */
-class CreateRecordParameters extends BaseParameters
+class RecordParameters extends BaseParameters
 {
     /**
      * @param int $ttl
