@@ -5,6 +5,7 @@ namespace Smartling\Context;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
+use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
@@ -126,13 +127,15 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * Match context async.
      *
      * @param $contextUid
+     * @param \Smartling\Context\Params\MatchContextParameters $params
+     *
      * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    public function matchContext($contextUid)
+    public function matchContext($contextUid, MatchContextParameters $params = null)
     {
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
-        $requestData = $this->getDefaultRequestData('form_params', []);
+        $requestData = $this->getDefaultRequestData('json', is_null($params) ? [] : $params->exportToArray());
         $requestData['headers']['Content-Type'] = 'application/json';
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
@@ -142,11 +145,13 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * Match context sync.
      *
      * @param $contextUid
+     * @param \Smartling\Context\Params\MatchContextParameters $params
+     *
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    public function matchContextSync($contextUid)
+    public function matchContextSync($contextUid, MatchContextParameters $params = null)
     {
-        $this->wait($this->matchContext($contextUid));
+        $this->wait($this->matchContext($contextUid, $params));
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Smartling\Tests\Functional;
 
 use PHPUnit_Framework_TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
+use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
 use Smartling\Exceptions\SmartlingApiException;
@@ -46,7 +47,7 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testUploadContext() {
         try {
             $params = new UploadContextParameters();
-            $params->setContextFileUri('tests/resources/context.html');
+            $params->setContent('tests/resources/context.html');
             $params->setName('test_context.html');
             $result = $this->contextApi->uploadContext($params);
 
@@ -65,10 +66,13 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testMatchContext() {
         try {
             $params = new UploadContextParameters();
-            $params->setContextFileUri('tests/resources/context.html');
+            $params->setContent('tests/resources/context.html');
             $params->setName('test_context.html');
             $contextInfo = $this->contextApi->uploadContext($params);
-            $result = $this->contextApi->matchContext($contextInfo['contextUid']);
+
+            $params = new MatchContextParameters();
+            $params->setContentFileUri('tests/resources/context.html');
+            $result = $this->contextApi->matchContext($contextInfo['contextUid'], $params);
 
             $this->assertArrayHasKey('matchId', $result);
         } catch (SmartlingApiException $e) {
@@ -82,7 +86,8 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testUploadAndMatchContext() {
         try {
             $params = new UploadContextParameters();
-            $params->setContextFileUri('tests/resources/context.html');
+            $params->setContent('tests/resources/context.html');
+            $params->setContentFileUri('tests/resources/context.html');
             $params->setName('test_context.html');
             $result = $this->contextApi->uploadAndMatchContext($params);
 
@@ -125,7 +130,7 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testRenderContext() {
         try {
             $params = new UploadContextParameters();
-            $params->setContextFileUri('tests/resources/context.html');
+            $params->setContent('tests/resources/context.html');
             $params->setName('test_context.html');
             $contextInfo = $this->contextApi->uploadContext($params);
             $result = $this->contextApi->renderContext($contextInfo['contextUid']);

@@ -11,6 +11,7 @@ error_reporting(E_ALL);
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
+use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
 
@@ -58,7 +59,7 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
     $response = false;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $params = new UploadContextParameters();
-    $params->setContextFileUri($fileUri);
+    $params->setContent($fileUri);
     $params->setName('context.html');
     $st = microtime(true);
 
@@ -84,16 +85,19 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param $contextUid
+ * @param $fileUri
  * @return array
  */
-function matchContextDemo($authProvider, $projectId, $contextUid)
+function matchContextDemo($authProvider, $projectId, $contextUid, $fileUri)
 {
     $response = false;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $params = new MatchContextParameters();
+    $params->setContentFileUri($fileUri);
     $st = microtime(true);
 
     try {
-        $response = $context->matchContext($contextUid);
+        $response = $context->matchContext($contextUid, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         var_dump($e->getErrors());
     }
@@ -121,7 +125,8 @@ function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri)
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $params = new UploadContextParameters();
-    $params->setContextFileUri($fileUri);
+    $params->setContent($fileUri);
+    $params->setContentFileUri($fileUri);
     $params->setName('context.html');
     $st = microtime(true);
 
@@ -292,7 +297,7 @@ function renderContextDemo($authProvider, $projectId, $contextUid)
 }
 
 $contextInfo = uploadContextDemo($authProvider, $projectId, '../tests/resources/context.html');
-$response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
+$response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid'], '../tests/resources/context.html');
 $response = uploadAndMatchContextDemo($authProvider, $projectId, '../tests/resources/context.html');
 $matchStatus = getMatchStatusDemo($authProvider, $projectId, $response['matchId']);
 $missingResources = getMissingResources($authProvider, $projectId);

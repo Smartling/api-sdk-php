@@ -3,6 +3,7 @@
 namespace Smartling\Tests;
 
 use Smartling\Context\ContextApi;
+use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Tests\Unit\ApiTestAbstract;
@@ -55,7 +56,7 @@ class ContextApiTest extends ApiTestAbstract
      */
     public function testUploadContext() {
         $params = new UploadContextParameters();
-        $params->setContextFileUri('./tests/resources/context.html');
+        $params->setContent('./tests/resources/context.html');
         $params->setName('test_context.html');
         $endpointUrl = vsprintf('%s/%s/contexts', [
             ContextApi::ENDPOINT_URL,
@@ -95,7 +96,10 @@ class ContextApiTest extends ApiTestAbstract
      * @covers \Smartling\Context\ContextApi::uploadContext
      */
     public function testMatchContext() {
+        $fileUri = './tests/resources/context.html';
         $contextUid = 'someContextUid';
+        $params = new MatchContextParameters();
+        $params->setContentFileUri($fileUri);
         $endpointUrl = vsprintf('%s/%s/contexts/%s/match/async', [
             ContextApi::ENDPOINT_URL,
             $this->projectId,
@@ -116,19 +120,23 @@ class ContextApiTest extends ApiTestAbstract
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
               ],
               'exceptions' => FALSE,
-              'form_params' => [],
+              'json' => [
+                  'contentFileUri' => $fileUri,
+              ],
             ])
             ->willReturn($this->responseMock);
 
-        $this->object->matchContext($contextUid);
+        $this->object->matchContext($contextUid, $params);
     }
 
     /**
      * @covers \Smartling\Context\ContextApi::uploadAndMatchContext
      */
     public function testUploadAndMatchContext() {
+        $fileUri = './tests/resources/context.html';
         $params = new UploadContextParameters();
-        $params->setContextFileUri('./tests/resources/context.html');
+        $params->setContent($fileUri);
+        $params->setContentFileUri($fileUri);
         $endpointUrl = vsprintf('%s/%s/contexts/upload-and-match-async', [
             ContextApi::ENDPOINT_URL,
             $this->projectId
@@ -151,6 +159,10 @@ class ContextApiTest extends ApiTestAbstract
                     [
                         'name' => 'content',
                         'contents' => $this->streamPlaceholder,
+                    ],
+                    [
+                        'name' => 'contentFileUri',
+                        'contents' => $fileUri,
                     ],
                 ],
             ])
