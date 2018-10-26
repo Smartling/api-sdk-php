@@ -65,13 +65,16 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
      */
     public function testMatchContext() {
         try {
+            $fileUri = 'tests/resources/context.html';
+
             $params = new UploadContextParameters();
-            $params->setContent('tests/resources/context.html');
+            $params->setContent($fileUri);
             $params->setName('test_context.html');
             $contextInfo = $this->contextApi->uploadContext($params);
 
             $params = new MatchContextParameters();
-            $params->setContentFileUri('tests/resources/context.html');
+            $params->setContentFileUri($fileUri);
+
             $result = $this->contextApi->matchContext($contextInfo['contextUid'], $params);
 
             $this->assertArrayHasKey('matchId', $result);
@@ -85,10 +88,16 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
      */
     public function testUploadAndMatchContext() {
         try {
+            $fileUri = 'tests/resources/context.html';
+
+            $matchParams = new MatchContextParameters();
+            $matchParams->setContentFileUri($fileUri);
+
             $params = new UploadContextParameters();
-            $params->setContent('tests/resources/context.html');
-            $params->setContentFileUri('tests/resources/context.html');
+            $params->setContent($fileUri);
+            $params->setMatchParams($matchParams);
             $params->setName('test_context.html');
+
             $result = $this->contextApi->uploadAndMatchContext($params);
 
             $this->assertArrayHasKey('matchId', $result);

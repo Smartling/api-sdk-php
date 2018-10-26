@@ -98,8 +98,10 @@ class ContextApiTest extends ApiTestAbstract
     public function testMatchContext() {
         $fileUri = './tests/resources/context.html';
         $contextUid = 'someContextUid';
+
         $params = new MatchContextParameters();
         $params->setContentFileUri($fileUri);
+
         $endpointUrl = vsprintf('%s/%s/contexts/%s/match/async', [
             ContextApi::ENDPOINT_URL,
             $this->projectId,
@@ -116,7 +118,6 @@ class ContextApiTest extends ApiTestAbstract
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
-                    'Content-Type' => 'application/json',
                     'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
               ],
               'exceptions' => FALSE,
@@ -134,9 +135,14 @@ class ContextApiTest extends ApiTestAbstract
      */
     public function testUploadAndMatchContext() {
         $fileUri = './tests/resources/context.html';
+
+        $matchParams = new MatchContextParameters();
+        $matchParams->setContentFileUri($fileUri);
+
         $params = new UploadContextParameters();
         $params->setContent($fileUri);
-        $params->setContentFileUri($fileUri);
+        $params->setMatchParams($matchParams);
+
         $endpointUrl = vsprintf('%s/%s/contexts/upload-and-match-async', [
             ContextApi::ENDPOINT_URL,
             $this->projectId
@@ -161,8 +167,11 @@ class ContextApiTest extends ApiTestAbstract
                         'contents' => $this->streamPlaceholder,
                     ],
                     [
-                        'name' => 'contentFileUri',
-                        'contents' => $fileUri,
+                        'name' => 'matchParams',
+                        'contents' => '{"contentFileUri":".\/tests\/resources\/context.html"}',
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                        ]
                     ],
                 ],
             ])

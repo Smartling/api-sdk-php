@@ -81,6 +81,12 @@ class ContextApi extends BaseApiAbstract implements Waitable
                 if (in_array($data['name'], $keys)) {
                     $data['contents'] = $this->readFile($data['contents']);
                 }
+
+                if ($data['name'] == 'matchParams') {
+                    $data['headers'] = [
+                        "Content-Type" => "application/json",
+                    ];
+                }
             }
         }
 
@@ -136,7 +142,6 @@ class ContextApi extends BaseApiAbstract implements Waitable
     {
         $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
         $requestData = $this->getDefaultRequestData('json', is_null($params) ? [] : $params->exportToArray());
-        $requestData['headers']['Content-Type'] = 'application/json';
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
     }
