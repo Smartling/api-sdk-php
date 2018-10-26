@@ -19,22 +19,22 @@ class UploadContextParameters extends BaseParameters
      */
     public function setContextFileUri($contextFileUri)
     {
-        $this->params['content'] = $contextFileUri;
+        $this->set('content', $contextFileUri);
     }
 
     public function setContent($contextFileUri)
     {
-        $this->params['content'] = $contextFileUri;
+        $this->set('content', $contextFileUri);
     }
 
     public function setName($name)
     {
-        $this->params['name'] = $name;
+        $this->set('name', $name);
     }
 
     public function setMatchParams(MatchContextParameters $params)
     {
-        $this->params['matchParams'] = json_encode($params->exportToArray());
+        $this->set('matchParams', json_encode($params->exportToArray()));
     }
 
 }

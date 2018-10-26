@@ -13,7 +13,7 @@ class MatchContextParameters extends BaseParameters
 
     public function setContentFileUri($contentFileUri)
     {
-        $this->params['contentFileUri'] = $contentFileUri;
+        $this->set('contentFileUri', $contentFileUri);
     }
 
 }
