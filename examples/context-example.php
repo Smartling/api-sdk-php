@@ -124,9 +124,13 @@ function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri)
 {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+
+    $matchParams = new MatchContextParameters();
+    $matchParams->setContentFileUri($fileUri);
+
     $params = new UploadContextParameters();
     $params->setContent($fileUri);
-    $params->setContentFileUri($fileUri);
+    $params->setMatchParams($matchParams);
     $params->setName('context.html');
     $st = microtime(true);
 

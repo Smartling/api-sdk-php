@@ -8,7 +8,7 @@ use Smartling\Parameters\BaseParameters;
  * Class UploadContextParameters
  * @package Context\Params
  */
-class UploadContextParameters extends BaseParameters implements ContextParametersInterface
+class UploadContextParameters extends BaseParameters
 {
 
     /**
@@ -27,12 +27,14 @@ class UploadContextParameters extends BaseParameters implements ContextParameter
         $this->params['content'] = $contextFileUri;
     }
 
-    public function setContentFileUri($contentFileUri) {
-        $this->params['contentFileUri'] = $contentFileUri;
+    public function setName($name)
+    {
+        $this->params['name'] = $name;
     }
 
-    public function setName($name) {
-        $this->params['name'] = $name;
+    public function setMatchParams(MatchContextParameters $params)
+    {
+        $this->params['matchParams'] = json_encode($params->exportToArray());
     }
 
 }
