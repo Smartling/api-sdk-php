@@ -118,15 +118,16 @@ function matchContextDemo($authProvider, $projectId, $contextUid, $fileUri)
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $fileUri
+ * @param $contentFileUri
  * @return array
  */
-function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri)
+function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri, $contentFileUri)
 {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
 
     $matchParams = new MatchContextParameters();
-    $matchParams->setContentFileUri($fileUri);
+    $matchParams->setContentFileUri($contentFileUri);
 
     $params = new UploadContextParameters();
     $params->setContent($fileUri);
@@ -301,8 +302,8 @@ function renderContextDemo($authProvider, $projectId, $contextUid)
 }
 
 $contextInfo = uploadContextDemo($authProvider, $projectId, '../tests/resources/context.html');
-$response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid'], '../tests/resources/context.html');
-$response = uploadAndMatchContextDemo($authProvider, $projectId, '../tests/resources/context.html');
+$response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid'], 'your/content/file.xml');
+$response = uploadAndMatchContextDemo($authProvider, $projectId, '../tests/resources/context.html', 'your/content/file.xml');
 $matchStatus = getMatchStatusDemo($authProvider, $projectId, $response['matchId']);
 $missingResources = getMissingResources($authProvider, $projectId);
 $allMissingResources = getAllMissingResourcesDemo($authProvider, $projectId);
