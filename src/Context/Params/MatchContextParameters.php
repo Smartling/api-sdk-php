@@ -18,8 +18,8 @@ class MatchContextParameters extends BaseParameters
 
     public function setOverrideContextOlderThanDays($days)
     {
-        if (!is_numeric($days)) {
-            throw new \InvalidArgumentException('Days value must be numeric.');
+        if ($days < 1) {
+            throw new \InvalidArgumentException('Days value must be grater or equal to one.');
         }
 
         $this->set('overrideContextOlderThanDays', $days);
