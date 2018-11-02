@@ -84,16 +84,17 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
 /**
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
- * @param $contextUid
- * @param $fileUri
+ * @param string $contextUid
+ * @param string $contentFileUri
+ *   Uri of a file which contains source strings
  * @return array
  */
-function matchContextDemo($authProvider, $projectId, $contextUid, $fileUri)
+function matchContextDemo($authProvider, $projectId, $contextUid, $contentFileUri)
 {
     $response = false;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $params = new MatchContextParameters();
-    $params->setContentFileUri($fileUri);
+    $params->setContentFileUri($contentFileUri);
     $st = microtime(true);
 
     try {
@@ -118,7 +119,9 @@ function matchContextDemo($authProvider, $projectId, $contextUid, $fileUri)
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $fileUri
- * @param $contentFileUri
+ *   Context file uri.
+ * @param string $contentFileUri
+ *   Uri of a file which contains source strings.
  * @return array
  */
 function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri, $contentFileUri)
@@ -156,7 +159,7 @@ function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri, $content
 /**
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
- * @param $matchId
+ * @param string $matchId
  * @return bool
  */
 function getMatchStatusDemo($authProvider, $projectId, $matchId) {
@@ -274,7 +277,7 @@ function uploadResourceDemo($authProvider, $projectId, $resourceId, $fileUri) {
 /**
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
- * @param $contextUid
+ * @param string $contextUid
  * @return array
  */
 function renderContextDemo($authProvider, $projectId, $contextUid)
