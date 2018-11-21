@@ -16,4 +16,12 @@ class MatchContextParameters extends BaseParameters
         $this->set('contentFileUri', $contentFileUri);
     }
 
+    public function setOverrideContextOlderThanDays($days)
+    {
+        if ($days < 1) {
+            throw new \InvalidArgumentException('Days value must be grater or equal to one.');
+        }
+
+        $this->set('overrideContextOlderThanDays', $days);
+    }
 }
