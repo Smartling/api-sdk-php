@@ -43,11 +43,13 @@ class SearchRecordParameters extends BaseParameters
     }
 
     public function setSort($field, $order) {
-        if (!in_array($order, [
+        $allowedSortOrders = [
             SearchRecordParameters::ORDER_DESC,
             SearchRecordParameters::ORDER_ASC
-        ])) {
-            throw new InvalidArgumentException('Allowed sort orders are "desc" and "asc".');
+        ];
+
+        if (!in_array($order, $allowedSortOrders)) {
+            throw new InvalidArgumentException('Allowed sort orders are: ' . implode(', ', $allowedSortOrders));
         }
 
         $this->set('sort', "$field:$order");
