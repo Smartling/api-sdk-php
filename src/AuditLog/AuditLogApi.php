@@ -22,7 +22,7 @@ class AuditLogApi extends BaseApiAbstract
         parent::__construct($projectId, $client, $logger, $service_url);
 
         // Do not include project_id into base url since
-        // progress tracker service has /accounts/{account}/token
+        // audit log service has /accounts/{accountUid}/logs
         // endpoint without project id.
         $this->setBaseUrl(rtrim($service_url, '/'));
     }
