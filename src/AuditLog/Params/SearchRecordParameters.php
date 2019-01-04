@@ -33,8 +33,8 @@ class SearchRecordParameters extends BaseParameters
     }
 
     public function setLimit($limit) {
-        if (!is_int($limit) || $limit < 0) {
-            throw new InvalidArgumentException('Offset value must be grater or equal to zero.');
+        if (!is_int($limit) || $limit < 1) {
+            throw new InvalidArgumentException('Limit value must be grater or equal to one.');
         }
 
         $this->set('limit', $limit);

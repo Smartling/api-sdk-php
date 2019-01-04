@@ -4,6 +4,7 @@ namespace Smartling\Tests\Unit;
 
 use Smartling\AuditLog\AuditLogApi;
 use Smartling\AuditLog\Params\CreateRecordRecommendedParameters;
+use Smartling\AuditLog\Params\SearchRecordParameters;
 
 class AuditLogApiTest extends ApiTestAbstract
 {
@@ -98,6 +99,91 @@ class AuditLogApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $this->object->createAccountLevelLogRecord($accountUid, $createParams);
+    }
+
+    /**
+     * @covers \Smartling\AuditLog\AuditLogApi::searchProjectLevelLogRecord
+     */
+    public function testSearchProjectLevelLogRecord()
+    {
+        $endpointUrl = vsprintf(
+            '%s/projects/%s/logs',
+            [
+                AuditLogApi::ENDPOINT_URL,
+                $this->projectId,
+            ]
+        );
+
+        $createParams = (new SearchRecordParameters())
+            ->setSearchQuery("foo:bar")
+            ->setOffset(1)
+            ->setLimit(100)
+            ->setSort("baz", SearchRecordParameters::ORDER_ASC);
+
+        $this->client->expects($this->any())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [
+                    'q' => 'foo:bar',
+                    'offset' => 1,
+                    'limit' => 100,
+                    'sort' => 'baz:' . SearchRecordParameters::ORDER_ASC,
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->searchProjectLevelLogRecord($createParams);
+    }
+
+    /**
+     * @covers \Smartling\AuditLog\AuditLogApi::searchAccountLevelLogRecord
+     */
+    public function testSearchAccountLevelLogRecord()
+    {
+        $accountUid = "account_uid";
+        $endpointUrl = vsprintf(
+            '%s/accounts/%s/logs',
+            [
+                AuditLogApi::ENDPOINT_URL,
+                $accountUid,
+            ]
+        );
+
+        $createParams = (new SearchRecordParameters())
+            ->setSearchQuery("foo:bar")
+            ->setOffset(1)
+            ->setLimit(100)
+            ->setSort("baz", SearchRecordParameters::ORDER_ASC);
+
+        $this->client->expects($this->any())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [
+                    'q' => 'foo:bar',
+                    'offset' => 1,
+                    'limit' => 100,
+                    'sort' => 'baz:' . SearchRecordParameters::ORDER_ASC,
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->searchAccountLevelLogRecord($accountUid, $createParams);
     }
 
     protected function setUp()
