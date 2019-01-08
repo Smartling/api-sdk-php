@@ -4,7 +4,7 @@ namespace Smartling\Tests\Functional;
 
 use PHPUnit_Framework_TestCase;
 use Smartling\AuditLog\AuditLogApi;
-use Smartling\AuditLog\Params\CreateRecordRecommendedParameters;
+use Smartling\AuditLog\Params\CreateRecordParameters;
 use Smartling\AuditLog\Params\SearchRecordParameters;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
@@ -36,10 +36,10 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
     {
         try {
             $user_id = uniqid();
-            $params = (new CreateRecordRecommendedParameters())
+            $params = (new CreateRecordParameters())
                 ->setBucket('test_bucket_name')
                 ->setTime(time())
-                ->setActionType(CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD)
+                ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setUserId($user_id)
                 ->setDescription("test_description")
                 ->setCustomField("my_custom_field", "test_custom_field_value");
@@ -61,10 +61,10 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
     {
         try {
             $user_id = uniqid();
-            $params = (new CreateRecordRecommendedParameters())
+            $params = (new CreateRecordParameters())
                 ->setBucket('test_bucket_name')
                 ->setTime(time())
-                ->setActionType(CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD)
+                ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setUserId($user_id)
                 ->setDescription("test_description")
                 ->setCustomField("my_custom_field", "test_custom_field_value");
@@ -87,10 +87,10 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
         try {
             $user_id = uniqid();
 
-            $params = (new CreateRecordRecommendedParameters())
+            $params = (new CreateRecordParameters())
                 ->setBucket('test_bucket_name')
                 ->setTime(time())
-                ->setActionType(CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD)
+                ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setUserId($user_id)
                 ->setDescription("test_description")
                 ->setCustomField("my_custom_field", "test_custom_field_value");
@@ -124,7 +124,7 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('project_uid', $result['items'][0]);
 
             $this->assertEquals($result['items'][0]['bucket'], 'test_bucket_name');
-            $this->assertEquals($result['items'][0]['action_type'], CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD);
+            $this->assertEquals($result['items'][0]['action_type'], CreateRecordParameters::ACTION_TYPE_UPLOAD);
             $this->assertEquals($result['items'][0]['user_id'], $user_id);
             $this->assertEquals($result['items'][0]['description'], 'test_description');
             $this->assertEquals($result['items'][0]['my_custom_field'], 'test_custom_field_value');
@@ -142,10 +142,10 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
         try {
             $user_id = uniqid();
 
-            $params = (new CreateRecordRecommendedParameters())
+            $params = (new CreateRecordParameters())
                 ->setBucket('test_bucket_name')
                 ->setTime(time())
-                ->setActionType(CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD)
+                ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setUserId($user_id)
                 ->setDescription("test_description")
                 ->setCustomField("my_custom_field", "test_custom_field_value");
@@ -179,7 +179,7 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('project_uid', $result['items'][0]);
 
             $this->assertEquals($result['items'][0]['bucket'], 'test_bucket_name');
-            $this->assertEquals($result['items'][0]['action_type'], CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD);
+            $this->assertEquals($result['items'][0]['action_type'], CreateRecordParameters::ACTION_TYPE_UPLOAD);
             $this->assertEquals($result['items'][0]['user_id'], $user_id);
             $this->assertEquals($result['items'][0]['description'], 'test_description');
             $this->assertEquals($result['items'][0]['my_custom_field'], 'test_custom_field_value');

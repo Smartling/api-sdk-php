@@ -62,7 +62,7 @@ function searchProjectLevelLogRecordDemo($authProvider, $projectId)
             ->setSearchQuery('foo:bar')
             ->setOffset(0)
             ->setLimit(100)
-            ->setSort('_id', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
+            ->setSort('time', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
 
         $response = $auditLog->searchProjectLevelLogRecord($searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
@@ -98,7 +98,7 @@ function searchAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
             ->setSearchQuery('foo:bar')
             ->setOffset(0)
             ->setLimit(100)
-            ->setSort('_id', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
+            ->setSort('time', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
 
         $response = $auditLog->searchAccountLevelLogRecord($accountUid, $searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
@@ -129,10 +129,10 @@ function createProjectLevelLogRecordDemo($authProvider, $projectId)
     $st = microtime(true);
 
     try {
-        $createParams = (new \Smartling\AuditLog\Params\CreateRecordRecommendedParameters())
+        $createParams = (new \Smartling\AuditLog\Params\CreateRecordParameters())
             ->setBucket("myBucket")
             ->setTime(time())
-            ->setActionType(\Smartling\AuditLog\Params\CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD)
+            ->setActionType(\Smartling\AuditLog\Params\CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setUserId("myUserId")
             ->setDescription("myDescription")
             ->setCustomField("foo", "bar");
@@ -167,10 +167,10 @@ function createAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
     $st = microtime(true);
 
     try {
-        $createParams = (new \Smartling\AuditLog\Params\CreateRecordRecommendedParameters())
+        $createParams = (new \Smartling\AuditLog\Params\CreateRecordParameters())
             ->setBucket("myBucket")
             ->setTime(time())
-            ->setActionType(\Smartling\AuditLog\Params\CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD)
+            ->setActionType(\Smartling\AuditLog\Params\CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setUserId("myUserId")
             ->setDescription("myDescription")
             ->setCustomField("foo", "bar");

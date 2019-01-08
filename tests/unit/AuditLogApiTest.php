@@ -3,7 +3,7 @@
 namespace Smartling\Tests\Unit;
 
 use Smartling\AuditLog\AuditLogApi;
-use Smartling\AuditLog\Params\CreateRecordRecommendedParameters;
+use Smartling\AuditLog\Params\CreateRecordParameters;
 use Smartling\AuditLog\Params\SearchRecordParameters;
 
 class AuditLogApiTest extends ApiTestAbstract
@@ -21,10 +21,10 @@ class AuditLogApiTest extends ApiTestAbstract
             ]
         );
 
-        $createParams = (new CreateRecordRecommendedParameters())
+        $createParams = (new CreateRecordParameters())
             ->setBucket("myBucket")
             ->setTime(1234567890)
-            ->setActionType(CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD)
+            ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setUserId("myUserId")
             ->setDescription("myDescription")
             ->setCustomField("my_custom_field", "foo");
@@ -43,7 +43,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 'json' => [
                     'time' => '2009-02-13T23:31:30Z',
                     'bucket' => 'myBucket',
-                    'action_type' => CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD,
+                    'action_type' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'user_id' => 'myUserId',
                     'description' => 'myDescription',
                     'my_custom_field' => 'foo',
@@ -68,10 +68,10 @@ class AuditLogApiTest extends ApiTestAbstract
             ]
         );
 
-        $createParams = (new CreateRecordRecommendedParameters())
+        $createParams = (new CreateRecordParameters())
             ->setBucket("myBucket")
             ->setTime(1234567890)
-            ->setActionType(CreateRecordRecommendedParameters::ACTION_TYPE_DOWNLOAD)
+            ->setActionType(CreateRecordParameters::ACTION_TYPE_DOWNLOAD)
             ->setUserId("myUserId")
             ->setDescription("myDescription")
             ->setCustomField("my_custom_field", "foo");
@@ -90,7 +90,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 'json' => [
                     'time' => '2009-02-13T23:31:30Z',
                     'bucket' => 'myBucket',
-                    'action_type' => CreateRecordRecommendedParameters::ACTION_TYPE_DOWNLOAD,
+                    'action_type' => CreateRecordParameters::ACTION_TYPE_DOWNLOAD,
                     'user_id' => 'myUserId',
                     'description' => 'myDescription',
                     'my_custom_field' => 'foo',

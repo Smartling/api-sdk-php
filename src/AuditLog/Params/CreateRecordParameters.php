@@ -5,7 +5,7 @@ namespace Smartling\AuditLog\Params;
 use InvalidArgumentException;
 use Smartling\Parameters\BaseParameters;
 
-class CreateRecordRecommendedParameters extends BaseParameters
+class CreateRecordParameters extends BaseParameters
 {
     const ACTION_TYPE_UPLOAD = 'UPLOAD';
     const ACTION_TYPE_DOWNLOAD = 'DOWNLOAD';
@@ -36,12 +36,12 @@ class CreateRecordRecommendedParameters extends BaseParameters
 
     public function setActionType($actionType) {
         $allowedActionTypes = [
-            CreateRecordRecommendedParameters::ACTION_TYPE_UPLOAD,
-            CreateRecordRecommendedParameters::ACTION_TYPE_DOWNLOAD,
-            CreateRecordRecommendedParameters::ACTION_TYPE_CANCEL,
-            CreateRecordRecommendedParameters::ACTION_TYPE_DELETE,
-            CreateRecordRecommendedParameters::ACTION_TYPE_LOCK_FIELDS,
-            CreateRecordRecommendedParameters::ACTION_TYPE_UPDATE_SETTINGS,
+            CreateRecordParameters::ACTION_TYPE_UPLOAD,
+            CreateRecordParameters::ACTION_TYPE_DOWNLOAD,
+            CreateRecordParameters::ACTION_TYPE_CANCEL,
+            CreateRecordParameters::ACTION_TYPE_DELETE,
+            CreateRecordParameters::ACTION_TYPE_LOCK_FIELDS,
+            CreateRecordParameters::ACTION_TYPE_UPDATE_SETTINGS,
         ];
 
         if (!in_array($actionType, $allowedActionTypes)) {
