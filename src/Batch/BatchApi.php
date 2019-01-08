@@ -18,10 +18,6 @@ class BatchApi extends BaseApiAbstract
 {
 
     const ACTION_EXECUTE = 'execute';
-
-    /**
-     * @TODO: change this to production url.
-     */
     const ENDPOINT_URL = 'https://api.smartling.com/jobs-batch-api/v1/projects';
 
     /**
