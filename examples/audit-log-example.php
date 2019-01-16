@@ -59,10 +59,10 @@ function searchProjectLevelLogRecordDemo($authProvider, $projectId)
 
     try {
         $searchParams = (new \Smartling\AuditLog\Params\SearchRecordParameters())
-            ->setSearchQuery('foo:bar')
+            ->setSearchQuery('clientData.foo:bar')
             ->setOffset(0)
             ->setLimit(100)
-            ->setSort('time', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
+            ->setSort('actionTime', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
 
         $response = $auditLog->searchProjectLevelLogRecord($searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
@@ -95,10 +95,10 @@ function searchAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
 
     try {
         $searchParams = (new \Smartling\AuditLog\Params\SearchRecordParameters())
-            ->setSearchQuery('foo:bar')
+            ->setSearchQuery('clientData.foo:bar')
             ->setOffset(0)
             ->setLimit(100)
-            ->setSort('time', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
+            ->setSort('actionTime', \Smartling\AuditLog\Params\SearchRecordParameters::ORDER_DESC);
 
         $response = $auditLog->searchAccountLevelLogRecord($accountUid, $searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
@@ -130,12 +130,23 @@ function createProjectLevelLogRecordDemo($authProvider, $projectId)
 
     try {
         $createParams = (new \Smartling\AuditLog\Params\CreateRecordParameters())
-            ->setBucket("myBucket")
-            ->setTime(time())
+            ->setActionTime(time())
             ->setActionType(\Smartling\AuditLog\Params\CreateRecordParameters::ACTION_TYPE_UPLOAD)
-            ->setUserId("myUserId")
-            ->setDescription("myDescription")
-            ->setCustomField("foo", "bar");
+            ->setFileUri("file_uri")
+            ->setFileUid("file_uid")
+            ->setSourceLocaleId('en')
+            ->setTargetLocaleIds(['de'])
+            ->setTranslationJobUid("smartling_job_uid")
+            ->setTranslationJobName("smartling_job_name")
+            ->setTranslationJobDueDate("smartling_job_due_date")
+            ->setTranslationJobAuthorize(true)
+            ->setBatchUid("batch_uid")
+            ->setDescription("description")
+            ->setClientUserId("user_id")
+            ->setClientUserEmail("user_email")
+            ->setClientUserName("user_name")
+            ->setEnvId("env_id")
+            ->setClientData("foo", "bar");
 
         $response = $auditLog->createProjectLevelLogRecord($createParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
@@ -168,12 +179,23 @@ function createAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
 
     try {
         $createParams = (new \Smartling\AuditLog\Params\CreateRecordParameters())
-            ->setBucket("myBucket")
-            ->setTime(time())
+            ->setActionTime(time())
             ->setActionType(\Smartling\AuditLog\Params\CreateRecordParameters::ACTION_TYPE_UPLOAD)
-            ->setUserId("myUserId")
-            ->setDescription("myDescription")
-            ->setCustomField("foo", "bar");
+            ->setFileUri("file_uri")
+            ->setFileUid("file_uid")
+            ->setSourceLocaleId('en')
+            ->setTargetLocaleIds(['de'])
+            ->setTranslationJobUid("smartling_job_uid")
+            ->setTranslationJobName("smartling_job_name")
+            ->setTranslationJobDueDate("smartling_job_due_date")
+            ->setTranslationJobAuthorize(true)
+            ->setBatchUid("batch_uid")
+            ->setDescription("description")
+            ->setClientUserId("user_id")
+            ->setClientUserEmail("user_email")
+            ->setClientUserName("user_name")
+            ->setEnvId("env_id")
+            ->setClientData("foo", "bar");
 
         $response = $auditLog->createAccountLevelLogRecord($accountUid, $createParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
@@ -192,7 +214,7 @@ function createAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
     return $response;
 }
 
-$response = searchProjectLevelLogRecordDemo($authProvider, $projectId);
-$response = searchAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid);
 $response = createProjectLevelLogRecordDemo($authProvider, $projectId);
 $response = createAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid);
+$response = searchProjectLevelLogRecordDemo($authProvider, $projectId);
+$response = searchAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid);
