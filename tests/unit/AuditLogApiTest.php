@@ -22,12 +22,22 @@ class AuditLogApiTest extends ApiTestAbstract
         );
 
         $createParams = (new CreateRecordParameters())
-            ->setBucket("myBucket")
-            ->setTime(1234567890)
+            ->setActionTime(1234567890)
             ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
-            ->setUserId("myUserId")
-            ->setDescription("myDescription")
-            ->setCustomField("my_custom_field", "foo");
+            ->setFileUri("file_uri")
+            ->setSourceLocaleId('en')
+            ->setTargetLocaleIds(['de'])
+            ->setTranslationJobUid("smartling_job_uid")
+            ->setTranslationJobName("smartling_job_name")
+            ->setTranslationJobDueDate("smartling_job_due_date")
+            ->setTranslationJobAuthorize(true)
+            ->setDescription("description")
+            ->setClientUserId("user_id")
+            ->setClientUserEmail("user_email")
+            ->setClientUserName("user_name")
+            ->setEnvId("env_id")
+            ->setClientData("foo", "bar")
+            ->setClientData("foo1", "bar1");
 
         $this->client->expects($this->any())
             ->method('request')
@@ -41,12 +51,24 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'time' => '2009-02-13T23:31:30Z',
-                    'bucket' => 'myBucket',
-                    'action_type' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
-                    'user_id' => 'myUserId',
-                    'description' => 'myDescription',
-                    'my_custom_field' => 'foo',
+                    'actionTime' => '2009-02-13T23:31:30Z',
+                    'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
+                    'fileUri' => 'file_uri',
+                    'sourceLocaleId' => 'en',
+                    'targetLocaleIds' => ['de'],
+                    'translationJobUid' => 'smartling_job_uid',
+                    'translationJobName' => 'smartling_job_name',
+                    'translationJobDueDate' => 'smartling_job_due_date',
+                    'translationJobAuthorize' => true,
+                    'description' => 'description',
+                    'clientUserId' => 'user_id',
+                    'clientUserEmail' => 'user_email',
+                    'clientUserName' => 'user_name',
+                    'envId' => 'env_id',
+                    'clientData' => [
+                        'foo' => 'bar',
+                        'foo1' => 'bar1',
+                    ]
                 ],
             ])
             ->willReturn($this->responseMock);
@@ -69,12 +91,22 @@ class AuditLogApiTest extends ApiTestAbstract
         );
 
         $createParams = (new CreateRecordParameters())
-            ->setBucket("myBucket")
-            ->setTime(1234567890)
-            ->setActionType(CreateRecordParameters::ACTION_TYPE_DOWNLOAD)
-            ->setUserId("myUserId")
-            ->setDescription("myDescription")
-            ->setCustomField("my_custom_field", "foo");
+            ->setActionTime(1234567890)
+            ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
+            ->setFileUri("file_uri")
+            ->setSourceLocaleId('en')
+            ->setTargetLocaleIds(['de'])
+            ->setTranslationJobUid("smartling_job_uid")
+            ->setTranslationJobName("smartling_job_name")
+            ->setTranslationJobDueDate("smartling_job_due_date")
+            ->setTranslationJobAuthorize(true)
+            ->setDescription("description")
+            ->setClientUserId("user_id")
+            ->setClientUserEmail("user_email")
+            ->setClientUserName("user_name")
+            ->setEnvId("env_id")
+            ->setClientData("foo", "bar")
+            ->setClientData("foo1", "bar1");
 
         $this->client->expects($this->any())
             ->method('request')
@@ -88,12 +120,24 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'time' => '2009-02-13T23:31:30Z',
-                    'bucket' => 'myBucket',
-                    'action_type' => CreateRecordParameters::ACTION_TYPE_DOWNLOAD,
-                    'user_id' => 'myUserId',
-                    'description' => 'myDescription',
-                    'my_custom_field' => 'foo',
+                    'actionTime' => '2009-02-13T23:31:30Z',
+                    'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
+                    'fileUri' => 'file_uri',
+                    'sourceLocaleId' => 'en',
+                    'targetLocaleIds' => ['de'],
+                    'translationJobUid' => 'smartling_job_uid',
+                    'translationJobName' => 'smartling_job_name',
+                    'translationJobDueDate' => 'smartling_job_due_date',
+                    'translationJobAuthorize' => true,
+                    'description' => 'description',
+                    'clientUserId' => 'user_id',
+                    'clientUserEmail' => 'user_email',
+                    'clientUserName' => 'user_name',
+                    'envId' => 'env_id',
+                    'clientData' => [
+                        'foo' => 'bar',
+                        'foo1' => 'bar1',
+                    ]
                 ],
             ])
             ->willReturn($this->responseMock);

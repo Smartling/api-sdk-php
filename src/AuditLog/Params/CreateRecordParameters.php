@@ -15,21 +15,15 @@ class CreateRecordParameters extends BaseParameters
     const ACTION_TYPE_UPDATE_SETTINGS = 'UPDATE_SETTINGS';
 
     public function __construct() {
-        $this->setTime(time());
+        $this->setActionTime(time());
     }
 
-    public function setBucket($bucket) {
-        $this->set('bucket', (string) $bucket);
-
-        return $this;
-    }
-
-    public function setTime($timeStamp) {
+    public function setActionTime($timeStamp) {
         if (!is_int($timeStamp)) {
             throw new InvalidArgumentException('Time value must be a timestamp.');
         }
 
-        $this->set('time', date('Y-m-d\TH:i:s\Z', $timeStamp));
+        $this->set('actionTime', date('Y-m-d\TH:i:s\Z', $timeStamp));
 
         return $this;
     }
@@ -48,13 +42,49 @@ class CreateRecordParameters extends BaseParameters
             throw new InvalidArgumentException('Allowed action types are: ' . implode(', ', $allowedActionTypes));
         }
 
-        $this->set('action_type', $actionType);
+        $this->set('actionType', $actionType);
 
         return $this;
     }
 
-    public function setUserId($user_id) {
-        $this->set('user_id', (string) $user_id);
+    public function setFileUri($fileUri) {
+        $this->set('fileUri', (string) $fileUri);
+
+        return $this;
+    }
+
+    public function setSourceLocaleId($sourceLocaleId) {
+        $this->set('sourceLocaleId', (string) $sourceLocaleId);
+
+        return $this;
+    }
+
+    public function setTargetLocaleIds(array $targetLocaleIds) {
+        $this->set('targetLocaleIds', $targetLocaleIds);
+
+        return $this;
+    }
+
+    public function setTranslationJobUid($translationJobUid) {
+        $this->set('translationJobUid', (string) $translationJobUid);
+
+        return $this;
+    }
+
+    public function setTranslationJobName($translationJobName) {
+        $this->set('translationJobName', (string) $translationJobName);
+
+        return $this;
+    }
+
+    public function setTranslationJobDueDate($translationJobDueDate) {
+        $this->set('translationJobDueDate', (string) $translationJobDueDate);
+
+        return $this;
+    }
+
+    public function setTranslationJobAuthorize($translationJobAuthorize) {
+        $this->set('translationJobAuthorize', $translationJobAuthorize);
 
         return $this;
     }
@@ -65,8 +95,36 @@ class CreateRecordParameters extends BaseParameters
         return $this;
     }
 
-    public function setCustomField($key, $value) {
-        $this->set($key, $value);
+    public function setClientUserId($clientUserId) {
+        $this->set('clientUserId', (string) $clientUserId);
+
+        return $this;
+    }
+
+    public function setClientUserEmail($clientUserEmail) {
+        $this->set('clientUserEmail', (string) $clientUserEmail);
+
+        return $this;
+    }
+
+    public function setClientUserName($clientUserName) {
+        $this->set('clientUserName', (string) $clientUserName);
+
+        return $this;
+    }
+
+    public function setEnvId($envId) {
+        $this->set('envId', (string) $envId);
+
+        return $this;
+    }
+
+    public function setClientData($key, $value) {
+        if (empty($this->params['clientData'])) {
+            $this->params['clientData'] = [];
+        }
+
+        $this->params['clientData'] += [$key => $value];
 
         return $this;
     }
