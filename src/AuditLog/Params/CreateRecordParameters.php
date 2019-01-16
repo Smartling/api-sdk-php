@@ -53,6 +53,12 @@ class CreateRecordParameters extends BaseParameters
         return $this;
     }
 
+    public function setFileUid($fileUid) {
+        $this->set('fileUid', (string) $fileUid);
+
+        return $this;
+    }
+
     public function setSourceLocaleId($sourceLocaleId) {
         $this->set('sourceLocaleId', (string) $sourceLocaleId);
 
@@ -85,6 +91,12 @@ class CreateRecordParameters extends BaseParameters
 
     public function setTranslationJobAuthorize($translationJobAuthorize) {
         $this->set('translationJobAuthorize', $translationJobAuthorize);
+
+        return $this;
+    }
+
+    public function setBatchUid($batchUid) {
+        $this->set('batchUid', (string) $batchUid);
 
         return $this;
     }

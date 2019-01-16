@@ -40,12 +40,14 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
                 ->setActionTime(time())
                 ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setFileUri("file_uri")
+                ->setFileUid("file_uid")
                 ->setSourceLocaleId('en')
                 ->setTargetLocaleIds(['de'])
                 ->setTranslationJobUid("smartling_job_uid")
                 ->setTranslationJobName("smartling_job_name")
                 ->setTranslationJobDueDate("smartling_job_due_date")
                 ->setTranslationJobAuthorize(true)
+                ->setBatchUid("batch_uid")
                 ->setDescription("description")
                 ->setClientUserId($user_id)
                 ->setClientUserEmail("user_email")
@@ -74,12 +76,14 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
                 ->setActionTime(time())
                 ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setFileUri("file_uri")
+                ->setFileUid("file_uid")
                 ->setSourceLocaleId('en')
                 ->setTargetLocaleIds(['de'])
                 ->setTranslationJobUid("smartling_job_uid")
                 ->setTranslationJobName("smartling_job_name")
                 ->setTranslationJobDueDate("smartling_job_due_date")
                 ->setTranslationJobAuthorize(true)
+                ->setBatchUid("batch_uid")
                 ->setDescription("description")
                 ->setClientUserId($user_id)
                 ->setClientUserEmail("user_email")
@@ -110,12 +114,14 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
                 ->setActionTime($time)
                 ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setFileUri("file_uri")
+                ->setFileUid("file_uid")
                 ->setSourceLocaleId('en')
                 ->setTargetLocaleIds(['de'])
                 ->setTranslationJobUid("smartling_job_uid")
                 ->setTranslationJobName("smartling_job_name")
                 ->setTranslationJobDueDate("smartling_job_due_date")
                 ->setTranslationJobAuthorize(true)
+                ->setBatchUid("batch_uid")
                 ->setDescription("description")
                 ->setClientUserId($user_id)
                 ->setClientUserEmail("user_email")
@@ -141,34 +147,17 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($result['totalCount'], 1);
             $this->assertEquals(count($result['items']), 1);
 
-            $this->assertArrayHasKey('actionTime', $result['items'][0]);
-            $this->assertArrayHasKey('actionType', $result['items'][0]);
-            $this->assertArrayHasKey('fileUri', $result['items'][0]);
-            $this->assertArrayHasKey('sourceLocaleId', $result['items'][0]);
-            $this->assertArrayHasKey('targetLocaleIds', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobUid', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobName', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobDueDate', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobAuthorize', $result['items'][0]);
-            $this->assertArrayHasKey('description', $result['items'][0]);
-            $this->assertArrayHasKey('clientUserId', $result['items'][0]);
-            $this->assertArrayHasKey('clientUserEmail', $result['items'][0]);
-            $this->assertArrayHasKey('clientUserName', $result['items'][0]);
-            $this->assertArrayHasKey('envId', $result['items'][0]);
-            $this->assertArrayHasKey('clientData', $result['items'][0]);
-            $this->assertArrayHasKey('ip', $result['items'][0]);
-            $this->assertArrayHasKey('userAgent', $result['items'][0]);
-            $this->assertArrayHasKey('gatewayRequestId', $result['items'][0]);
-
             $this->assertEquals($result['items'][0]['actionTime'], $createParamsArray['actionTime']);
             $this->assertEquals($result['items'][0]['actionType'], $createParamsArray['actionType']);
             $this->assertEquals($result['items'][0]['fileUri'], $createParamsArray['fileUri']);
+            $this->assertEquals($result['items'][0]['fileUid'], $createParamsArray['fileUid']);
             $this->assertEquals($result['items'][0]['sourceLocaleId'], $createParamsArray['sourceLocaleId']);
             $this->assertEquals($result['items'][0]['targetLocaleIds'], $createParamsArray['targetLocaleIds']);
             $this->assertEquals($result['items'][0]['translationJobUid'], $createParamsArray['translationJobUid']);
             $this->assertEquals($result['items'][0]['translationJobName'], $createParamsArray['translationJobName']);
             $this->assertEquals($result['items'][0]['translationJobDueDate'], $createParamsArray['translationJobDueDate']);
             $this->assertEquals($result['items'][0]['translationJobAuthorize'], $createParamsArray['translationJobAuthorize']);
+            $this->assertEquals($result['items'][0]['batchUid'], $createParamsArray['batchUid']);
             $this->assertEquals($result['items'][0]['description'], $createParamsArray['description']);
             $this->assertEquals($result['items'][0]['clientUserId'], $createParamsArray['clientUserId']);
             $this->assertEquals($result['items'][0]['clientUserEmail'], $createParamsArray['clientUserEmail']);
@@ -194,12 +183,14 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
                 ->setActionTime($time)
                 ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setFileUri("file_uri")
+                ->setFileUid("file_uid")
                 ->setSourceLocaleId('en')
                 ->setTargetLocaleIds(['de'])
                 ->setTranslationJobUid("smartling_job_uid")
                 ->setTranslationJobName("smartling_job_name")
                 ->setTranslationJobDueDate("smartling_job_due_date")
                 ->setTranslationJobAuthorize(true)
+                ->setBatchUid("batch_uid")
                 ->setDescription("description")
                 ->setClientUserId($user_id)
                 ->setClientUserEmail("user_email")
@@ -225,34 +216,17 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($result['totalCount'], 1);
             $this->assertEquals(count($result['items']), 1);
 
-            $this->assertArrayHasKey('actionTime', $result['items'][0]);
-            $this->assertArrayHasKey('actionType', $result['items'][0]);
-            $this->assertArrayHasKey('fileUri', $result['items'][0]);
-            $this->assertArrayHasKey('sourceLocaleId', $result['items'][0]);
-            $this->assertArrayHasKey('targetLocaleIds', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobUid', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobName', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobDueDate', $result['items'][0]);
-            $this->assertArrayHasKey('translationJobAuthorize', $result['items'][0]);
-            $this->assertArrayHasKey('description', $result['items'][0]);
-            $this->assertArrayHasKey('clientUserId', $result['items'][0]);
-            $this->assertArrayHasKey('clientUserEmail', $result['items'][0]);
-            $this->assertArrayHasKey('clientUserName', $result['items'][0]);
-            $this->assertArrayHasKey('envId', $result['items'][0]);
-            $this->assertArrayHasKey('clientData', $result['items'][0]);
-            $this->assertArrayHasKey('ip', $result['items'][0]);
-            $this->assertArrayHasKey('userAgent', $result['items'][0]);
-            $this->assertArrayHasKey('gatewayRequestId', $result['items'][0]);
-
             $this->assertEquals($result['items'][0]['actionTime'], $createParamsArray['actionTime']);
             $this->assertEquals($result['items'][0]['actionType'], $createParamsArray['actionType']);
             $this->assertEquals($result['items'][0]['fileUri'], $createParamsArray['fileUri']);
+            $this->assertEquals($result['items'][0]['fileUid'], $createParamsArray['fileUid']);
             $this->assertEquals($result['items'][0]['sourceLocaleId'], $createParamsArray['sourceLocaleId']);
             $this->assertEquals($result['items'][0]['targetLocaleIds'], $createParamsArray['targetLocaleIds']);
             $this->assertEquals($result['items'][0]['translationJobUid'], $createParamsArray['translationJobUid']);
             $this->assertEquals($result['items'][0]['translationJobName'], $createParamsArray['translationJobName']);
             $this->assertEquals($result['items'][0]['translationJobDueDate'], $createParamsArray['translationJobDueDate']);
             $this->assertEquals($result['items'][0]['translationJobAuthorize'], $createParamsArray['translationJobAuthorize']);
+            $this->assertEquals($result['items'][0]['batchUid'], $createParamsArray['batchUid']);
             $this->assertEquals($result['items'][0]['description'], $createParamsArray['description']);
             $this->assertEquals($result['items'][0]['clientUserId'], $createParamsArray['clientUserId']);
             $this->assertEquals($result['items'][0]['clientUserEmail'], $createParamsArray['clientUserEmail']);

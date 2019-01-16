@@ -25,12 +25,14 @@ class AuditLogApiTest extends ApiTestAbstract
             ->setActionTime(1234567890)
             ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
+            ->setFileUid("file_uid")
             ->setSourceLocaleId('en')
             ->setTargetLocaleIds(['de'])
             ->setTranslationJobUid("smartling_job_uid")
             ->setTranslationJobName("smartling_job_name")
             ->setTranslationJobDueDate("smartling_job_due_date")
             ->setTranslationJobAuthorize(true)
+            ->setBatchUid("batch_uid")
             ->setDescription("description")
             ->setClientUserId("user_id")
             ->setClientUserEmail("user_email")
@@ -54,12 +56,14 @@ class AuditLogApiTest extends ApiTestAbstract
                     'actionTime' => '2009-02-13T23:31:30Z',
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
+                    'fileUid' => 'file_uid',
                     'sourceLocaleId' => 'en',
                     'targetLocaleIds' => ['de'],
                     'translationJobUid' => 'smartling_job_uid',
                     'translationJobName' => 'smartling_job_name',
                     'translationJobDueDate' => 'smartling_job_due_date',
                     'translationJobAuthorize' => true,
+                    'batchUid' => 'batch_uid',
                     'description' => 'description',
                     'clientUserId' => 'user_id',
                     'clientUserEmail' => 'user_email',
@@ -94,12 +98,14 @@ class AuditLogApiTest extends ApiTestAbstract
             ->setActionTime(1234567890)
             ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
+            ->setFileUid("file_uid")
             ->setSourceLocaleId('en')
             ->setTargetLocaleIds(['de'])
             ->setTranslationJobUid("smartling_job_uid")
             ->setTranslationJobName("smartling_job_name")
             ->setTranslationJobDueDate("smartling_job_due_date")
             ->setTranslationJobAuthorize(true)
+            ->setBatchUid("batch_uid")
             ->setDescription("description")
             ->setClientUserId("user_id")
             ->setClientUserEmail("user_email")
@@ -123,12 +129,14 @@ class AuditLogApiTest extends ApiTestAbstract
                     'actionTime' => '2009-02-13T23:31:30Z',
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
+                    'fileUid' => 'file_uid',
                     'sourceLocaleId' => 'en',
                     'targetLocaleIds' => ['de'],
                     'translationJobUid' => 'smartling_job_uid',
                     'translationJobName' => 'smartling_job_name',
                     'translationJobDueDate' => 'smartling_job_due_date',
                     'translationJobAuthorize' => true,
+                    'batchUid' => 'batch_uid',
                     'description' => 'description',
                     'clientUserId' => 'user_id',
                     'clientUserEmail' => 'user_email',
