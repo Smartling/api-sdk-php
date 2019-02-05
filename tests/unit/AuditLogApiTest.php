@@ -31,7 +31,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->setTranslationJobUid("smartling_job_uid")
             ->setTranslationJobName("smartling_job_name")
             ->setTranslationJobDueDate("smartling_job_due_date")
-            ->setTranslationJobAuthorize(true)
+            ->setTranslationJobAuthorize(1)
             ->setBatchUid("batch_uid")
             ->setDescription("description")
             ->setClientUserId("user_id")

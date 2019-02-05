@@ -23,7 +23,9 @@ abstract class BaseApiAbstract
 
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
-    const CLIENT_LIB_ID_VERSION = '3.5.3';
+    const CLIENT_LIB_ID_VERSION = '3.6.2';
+
+    const CLIENT_USER_AGENT_EXTENSION = '(no extensions)';
 
     const HTTP_METHOD_GET = 'get';
 
@@ -36,6 +38,24 @@ abstract class BaseApiAbstract
     private static $currentClientId = self::CLIENT_LIB_ID_SDK;
 
     private static $currentClientVersion = self::CLIENT_LIB_ID_VERSION;
+
+    private static $currentClientUserAgentExtension = self::CLIENT_USER_AGENT_EXTENSION;
+
+    /**
+     * @param string $currentClientUserAgentExtension
+     */
+    public static function setCurrentClientUserAgentExtension($currentClientUserAgentExtension)
+    {
+        self::$currentClientUserAgentExtension = $currentClientUserAgentExtension;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getCurrentClientUserAgentExtension()
+    {
+        return self::$currentClientUserAgentExtension;
+    }
 
     /**
      * @return string
@@ -223,10 +243,11 @@ abstract class BaseApiAbstract
                 'debug' => $debug,
                 'headers' => [
                     'User-Agent' => vsprintf(
-                        '%s/%s %s',
+                        '%s/%s %s %s',
                         [
                             self::getCurrentClientId(),
                             self::getCurrentClientVersion(),
+                            self::getCurrentClientUserAgentExtension(),
                             GuzzleHttp\default_user_agent()
                         ]
                     ),

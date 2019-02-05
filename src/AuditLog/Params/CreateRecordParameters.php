@@ -90,7 +90,7 @@ class CreateRecordParameters extends BaseParameters
     }
 
     public function setTranslationJobAuthorize($translationJobAuthorize) {
-        $this->set('translationJobAuthorize', $translationJobAuthorize);
+        $this->set('translationJobAuthorize', (bool) $translationJobAuthorize);
 
         return $this;
     }
