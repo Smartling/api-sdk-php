@@ -18,7 +18,7 @@ class BaseApiAbstractTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\Api\BaseApiAbstract::setCurrentUserAgentExtension()
+     * Test default user agent.
      */
     public function testNoUserAgentExtensions()
     {
@@ -53,7 +53,7 @@ class BaseApiAbstractTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\Api\BaseApiAbstract::setCurrentUserAgentExtension()
+     * Test custom client id, version and extension in user agent.
      */
     public function testClientIdAndClientVersionAndUserAgentExtensionsSpecified()
     {
