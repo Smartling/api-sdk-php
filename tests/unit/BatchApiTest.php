@@ -89,7 +89,7 @@ class BatchApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\Batch\BatchApi::uploadBatchFile
-     * @expectedException Smartling\Exceptions\SmartlingApiException
+     * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage BatchUid cannot be empty.
      */
     public function testUploadBatchFileWithEmptyBatchUid()

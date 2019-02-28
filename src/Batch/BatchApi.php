@@ -93,7 +93,7 @@ class BatchApi extends BaseApiAbstract
         // method. But this approach requires changes in UploadFileParameters
         // class + changes in FileApi::uploadFile() method.
         if (empty($batchUid)) {
-            throw new SmartlingApiException('BatchUid cannot be empty.');
+            throw new \UnexpectedValueException('BatchUid cannot be empty.');
         }
 
         if (is_null($parameters)) {
