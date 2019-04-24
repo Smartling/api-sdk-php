@@ -19,6 +19,8 @@ class DownloadFileParameters extends BaseParameters
 
     const RETRIEVAL_TYPE_PSEUDO = 'pseudo';
 
+    const RETRIEVAL_TYPE_CONTEXT_MATCHING_INSTRUMENTED = 'contextMatchingInstrumented';
+
     /**
      * @param string $retrievalType
      *
@@ -34,6 +36,7 @@ class DownloadFileParameters extends BaseParameters
                 self::RETRIEVAL_TYPE_PENDING,
                 self::RETRIEVAL_TYPE_PUBLISHED,
                 self::RETRIEVAL_TYPE_PSEUDO,
+                self::RETRIEVAL_TYPE_CONTEXT_MATCHING_INSTRUMENTED
             ],
             true
         );
