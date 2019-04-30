@@ -119,7 +119,7 @@ class FileApiTest extends ApiTestAbstract
                     ],
                     [
                         'name' => 'smartling.client_lib_id',
-                        'contents' => '{"client":"smartling-api-sdk-php","version":"3.6.2"}',
+                        'contents' => '{"client":"smartling-api-sdk-php","version":"3.6.4"}',
                     ],
                     [
                         'name' => 'localeIdsToAuthorize[]',
