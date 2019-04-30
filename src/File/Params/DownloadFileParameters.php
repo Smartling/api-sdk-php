@@ -19,6 +19,8 @@ class DownloadFileParameters extends BaseParameters
 
     const RETRIEVAL_TYPE_PSEUDO = 'pseudo';
 
+    const RETRIEVAL_TYPE_CONTEXT_MATCHING_INSTRUMENTED = 'contextMatchingInstrumented';
+
     /**
      * @param string $retrievalType
      *
@@ -28,17 +30,18 @@ class DownloadFileParameters extends BaseParameters
     public function setRetrievalType($retrievalType)
     {
 
-        $validRetrivalType = in_array(
+        $validRetrievalType = in_array(
             $retrievalType,
             [
                 self::RETRIEVAL_TYPE_PENDING,
                 self::RETRIEVAL_TYPE_PUBLISHED,
                 self::RETRIEVAL_TYPE_PSEUDO,
+                self::RETRIEVAL_TYPE_CONTEXT_MATCHING_INSTRUMENTED
             ],
             true
         );
 
-        if (!$validRetrivalType) {
+        if (!$validRetrievalType) {
             throw new SmartlingApiException('Unknown retrieval type: ' . var_export($retrievalType, true));
         }
 
