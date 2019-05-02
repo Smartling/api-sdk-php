@@ -35,4 +35,20 @@ class UpdateJobParameters extends BaseParameters
         $this->set('dueDate', $dueDate->format('Y-m-d\TH:i:s\Z'));
     }
 
+    public function setCallbackUrl($callback_url)
+    {
+        $this->set('callbackUrl', $callback_url);
+    }
+
+    public function setCallbackMethod($callback_method)
+    {
+        if (!in_array($callback_method, [
+            "GET",
+            "POST"
+        ])) {
+            throw new \InvalidArgumentException("Callback method '$callback_method' is not allowed. Allowed methods are: GET, POST.");
+        }
+
+        $this->set('callbackMethod', $callback_method);
+    }
 }
