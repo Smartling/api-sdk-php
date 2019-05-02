@@ -11,6 +11,9 @@ use Smartling\Parameters\BaseParameters;
 class UpdateJobParameters extends BaseParameters
 {
 
+    const CALLBACK_METHOD_POST = "POST";
+    const CALLBACK_METHOD_GET = "GET";
+
     public function setName($jobName)
     {
         if (mb_strlen($jobName, 'UTF-8') >= 170) {
@@ -35,4 +38,20 @@ class UpdateJobParameters extends BaseParameters
         $this->set('dueDate', $dueDate->format('Y-m-d\TH:i:s\Z'));
     }
 
+    public function setCallbackUrl($callback_url)
+    {
+        $this->set('callbackUrl', $callback_url);
+    }
+
+    public function setCallbackMethod($callback_method)
+    {
+        if (!in_array($callback_method, [
+            self::CALLBACK_METHOD_GET,
+            self::CALLBACK_METHOD_POST
+        ])) {
+            throw new \InvalidArgumentException("Callback method '$callback_method' is not allowed. Allowed methods are: GET, POST.");
+        }
+
+        $this->set('callbackMethod', $callback_method);
+    }
 }

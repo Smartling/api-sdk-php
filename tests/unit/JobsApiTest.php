@@ -63,10 +63,14 @@ class JobsApiTest extends ApiTestAbstract
         $description = 'Test Job Description';
         $dueDate = DateTime::createFromFormat('Y-m-d H:i:s', '2020-01-01 19:19:17', new DateTimeZone('UTC'));
         $locales = ['es', 'fr'];
+        $callbackUrl = "https://test.com";
+        $callbackMethod = CreateJobParameters::CALLBACK_METHOD_GET;
         $params = new CreateJobParameters();
         $params->setName($name);
         $params->setDescription($description);
         $params->setDueDate($dueDate);
+        $params->setCallbackUrl($callbackUrl);
+        $params->setCallbackMethod($callbackMethod);
         $params->setTargetLocales($locales);
         $endpointUrl = vsprintf('%s/%s/jobs', [
             JobsApi::ENDPOINT_URL,
@@ -90,6 +94,8 @@ class JobsApiTest extends ApiTestAbstract
                     'description' => $description,
                     'dueDate' => $dueDate->format('Y-m-d\TH:i:s\Z'),
                     'targetLocaleIds' => $locales,
+                    'callbackUrl' => $callbackUrl,
+                    'callbackMethod' => $callbackMethod
                 ],
             ])
             ->willReturn($this->responseMock);
@@ -105,10 +111,14 @@ class JobsApiTest extends ApiTestAbstract
         $name = 'Test Job Name Updated';
         $description = 'Test Job Description Updated';
         $dueDate = DateTime::createFromFormat('Y-m-d H:i:s', '2030-01-01 19:19:17', new DateTimeZone('UTC'));
+        $callbackUrl = "https://test.com";
+        $callbackMethod = UpdateJobParameters::CALLBACK_METHOD_POST;
         $params = new UpdateJobParameters();
         $params->setName($name);
         $params->setDescription($description);
         $params->setDueDate($dueDate);
+        $params->setCallbackUrl($callbackUrl);
+        $params->setCallbackMethod($callbackMethod);
         $endpointUrl = vsprintf('%s/%s/jobs/%s', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
@@ -131,6 +141,8 @@ class JobsApiTest extends ApiTestAbstract
                     'jobName' => $name,
                     'description' => $description,
                     'dueDate' => $dueDate->format('Y-m-d\TH:i:s\Z'),
+                    'callbackUrl' => $callbackUrl,
+                    'callbackMethod' => $callbackMethod
                 ],
             ])
             ->willReturn($this->responseMock);
@@ -412,4 +424,12 @@ class JobsApiTest extends ApiTestAbstract
         $this->object->checkAsynchronousProcessingStatus($jobId, $processId);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Callback method 'TEST' is not allowed. Allowed methods are: GET, POST.
+     */
+    public function testCreateJobParametersSetCallbackMethodValidation()
+    {
+        (new CreateJobParameters())->setCallbackMethod("TEST");
+    }
 }
