@@ -46,8 +46,8 @@ class UpdateJobParameters extends BaseParameters
     public function setCallbackMethod($callback_method)
     {
         if (!in_array($callback_method, [
-            "GET",
-            "POST"
+            self::CALLBACK_METHOD_GET,
+            self::CALLBACK_METHOD_POST
         ])) {
             throw new \InvalidArgumentException("Callback method '$callback_method' is not allowed. Allowed methods are: GET, POST.");
         }
