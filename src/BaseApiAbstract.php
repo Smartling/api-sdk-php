@@ -299,6 +299,33 @@ abstract class BaseApiAbstract
         }
 
         $options[$parametersType] = $parameters;
+        $queryStringAsStringNeeded = false;
+
+        if ($parametersType == 'query') {
+            foreach ($parameters as $key => $value) {
+                if (is_array($value)) {
+                    $queryStringAsStringNeeded = true;
+
+                    break;
+                }
+            }
+
+            if ($queryStringAsStringNeeded) {
+                $queryStringParts = [];
+
+                foreach ($parameters as $key => $value) {
+                    if (is_array($value)) {
+                        foreach ($value as $item) {
+                            $queryStringParts[] = "$key" . "[]=$item";
+                        }
+                    } else {
+                        $queryStringParts[] = "$key=$value";
+                    }
+                }
+
+                $options[$parametersType] = implode("&", $queryStringParts);
+            }
+        }
 
         return $options;
     }

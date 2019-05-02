@@ -121,6 +121,64 @@ try {
 }
 
 /**
+ * Download all translations of file example
+ */
+try {
+    echo '::: Download All Translations Of File Example :::' . PHP_EOL;
+
+    $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
+
+    $fileApi = \Smartling\File\FileApi::create($authProvider, $projectId);
+
+    $params = new \Smartling\File\Params\DownloadFileParameters();
+    $params->setRetrievalType($retrievalType);
+
+    $result = $fileApi->downloadAllTranslationsOfFile($fileName, $params);
+
+    file_put_contents("downloadAllTranslationsOfFile.zip", (string) $result);
+
+    echo 'File download result:' . PHP_EOL;
+    echo var_export((string) $result, true) . PHP_EOL . PHP_EOL;
+
+} catch (\Smartling\Exceptions\SmartlingApiException $e) {
+    echo $e->formatErrors('Error happened while downloading file');
+}
+
+/**
+ * Download multiple translations of files example
+ */
+try {
+    echo '::: Download Multiple Translations Of Files Example :::' . PHP_EOL;
+
+    $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
+
+    $fileApi = \Smartling\File\FileApi::create($authProvider, $projectId);
+
+    $params = new \Smartling\File\Params\DownloadMultipleFilesParameters();
+    $params->setRetrievalType($retrievalType);
+    $params->setFileUris([
+        "test1.xml",
+        "test2.xml"
+    ]);
+    $params->setLocaleIds([
+        "fr",
+        "de"
+    ]);
+    $params->setLocaleMode(\Smartling\File\Params\DownloadMultipleFilesParameters::LOCALE_MODE_LOCALE_IN_NAME_AND_PATH);
+    $params->setFileNameMode(\Smartling\File\Params\DownloadMultipleFilesParameters::FILE_NAME_MODE_LOCALE_LAST);
+
+    $result = $fileApi->downloadMultipleTranslationsOfFiles($params);
+
+    file_put_contents("downloadMultipleTranslationsOfFiles.zip", (string) $result);
+
+    echo 'File download result:' . PHP_EOL;
+    echo var_export((string) $result, true) . PHP_EOL . PHP_EOL;
+
+} catch (\Smartling\Exceptions\SmartlingApiException $e) {
+    echo $e->formatErrors('Error happened while downloading file');
+}
+
+/**
  * Getting file status example
  */
 try {
@@ -272,7 +330,7 @@ try {
 function resetFiles($userIdentifier, $userSecretKey, $projectId, array $files = [])
 {
     echo '::: Reset File Example :::' . PHP_EOL;
-    
+
     $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
     foreach ($files as $file) {
         try {

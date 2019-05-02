@@ -7,6 +7,7 @@ use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\Params\DownloadFileParameters;
+use Smartling\File\Params\DownloadMultipleFilesParameters;
 use Smartling\File\Params\ListFilesParameters;
 use Smartling\File\Params\ExtendedListFilesParameters;
 use Smartling\Parameters\ParameterInterface;
@@ -151,6 +152,27 @@ class FileApi extends BaseApiAbstract
         unset($requestData['headers']['Accept']);
 
         return $this->sendRequest("locales/{$locale}/file", $requestData, self::HTTP_METHOD_GET, true);
+    }
+
+    public function downloadAllTranslationsOfFile($fileUri, DownloadFileParameters $params = null)
+    {
+        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params['fileUri'] = $fileUri;
+
+        $requestData = $this->getDefaultRequestData('query', $params);
+        unset($requestData['headers']['Accept']);
+
+        return $this->sendRequest("locales/all/file/zip", $requestData, self::HTTP_METHOD_GET, true);
+    }
+
+    public function downloadMultipleTranslationsOfFiles(DownloadMultipleFilesParameters $params = null)
+    {
+        $params = (is_null($params)) ? [] : $params->exportToArray();
+
+        $requestData = $this->getDefaultRequestData('query', $params);
+        unset($requestData['headers']['Accept']);
+
+        return $this->sendRequest("/files/zip", $requestData, self::HTTP_METHOD_GET, true);
     }
 
     /**
