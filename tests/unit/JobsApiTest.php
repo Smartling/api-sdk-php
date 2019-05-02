@@ -64,7 +64,7 @@ class JobsApiTest extends ApiTestAbstract
         $dueDate = DateTime::createFromFormat('Y-m-d H:i:s', '2020-01-01 19:19:17', new DateTimeZone('UTC'));
         $locales = ['es', 'fr'];
         $callbackUrl = "https://test.com";
-        $callbackMethod = "GET";
+        $callbackMethod = CreateJobParameters::CALLBACK_METHOD_GET;
         $params = new CreateJobParameters();
         $params->setName($name);
         $params->setDescription($description);
@@ -112,7 +112,7 @@ class JobsApiTest extends ApiTestAbstract
         $description = 'Test Job Description Updated';
         $dueDate = DateTime::createFromFormat('Y-m-d H:i:s', '2030-01-01 19:19:17', new DateTimeZone('UTC'));
         $callbackUrl = "https://test.com";
-        $callbackMethod = "GET";
+        $callbackMethod = UpdateJobParameters::CALLBACK_METHOD_POST;
         $params = new UpdateJobParameters();
         $params->setName($name);
         $params->setDescription($description);

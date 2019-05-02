@@ -11,6 +11,9 @@ use Smartling\Parameters\BaseParameters;
 class UpdateJobParameters extends BaseParameters
 {
 
+    const CALLBACK_METHOD_POST = "POST";
+    const CALLBACK_METHOD_GET = "GET";
+
     public function setName($jobName)
     {
         if (mb_strlen($jobName, 'UTF-8') >= 170) {
