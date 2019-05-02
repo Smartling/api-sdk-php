@@ -4,6 +4,7 @@ namespace Smartling\Tests\Unit;
 
 use Smartling\File\FileApi;
 use Smartling\File\Params\DownloadFileParameters;
+use Smartling\File\Params\DownloadMultipleFilesParameters;
 use Smartling\File\Params\UploadFileParameters;
 
 /**
@@ -246,6 +247,93 @@ class FileApiTest extends ApiTestAbstract
                 '{"string1":"translation1", "string2":"translation2"}'
             ],
         ];
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::downloadAllTranslationsOfFile
+     */
+    public function testDownloadAllTranslationsOfFile()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $endpointUrl = vsprintf(
+            '%s/%s/locales/all/file/zip',
+            [
+                FileApi::ENDPOINT_URL,
+                $this->projectId
+            ]
+        );
+
+        $params = new DownloadFileParameters();
+        $params->setRetrievalType(DownloadFileParameters::RETRIEVAL_TYPE_PSEUDO);
+
+        $this->client
+            ->expects($this->once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => [
+                    'retrievalType' => 'pseudo',
+                    'fileUri' => 'test.xml'
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->downloadAllTranslationsOfFile('test.xml', $params);
+    }
+
+    /**
+     * @covers \Smartling\File\FileApi::downloadMultipleTranslationsOfFiles
+     */
+    public function testDownloadMultipleTranslationsOfFiles()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $endpointUrl = vsprintf(
+            '%s/%s/files/zip',
+            [
+                FileApi::ENDPOINT_URL,
+                $this->projectId
+            ]
+        );
+
+        $params = new DownloadMultipleFilesParameters();
+        $params->setRetrievalType(DownloadMultipleFilesParameters::RETRIEVAL_TYPE_PSEUDO);
+        $params->setFileNameMode(DownloadMultipleFilesParameters::FILE_NAME_MODE_LOCALE_LAST);
+        $params->setLocaleMode(DownloadMultipleFilesParameters::LOCALE_MODE_LOCALE_IN_NAME_AND_PATH);
+        $params->setFileUris([
+            "test1.xml",
+            "test2.xml"
+        ]);
+        $params->setLocaleIds([
+            "fr",
+            "de"
+        ]);
+        $params->setIncludeOriginalStrings(true);
+        $params->setZipFileName("zipFileName.zip");
+
+        $this->client
+            ->expects($this->once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => 'retrievalType=pseudo&fileNameMode=LOCALE_LAST&localeMode=LOCALE_IN_NAME_AND_PATH&fileUris[]=test1.xml&fileUris[]=test2.xml&localeIds[]=fr&localeIds[]=de&includeOriginalStrings=1&zipFileName=zipFileName.zip',
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->downloadMultipleTranslationsOfFiles($params);
     }
 
     /**
