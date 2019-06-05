@@ -5,6 +5,7 @@ namespace Smartling\Tests\Unit;
 use DateTime;
 use DateTimeZone;
 use Smartling\Jobs\JobsApi;
+use Smartling\Jobs\JobStatus;
 use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\AddLocaleToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
@@ -188,7 +189,7 @@ class JobsApiTest extends ApiTestAbstract
     /**
      * @covers \Smartling\Jobs\JobsApi::listJobs
      */
-    public function testListJobs() {
+    public function testListJobsQueryAsArray() {
         $name = 'Test Job Name Updated';
         $limit = 1;
         $offset = 2;
@@ -218,6 +219,43 @@ class JobsApiTest extends ApiTestAbstract
                     'limit' => $limit,
                     'offset' => $offset,
                 ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->listJobs($params);
+    }
+
+    /**
+     * @covers \Smartling\Jobs\JobsApi::listJobs
+     */
+    public function testListJobsQueryAsString() {
+        $limit = 1;
+        $offset = 2;
+        $params = new ListJobsParameters();
+        $params->setStatuses([
+            JobStatus::AWAITING_AUTHORIZATION,
+            JobStatus::IN_PROGRESS,
+        ]);
+        $params->setLimit($limit);
+        $params->setOffset($offset);
+        $endpointUrl = vsprintf('%s/%s/jobs', [
+            JobsApi::ENDPOINT_URL,
+            $this->projectId,
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => FALSE,
+                'query' => "translationJobStatus[]=AWAITING_AUTHORIZATION&translationJobStatus[]=IN_PROGRESS&limit=1&offset=2"
             ])
             ->willReturn($this->responseMock);
 
