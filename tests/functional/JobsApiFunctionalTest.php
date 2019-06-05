@@ -9,6 +9,7 @@ use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\FileApi;
 use Smartling\Jobs\JobsApi;
+use Smartling\Jobs\JobStatus;
 use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\AddLocaleToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
@@ -133,7 +134,12 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testJobsApiListJobs()
     {
         try {
-            $result = $this->jobsApi->listJobs(new ListJobsParameters());
+            $params = new ListJobsParameters();
+            $params->setStatuses([
+                JobStatus::AWAITING_AUTHORIZATION,
+                JobStatus::IN_PROGRESS,
+            ]);
+            $result = $this->jobsApi->listJobs($params);
 
             $this->assertArrayHasKey('totalCount', $result);
             $this->assertArrayHasKey('items', $result);
