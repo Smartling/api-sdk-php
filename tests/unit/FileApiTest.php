@@ -329,7 +329,7 @@ class FileApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => false,
-                'query' => 'retrievalType=pseudo&fileNameMode=LOCALE_LAST&localeMode=LOCALE_IN_NAME_AND_PATH&fileUris[]=test1.xml&fileUris[]=test2.xml&localeIds[]=fr&localeIds[]=de&includeOriginalStrings=1&zipFileName=zipFileName.zip',
+                'query' => 'retrievalType=pseudo&fileNameMode=LOCALE_LAST&localeMode=LOCALE_IN_NAME_AND_PATH&fileUris=test1.xml&fileUris=test2.xml&localeIds=fr&localeIds=de&includeOriginalStrings=1&zipFileName=zipFileName.zip',
             ])
             ->willReturn($this->responseMock);
 

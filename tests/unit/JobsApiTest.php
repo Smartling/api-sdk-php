@@ -255,7 +255,7 @@ class JobsApiTest extends ApiTestAbstract
                     ]),
                 ],
                 'exceptions' => FALSE,
-                'query' => "translationJobStatus[]=AWAITING_AUTHORIZATION&translationJobStatus[]=IN_PROGRESS&limit=1&offset=2"
+                'query' => "translationJobStatus=AWAITING_AUTHORIZATION&translationJobStatus=IN_PROGRESS&limit=1&offset=2"
             ])
             ->willReturn($this->responseMock);
 
