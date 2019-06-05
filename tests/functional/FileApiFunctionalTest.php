@@ -8,6 +8,7 @@ use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\FileApi;
 use Smartling\File\Params\DownloadFileParameters;
+use Smartling\File\Params\DownloadMultipleFilesParameters;
 use Smartling\File\Params\ListFilesParameters;
 
 /**
@@ -151,6 +152,45 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
             $params = new DownloadFileParameters();
             $params->setRetrievalType($this->retrievalType);
             $result = $this->fileApi->downloadFile(self::FILE_NAME, $this->targetLocale, $params);
+
+            $this->assertInstanceOf(Stream::class, $result);
+        } catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * Test for download all translations of file.
+     */
+    public function testFileApiDownloadAllTranslationsOfFile() {
+        try {
+            $params = new DownloadFileParameters();
+            $params->setRetrievalType($this->retrievalType);
+            $result = $this->fileApi->downloadAllTranslationsOfFile(self::FILE_NAME, $params);
+
+            $this->assertInstanceOf(Stream::class, $result);
+        } catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * Test for download multiple translations of files.
+     */
+    public function testFileApiDownloadMultipleTranslationsOfFiles() {
+        try {
+            $params = new DownloadMultipleFilesParameters();
+            $params->setRetrievalType($this->retrievalType);
+            $params->setFileUris([
+                self::FILE_NAME
+            ]);
+            $params->setLocaleIds([
+                "fr",
+                "de"
+            ]);
+            $params->setLocaleMode(DownloadMultipleFilesParameters::LOCALE_MODE_LOCALE_IN_NAME_AND_PATH);
+            $params->setFileNameMode(DownloadMultipleFilesParameters::FILE_NAME_MODE_LOCALE_LAST);
+            $result = $this->fileApi->downloadMultipleTranslationsOfFiles($params);
 
             $this->assertInstanceOf(Stream::class, $result);
         } catch (SmartlingApiException $e) {
