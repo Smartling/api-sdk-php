@@ -316,7 +316,7 @@ abstract class BaseApiAbstract
                 foreach ($parameters as $key => $value) {
                     if (is_array($value)) {
                         foreach ($value as $item) {
-                            $queryStringParts[] = "$key" . "[]=$item";
+                            $queryStringParts[] = "$key=$item";
                         }
                     } else {
                         $queryStringParts[] = "$key=$value";

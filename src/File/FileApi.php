@@ -60,6 +60,44 @@ class FileApi extends BaseApiAbstract
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * FileAPI requires [] syntax for array values in query string.
+     */
+    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false) {
+        $options = parent::getDefaultRequestData($parametersType, $parameters, $auth, $httpErrors);
+        $queryStringAsStringNeeded = false;
+
+        if ($parametersType == 'query') {
+            foreach ($parameters as $key => $value) {
+                if (is_array($value)) {
+                    $queryStringAsStringNeeded = true;
+
+                    break;
+                }
+            }
+
+            if ($queryStringAsStringNeeded) {
+                $queryStringParts = [];
+
+                foreach ($parameters as $key => $value) {
+                    if (is_array($value)) {
+                        foreach ($value as $item) {
+                            $queryStringParts[] = "$key" . "[]=$item";
+                        }
+                    } else {
+                        $queryStringParts[] = "$key=$value";
+                    }
+                }
+
+                $options[$parametersType] = implode("&", $queryStringParts);
+            }
+        }
+
+        return $options;
+    }
+
+    /**
      * Uploads original source content to Smartling.
      *
      * @param string $realPath
