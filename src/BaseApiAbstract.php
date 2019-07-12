@@ -23,7 +23,7 @@ abstract class BaseApiAbstract
 
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
-    const CLIENT_LIB_ID_VERSION = '3.6.6';
+    const CLIENT_LIB_ID_VERSION = '3.6.7';
 
     const CLIENT_USER_AGENT_EXTENSION = '(no extensions)';
 
