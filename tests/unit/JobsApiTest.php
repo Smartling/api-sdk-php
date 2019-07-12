@@ -263,6 +263,39 @@ class JobsApiTest extends ApiTestAbstract
     }
 
     /**
+     * @covers \Smartling\File\FileApi::getDefaultRequestData
+     */
+    public function testGetDefaultRequestDataMethodUrlEncoding()
+    {
+        $params = new ListJobsParameters();
+        $params->setStatuses([
+            "123:/content/page.html#anchor?param1=!&param2=*"
+        ]);
+        $endpointUrl = vsprintf('%s/%s/jobs', [
+            JobsApi::ENDPOINT_URL,
+            $this->projectId,
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => FALSE,
+                'query' => "translationJobStatus=123%3A%2Fcontent%2Fpage.html%23anchor%3Fparam1%3D%21%26param2%3D%2A"
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->listJobs($params);
+    }
+
+    /**
      * @covers \Smartling\Jobs\JobsApi::getJob
      */
     public function testGetJob() {

@@ -337,6 +337,44 @@ class FileApiTest extends ApiTestAbstract
     }
 
     /**
+     * @covers \Smartling\File\FileApi::getDefaultRequestData
+     */
+    public function testGetDefaultRequestDataMethodUrlEncoding()
+    {
+        $this->prepareClientResponseMock(false);
+
+        $endpointUrl = vsprintf(
+            '%s/%s/files/zip',
+            [
+                FileApi::ENDPOINT_URL,
+                $this->projectId
+            ]
+        );
+
+        $params = new DownloadMultipleFilesParameters();
+        $params->setFileUris([
+            "123:/content/page.html#anchor?param1=!&param2=*"
+        ]);
+
+        $this->client
+            ->expects($this->once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'query' => 'fileUris[]=123%3A%2Fcontent%2Fpage.html%23anchor%3Fparam1%3D%21%26param2%3D%2A',
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->downloadMultipleTranslationsOfFiles($params);
+    }
+
+    /**
      * @covers       \Smartling\File\FileApi::downloadFile
      * @dataProvider downloadFileLocaleCheckSuccessParams
      * @expectedException Smartling\Exceptions\SmartlingApiException

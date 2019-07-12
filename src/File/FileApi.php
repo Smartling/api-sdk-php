@@ -83,10 +83,10 @@ class FileApi extends BaseApiAbstract
                 foreach ($parameters as $key => $value) {
                     if (is_array($value)) {
                         foreach ($value as $item) {
-                            $queryStringParts[] = "$key" . "[]=$item";
+                            $queryStringParts[] = $key . "[]=" . urlencode($item);
                         }
                     } else {
-                        $queryStringParts[] = "$key=$value";
+                        $queryStringParts[] = $key . "=" . urlencode($value);
                     }
                 }
 
