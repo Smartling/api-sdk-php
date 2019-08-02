@@ -317,8 +317,8 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                 ]
             ],
             [
-                (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"])->setFileUri('%.xml'),
-                (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"])->setFileUri('%.xml')->exportToArray(),
+                (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"])->setFileUri('%.xml')->setSort(SearchTranslationRequestParams::SORT_MODIFIED, SearchTranslationRequestParams::ORDER_DESC),
+                (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"])->setFileUri('%.xml')->setSort(SearchTranslationRequestParams::SORT_MODIFIED, SearchTranslationRequestParams::ORDER_DESC)->exportToArray(),
                 [
                     "response" => [
                         "code" => "SUCCESS",
@@ -357,7 +357,8 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                     ->setSubmitterName('wp')
                     ->setCustomTranslationData(["d" => "4"])
                     ->setLimit(5)
-                    ->setOffset(6),
+                    ->setOffset(6)
+                    ->setSort(SearchTranslationRequestParams::SORT_CREATED, SearchTranslationRequestParams::ORDER_ASC),
                 (new SearchTranslationRequestParams())
                     ->setOriginalAssetKey(["a" => "1"])
                     ->setFileUri("%.xml")
@@ -370,6 +371,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                     ->setCustomTranslationData(["d" => "4"])
                     ->setLimit(5)
                     ->setOffset(6)
+                    ->setSort(SearchTranslationRequestParams::SORT_CREATED, SearchTranslationRequestParams::ORDER_ASC)
                     ->exportToArray(),
 
                 [

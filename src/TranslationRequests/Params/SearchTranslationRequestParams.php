@@ -2,6 +2,7 @@
 
 namespace Smartling\TranslationRequests\Params;
 
+use InvalidArgumentException;
 use Smartling\Parameters\BaseParameters;
 
 /**
@@ -10,6 +11,11 @@ use Smartling\Parameters\BaseParameters;
  */
 class SearchTranslationRequestParams extends BaseParameters
 {
+    const ORDER_DESC = "desc";
+    const ORDER_ASC = "asc";
+    const SORT_CREATED = "createdDate";
+    const SORT_MODIFIED = "modifiedDate";
+
     /**
      * @param array $originalAssetKey
      * @return $this
@@ -147,6 +153,32 @@ class SearchTranslationRequestParams extends BaseParameters
     public function setWithoutBatchUid()
     {
         $this->set('withoutBatchUid', 1);
+        return $this;
+    }
+
+    public function setSort($field, $order)
+    {
+        $allowedSortOrders = [
+            SearchTranslationRequestParams::ORDER_DESC,
+            SearchTranslationRequestParams::ORDER_ASC
+        ];
+
+        $allowedSortFields = [
+            SearchTranslationRequestParams::SORT_CREATED,
+            SearchTranslationRequestParams::SORT_MODIFIED
+        ];
+
+        if (!in_array($order, $allowedSortOrders)) {
+            throw new InvalidArgumentException('Allowed sort orders are: ' . implode(', ', $allowedSortOrders));
+        }
+
+        if (!in_array($field, $allowedSortFields)) {
+            throw new InvalidArgumentException('Allowed sort fields are: ' . implode(', ', $allowedSortFields));
+        }
+
+        $this->set("sortBy", $field);
+        $this->set("orderBy", $order);
+
         return $this;
     }
 }
