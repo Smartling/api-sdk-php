@@ -14,7 +14,7 @@ class UpdateTranslationRequestParams extends TranslationRequestParamsAbstract
      */
     public function addTranslationSubmission(UpdateTranslationSubmissionParams $translationSubmission)
     {
-        if (!array_key_exists('translationSubmissions', $this->params)) {
+        if (!\array_key_exists('translationSubmissions', $this->params)) {
             $this->set('translationSubmissions', []);
         }
 

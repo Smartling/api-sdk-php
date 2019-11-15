@@ -96,7 +96,7 @@ class BatchApi extends BaseApiAbstract
             throw new \UnexpectedValueException('BatchUid cannot be empty.');
         }
 
-        if (is_null($parameters)) {
+        if (\is_null($parameters)) {
             $parameters = new UploadFileParameters();
         }
         $parameters = $parameters->exportToArray();
@@ -104,7 +104,7 @@ class BatchApi extends BaseApiAbstract
         $parameters['fileUri'] = $fileName;
         $parameters['fileType'] = $fileType;
 
-        $endpoint = vsprintf('batches/%s/file', [$batchUid]);
+        $endpoint = \vsprintf('batches/%s/file', [$batchUid]);
         $requestData = $this->getDefaultRequestData('multipart', $parameters);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
@@ -121,7 +121,7 @@ class BatchApi extends BaseApiAbstract
      */
     public function executeBatch($batchUid)
     {
-        $endpoint = vsprintf('batches/%s', [$batchUid]);
+        $endpoint = \vsprintf('batches/%s', [$batchUid]);
         $requestData = $this->getDefaultRequestData('json', [
           'action' => self::ACTION_EXECUTE,
         ]);
@@ -139,7 +139,7 @@ class BatchApi extends BaseApiAbstract
      * @throws SmartlingApiException
      */
     public function getBatchStatus($batchUid) {
-        $endpoint = vsprintf('batches/%s', [$batchUid]);
+        $endpoint = \vsprintf('batches/%s', [$batchUid]);
         $requestData = $this->getDefaultRequestData('query', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);

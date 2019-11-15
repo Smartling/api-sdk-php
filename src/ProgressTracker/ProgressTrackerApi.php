@@ -27,7 +27,7 @@ class ProgressTrackerApi extends BaseApiAbstract
         // Do not include project_id into base url since
         // progress tracker service has /accounts/{account}/token
         // endpoint without project id.
-        $this->setBaseUrl(rtrim($service_url, '/'));
+        $this->setBaseUrl(\rtrim($service_url, '/'));
     }
 
     /**
@@ -56,7 +56,7 @@ class ProgressTrackerApi extends BaseApiAbstract
     public function getToken($accountUid)
     {
         $requestData = $this->getDefaultRequestData('query', []);
-        $endpoint = vsprintf('accounts/%s/token', [$accountUid]);
+        $endpoint = \vsprintf('accounts/%s/token', [$accountUid]);
 
         return $this->sendRequest($endpoint, $requestData, static::HTTP_METHOD_GET);
     }
@@ -74,7 +74,7 @@ class ProgressTrackerApi extends BaseApiAbstract
     public function createRecord($spaceId, $objectId, RecordParameters $parameters)
     {
         $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
-        $endpoint = vsprintf('projects/%s/spaces/%s/objects/%s/records', [
+        $endpoint = \vsprintf('projects/%s/spaces/%s/objects/%s/records', [
             $this->getProjectId(),
             $spaceId,
             $objectId,
@@ -96,7 +96,7 @@ class ProgressTrackerApi extends BaseApiAbstract
     public function deleteRecord($spaceId, $objectId, $recordId)
     {
         $requestData = $this->getDefaultRequestData('query', []);
-        $endpoint = vsprintf('projects/%s/spaces/%s/objects/%s/records/%s', [
+        $endpoint = \vsprintf('projects/%s/spaces/%s/objects/%s/records/%s', [
             $this->getProjectId(),
             $spaceId,
             $objectId,
@@ -118,7 +118,7 @@ class ProgressTrackerApi extends BaseApiAbstract
     public function updateRecord($spaceId, $objectId, $recordId, RecordParameters $parameters)
     {
         $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
-        $endpoint = vsprintf('projects/%s/spaces/%s/objects/%s/records/%s', [
+        $endpoint = \vsprintf('projects/%s/spaces/%s/objects/%s/records/%s', [
             $this->getProjectId(),
             $spaceId,
             $objectId,

@@ -19,12 +19,12 @@ $longOpts = [
     'secret-key:',
 ];
 
-$options = getopt('', $longOpts);
+$options = \getopt('', $longOpts);
 
 if (
-    !array_key_exists('project-id', $options)
-    || !array_key_exists('user-id', $options)
-    || !array_key_exists('secret-key', $options)
+    !\array_key_exists('project-id', $options)
+    || !\array_key_exists('user-id', $options)
+    || !\array_key_exists('secret-key', $options)
 ) {
     echo 'Missing required params.' . PHP_EOL;
     exit;
@@ -32,7 +32,7 @@ if (
 
 $autoloader = '../vendor/autoload.php';
 
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
+if (!\file_exists($autoloader) || !\is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 } else {
@@ -60,21 +60,21 @@ function createBatchDemo($authProvider, $projectId, $jobId)
     $createBatchParameters = new CreateBatchParameters();
     $createBatchParameters->setTranslationJobUid($jobId);
     $createBatchParameters->setAuthorize(true);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $batchApi->createBatch($createBatchParameters);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -95,21 +95,21 @@ function uploadBatchFileDemo($authProvider, $projectId, $batchUid)
     $batchApi = BatchApi::create($authProvider, $projectId);
     $uploadParameters = new UploadFileParameters();
     $uploadParameters->setLocalesToApprove(['fr-FR']);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
-        $response = $batchApi->uploadBatchFile(realpath('../tests/resources/test.xml'), 'test-BATCH-file.xml', 'xml', $batchUid, $uploadParameters);
+        $response = $batchApi->uploadBatchFile(\realpath('../tests/resources/test.xml'), 'test-BATCH-file.xml', 'xml', $batchUid, $uploadParameters);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -128,21 +128,21 @@ function executeBatchDemo($authProvider, $projectId, $batchUid)
 
     $response = [];
     $batchApi = BatchApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $batchApi->executeBatch($batchUid);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -161,21 +161,21 @@ function getBatchStatusDemo($authProvider, $projectId, $batchUid)
 
     $response = [];
     $batchApi = BatchApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $batchApi->getBatchStatus($batchUid);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -193,21 +193,21 @@ function listBatchesDemo($authProvider, $projectId)
 
   $response = [];
   $batchApi = BatchApi::create($authProvider, $projectId);
-  $st = microtime(true);
+  $st = \microtime(true);
 
   try {
     $response = $batchApi->listBatches();
   } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    var_dump($e->getErrors());
+    \var_dump($e->getErrors());
   }
 
-  $et = microtime(TRUE);
+  $et = \microtime(TRUE);
   $time = $et - $st;
 
-  echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+  echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
   if (!empty($response)) {
-    var_dump($response);
+    \var_dump($response);
   }
 
   return $response;

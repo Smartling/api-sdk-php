@@ -52,21 +52,21 @@ class JobsApi extends BaseApiAbstract
      * @throws SmartlingApiException
      */
     private function wait($response) {
-        if (is_array($response) && !empty($response['url'])) {
-            $explodedUrl = explode('/', $response['url']);
-            $arrayLength = count($explodedUrl);
+        if (\is_array($response) && !empty($response['url'])) {
+            $explodedUrl = \explode('/', $response['url']);
+            $arrayLength = \count($explodedUrl);
             $processId = $explodedUrl[$arrayLength - 1];
             $jobId = $explodedUrl[$arrayLength - 3];
-            $start_time = time();
+            $start_time = \time();
 
             do {
-                $delta = time() - $start_time;
+                $delta = \time() - $start_time;
 
                 if ($delta > $this->getSyncTimeOut()) {
-                    throw new SmartlingApiException(vsprintf('No response received after %s seconds.', [$delta]));
+                    throw new SmartlingApiException(\vsprintf('No response received after %s seconds.', [$delta]));
                 }
 
-                sleep(1);
+                \sleep(1);
                 $result = $this->checkAsynchronousProcessingStatus($jobId, $processId);
             }
             while ($result['processState'] != 'COMPLETED');
@@ -129,7 +129,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function cancelJobSync($jobId, CancelJobParameters $parameters)
     {
-        $endpoint = vsprintf('jobs/%s/cancel', [$jobId]);
+        $endpoint = \vsprintf('jobs/%s/cancel', [$jobId]);
         $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $this->wait($this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST));
     }
@@ -168,7 +168,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function authorizeJob($jobId)
     {
-        $endpoint = vsprintf('jobs/%s/authorize', [$jobId]);
+        $endpoint = \vsprintf('jobs/%s/authorize', [$jobId]);
         $requestData = $this->getDefaultRequestData('json', new \stdClass());
         $requestData['headers']['Content-Type'] = 'application/json';
         $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
@@ -183,7 +183,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function addFileToJobSync($jobId, AddFileToJobParameters $parameters)
     {
-        $endpoint = vsprintf('jobs/%s/file/add', [$jobId]);
+        $endpoint = \vsprintf('jobs/%s/file/add', [$jobId]);
         $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $this->wait($this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST));
     }
@@ -212,7 +212,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function addLocaleToJobSync($jobId, $localeId, AddLocaleToJobParameters $parameters)
     {
-        $endpoint = vsprintf('jobs/%s/locales/%s', [$jobId, $localeId]);
+        $endpoint = \vsprintf('jobs/%s/locales/%s', [$jobId, $localeId]);
         $requestData = $this->getDefaultRequestData('json', $parameters->exportToArray());
         $this->wait($this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST));
     }
@@ -227,7 +227,7 @@ class JobsApi extends BaseApiAbstract
      */
     public function checkAsynchronousProcessingStatus($jobId, $processId)
     {
-        $endpoint = vsprintf('jobs/%s/processes/%s', [$jobId, $processId]);
+        $endpoint = \vsprintf('jobs/%s/processes/%s', [$jobId, $processId]);
         $requestData = $this->getDefaultRequestData('query', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);

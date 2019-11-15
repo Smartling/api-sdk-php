@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL);
+\error_reporting(E_ALL);
 
 /**
  * This file contains examples of Smartling API 2.x usage.
@@ -21,12 +21,12 @@ $longOpts = [
     'secret-key:',
 ];
 
-$options = getopt('', $longOpts);
+$options = \getopt('', $longOpts);
 
 if (
-    !array_key_exists('project-id', $options)
-    || !array_key_exists('user-id', $options)
-    || !array_key_exists('secret-key', $options)
+    !\array_key_exists('project-id', $options)
+    || !\array_key_exists('user-id', $options)
+    || !\array_key_exists('secret-key', $options)
 ) {
     echo 'Missing required params.' . PHP_EOL;
     exit;
@@ -34,7 +34,7 @@ if (
 
 $autoloader = '../vendor/autoload.php';
 
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
+if (!\file_exists($autoloader) || !\is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 }
@@ -61,21 +61,21 @@ function uploadContextDemo($authProvider, $projectId, $fileUri)
     $params = new UploadContextParameters();
     $params->setContent($fileUri);
     $params->setName('context.html');
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $context->uploadContext($params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-      var_dump($response);
+      \var_dump($response);
     }
 
     return $response;
@@ -95,21 +95,21 @@ function matchContextDemo($authProvider, $projectId, $contextUid, $contentFileUr
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $params = new MatchContextParameters();
     $params->setContentFileUri($contentFileUri);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $context->matchContext($contextUid, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -136,21 +136,21 @@ function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri, $content
     $params->setContent($fileUri);
     $params->setMatchParams($matchParams);
     $params->setName('context.html');
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $context->uploadAndMatchContext($params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -165,21 +165,21 @@ function uploadAndMatchContextDemo($authProvider, $projectId, $fileUri, $content
 function getMatchStatusDemo($authProvider, $projectId, $matchId) {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $context->getMatchStatus($matchId);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -194,21 +194,21 @@ function getMissingResources($authProvider, $projectId)
 {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $context->getMissingResources();
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -222,21 +222,21 @@ function getMissingResources($authProvider, $projectId)
 function getAllMissingResourcesDemo($authProvider, $projectId) {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $context->getAllMissingResources();
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -252,23 +252,23 @@ function getAllMissingResourcesDemo($authProvider, $projectId) {
 function uploadResourceDemo($authProvider, $projectId, $resourceId, $fileUri) {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $params = new UploadResourceParameters();
         $params->setFile($fileUri);
         $response = $context->uploadResource($resourceId, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -284,21 +284,21 @@ function renderContextDemo($authProvider, $projectId, $contextUid)
 {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $context->renderContext($contextUid);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;

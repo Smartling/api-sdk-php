@@ -25,9 +25,9 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
      * Test mixture.
      */
     public function setUp() {
-        $projectId = getenv('project_id');
-        $userIdentifier = getenv('user_id');
-        $userSecretKey = getenv('user_key');
+        $projectId = \getenv('project_id');
+        $userIdentifier = \getenv('user_id');
+        $userSecretKey = \getenv('user_key');
 
         if (
             empty($projectId) ||

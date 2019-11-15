@@ -26,7 +26,7 @@ class AuditLogApi extends BaseApiAbstract
         // Do not include project_id into base url since
         // audit log service has /accounts/{accountUid}/logs
         // endpoint without project id.
-        $this->setBaseUrl(rtrim($service_url, '/'));
+        $this->setBaseUrl(\rtrim($service_url, '/'));
     }
 
     public static function create(AuthApiInterface $authProvider, $projectId, LoggerInterface $logger = null)
@@ -42,7 +42,7 @@ class AuditLogApi extends BaseApiAbstract
 
     public function createProjectLevelLogRecord(CreateRecordParameters $createRecordRecommendedParameters) {
         $requestData = $this->getDefaultRequestData('json', $createRecordRecommendedParameters->exportToArray());
-        $endpoint = vsprintf(self::PROJECT_LEVEL_URL, [
+        $endpoint = \vsprintf(self::PROJECT_LEVEL_URL, [
             $this->getProjectId(),
         ]);
 
@@ -51,7 +51,7 @@ class AuditLogApi extends BaseApiAbstract
 
     public function createAccountLevelLogRecord($accountUid, CreateRecordParameters $createRecordRecommendedParameters) {
         $requestData = $this->getDefaultRequestData('json', $createRecordRecommendedParameters->exportToArray());
-        $endpoint = vsprintf(self::ACCOUNT_LEVEL_URL, [
+        $endpoint = \vsprintf(self::ACCOUNT_LEVEL_URL, [
             $accountUid,
         ]);
 
@@ -60,7 +60,7 @@ class AuditLogApi extends BaseApiAbstract
 
     public function searchProjectLevelLogRecord(SearchRecordParameters $searchParameters) {
         $requestData = $this->getDefaultRequestData('query', $searchParameters->exportToArray());
-        $endpoint = vsprintf(self::PROJECT_LEVEL_URL, [
+        $endpoint = \vsprintf(self::PROJECT_LEVEL_URL, [
             $this->getProjectId(),
         ]);
 
@@ -69,7 +69,7 @@ class AuditLogApi extends BaseApiAbstract
 
     public function searchAccountLevelLogRecord($accountUid, SearchRecordParameters $searchParameters) {
         $requestData = $this->getDefaultRequestData('query', $searchParameters->exportToArray());
-        $endpoint = vsprintf(self::ACCOUNT_LEVEL_URL, [
+        $endpoint = \vsprintf(self::ACCOUNT_LEVEL_URL, [
             $accountUid,
         ]);
 

@@ -25,15 +25,15 @@ abstract class TranslationSubmissionParamsAbstract extends ParamsAbstract
     public function setState($state)
     {
         $state = (string)$state;
-        if (in_array($state, TranslationSubmissionStates::$allowedStates, true)) {
+        if (\in_array($state, TranslationSubmissionStates::$allowedStates, true)) {
             $this->set('state', $state);
         } else {
             throw new \UnexpectedValueException(
-                vsprintf(
+                \vsprintf(
                     'Invalid \'state\' value \'%s\', expected one of: %s',
                     [
                         $state,
-                        implode('|', TranslationSubmissionStates::$allowedStates)
+                        \implode('|', TranslationSubmissionStates::$allowedStates)
                     ]
                 )
             );

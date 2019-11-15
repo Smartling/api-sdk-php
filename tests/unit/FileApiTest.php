@@ -67,7 +67,7 @@ class FileApiTest extends ApiTestAbstract
         $this->prepareClientResponseMock();
         $fileApi = new FileApi($projectId, $client, null, $expected_base_url);
 
-        $this->assertEquals(rtrim($expected_base_url, '/') . '/' . $projectId,
+        $this->assertEquals(\rtrim($expected_base_url, '/') . '/' . $projectId,
             $this->invokeMethod($fileApi, 'getBaseUrl'));
         $this->assertEquals($projectId, $this->invokeMethod($fileApi, 'getProjectId'));
         $this->assertEquals($client, $this->invokeMethod($fileApi, 'getHttpClient'));
@@ -107,7 +107,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('post', FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -193,7 +193,7 @@ class FileApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn($expected_translated_file);
 
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/locales/%s/file',
             [
                 FileApi::ENDPOINT_URL,
@@ -213,7 +213,7 @@ class FileApiTest extends ApiTestAbstract
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -256,7 +256,7 @@ class FileApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock(false);
 
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/locales/all/file/zip',
             [
                 FileApi::ENDPOINT_URL,
@@ -272,7 +272,7 @@ class FileApiTest extends ApiTestAbstract
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -295,7 +295,7 @@ class FileApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock(false);
 
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/files/zip',
             [
                 FileApi::ENDPOINT_URL,
@@ -323,7 +323,7 @@ class FileApiTest extends ApiTestAbstract
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -343,7 +343,7 @@ class FileApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock(false);
 
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/files/zip',
             [
                 FileApi::ENDPOINT_URL,
@@ -361,7 +361,7 @@ class FileApiTest extends ApiTestAbstract
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -519,9 +519,9 @@ class FileApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn($response);
 
-        date_default_timezone_set('UTC');
+        \date_default_timezone_set('UTC');
         $result_default_utc = $this->object->lastModified('test.xml');
-        date_default_timezone_set('Pacific/Auckland');
+        \date_default_timezone_set('Pacific/Auckland');
         $result_default_auckland = $this->object->lastModified('test.xml');
 
         $this->assertEquals(
@@ -546,7 +546,7 @@ class FileApiTest extends ApiTestAbstract
     public function testLastModified()
     {
         $this->prepareClientResponseMock(false);
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/file/last-modified',
             [
                 FileApi::ENDPOINT_URL,
@@ -559,7 +559,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -586,7 +586,7 @@ class FileApiTest extends ApiTestAbstract
     public function testGetStatusForAllLocales()
     {
         $this->prepareClientResponseMock();
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/file/status',
             [
                 FileApi::ENDPOINT_URL,
@@ -599,7 +599,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -620,7 +620,7 @@ class FileApiTest extends ApiTestAbstract
     public function testGetStatus()
     {
         $this->prepareClientResponseMock();
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/locales/%s/file/status',
             [
                 FileApi::ENDPOINT_URL,
@@ -634,7 +634,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -655,7 +655,7 @@ class FileApiTest extends ApiTestAbstract
     public function testGetList()
     {
         $this->prepareClientResponseMock();
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/files/list',
             [
                 FileApi::ENDPOINT_URL,
@@ -668,7 +668,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -689,7 +689,7 @@ class FileApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock();
         $locale = 'nl-NL';
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/locales/%s/files/list',
             [
                 FileApi::ENDPOINT_URL,
@@ -703,7 +703,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -732,7 +732,7 @@ class FileApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn($this->responseWithException);
 
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/context/html',
             [
                 FileApi::ENDPOINT_URL,
@@ -745,7 +745,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -775,9 +775,9 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn(400);
         $this->responseMock->expects($this->any())
             ->method('getBody')
-            ->willReturn(rtrim($this->responseWithException, '}'));
+            ->willReturn(\rtrim($this->responseWithException, '}'));
 
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/context/html',
             [
                 FileApi::ENDPOINT_URL,
@@ -790,7 +790,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -820,9 +820,9 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn(401);
         $this->responseMock->expects($this->any())
             ->method('getBody')
-            ->willReturn(rtrim($this->responseWithException, '}'));
+            ->willReturn(\rtrim($this->responseWithException, '}'));
 
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/context/html',
             [
                 FileApi::ENDPOINT_URL,
@@ -835,7 +835,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -865,7 +865,7 @@ class FileApiTest extends ApiTestAbstract
         $this->prepareClientResponseMock();
         $defaultRequestData = $this->invokeMethod($this->object, 'getDefaultRequestData', [$paramsType, $requestData]);
 
-        $params['headers']['Authorization'] = vsprintf('%s %s', [
+        $params['headers']['Authorization'] = \vsprintf('%s %s', [
             $this->authProvider->getTokenType(),
             $this->authProvider->getAccessToken(),
         ]);
@@ -946,7 +946,7 @@ class FileApiTest extends ApiTestAbstract
     public function testRenameFile()
     {
         $this->prepareClientResponseMock();
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/file/rename',
             [
                 FileApi::ENDPOINT_URL,
@@ -959,7 +959,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -981,7 +981,7 @@ class FileApiTest extends ApiTestAbstract
     public function testGetAuthorizedLocales()
     {
         $this->prepareClientResponseMock();
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/file/authorized-locales',
             [
                 FileApi::ENDPOINT_URL,
@@ -994,7 +994,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -1015,14 +1015,14 @@ class FileApiTest extends ApiTestAbstract
     public function testDeleteFile()
     {
         $this->prepareClientResponseMock();
-        $endpointUrl = vsprintf('%s/%s/file/delete', [FileApi::ENDPOINT_URL, $this->projectId]);
+        $endpointUrl = \vsprintf('%s/%s/file/delete', [FileApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client->expects($this->once())
             ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -1044,7 +1044,7 @@ class FileApiTest extends ApiTestAbstract
     {
         $this->prepareClientResponseMock();
         $locale = 'en-EN';
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/locales/%s/file/import',
             [
                 FileApi::ENDPOINT_URL,
@@ -1058,7 +1058,7 @@ class FileApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -1116,7 +1116,7 @@ class FileApiTest extends ApiTestAbstract
 
         $stream = $this->invokeMethod($fileApi, 'readFile', [$validFilePath]);
 
-        $this->assertEquals('stream', get_resource_type($stream));
+        $this->assertEquals('stream', \get_resource_type($stream));
     }
 
     /**
@@ -1139,7 +1139,7 @@ class FileApiTest extends ApiTestAbstract
 
         $stream = $this->invokeMethod($fileApi, 'readFile', [$invalidFilePath]);
 
-        $this->assertEquals('stream', get_resource_type($stream));
+        $this->assertEquals('stream', \get_resource_type($stream));
     }
 
     /**
@@ -1151,7 +1151,7 @@ class FileApiTest extends ApiTestAbstract
         $this->prepareClientResponseMock();
         $responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
             ->setMethods(
-                array_merge(
+                \array_merge(
                     self::$responseInterfaceMethods,
                     self::$messageInterfaceMethods
                 )
@@ -1170,7 +1170,7 @@ class FileApiTest extends ApiTestAbstract
         $responseMock->expects(self::any())
             ->method('json')
             ->willReturn(
-                json_decode($this->responseAsync, true)
+                \json_decode($this->responseAsync, true)
             );
 
         $this->client->expects(self::once())

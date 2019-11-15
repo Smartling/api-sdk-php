@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL);
+\error_reporting(E_ALL);
 
 /**
  * This file contains examples of Smartling API 2.x usage.
@@ -18,12 +18,12 @@ $longOpts = [
     'account-uid:'
 ];
 
-$options = getopt('', $longOpts);
+$options = \getopt('', $longOpts);
 
 if (
-    !array_key_exists('project-id', $options)
-    || !array_key_exists('user-id', $options)
-    || !array_key_exists('secret-key', $options)
+    !\array_key_exists('project-id', $options)
+    || !\array_key_exists('user-id', $options)
+    || !\array_key_exists('secret-key', $options)
 ) {
     echo 'Missing required params.' . PHP_EOL;
     exit;
@@ -31,7 +31,7 @@ if (
 
 $autoloader = '../vendor/autoload.php';
 
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
+if (!\file_exists($autoloader) || !\is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 }
@@ -55,7 +55,7 @@ function searchProjectLevelLogRecordDemo($authProvider, $projectId)
 {
     $response = false;
     $auditLog = \Smartling\AuditLog\AuditLogApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $searchParams = (new \Smartling\AuditLog\Params\SearchRecordParameters())
@@ -66,16 +66,16 @@ function searchProjectLevelLogRecordDemo($authProvider, $projectId)
 
         $response = $auditLog->searchProjectLevelLogRecord($searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -91,7 +91,7 @@ function searchAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
 {
     $response = false;
     $auditLog = \Smartling\AuditLog\AuditLogApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $searchParams = (new \Smartling\AuditLog\Params\SearchRecordParameters())
@@ -102,16 +102,16 @@ function searchAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
 
         $response = $auditLog->searchAccountLevelLogRecord($accountUid, $searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -126,11 +126,11 @@ function createProjectLevelLogRecordDemo($authProvider, $projectId)
 {
     $response = false;
     $auditLog = \Smartling\AuditLog\AuditLogApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $createParams = (new \Smartling\AuditLog\Params\CreateRecordParameters())
-            ->setActionTime(time())
+            ->setActionTime(\time())
             ->setActionType(\Smartling\AuditLog\Params\CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
             ->setFileUid("file_uid")
@@ -150,16 +150,16 @@ function createProjectLevelLogRecordDemo($authProvider, $projectId)
 
         $response = $auditLog->createProjectLevelLogRecord($createParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -175,11 +175,11 @@ function createAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
 {
     $response = false;
     $auditLog = \Smartling\AuditLog\AuditLogApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $createParams = (new \Smartling\AuditLog\Params\CreateRecordParameters())
-            ->setActionTime(time())
+            ->setActionTime(\time())
             ->setActionType(\Smartling\AuditLog\Params\CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
             ->setFileUid("file_uid")
@@ -199,16 +199,16 @@ function createAccountLevelLogRecordDemo($authProvider, $projectId, $accountUid)
 
         $response = $auditLog->createAccountLevelLogRecord($accountUid, $createParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;

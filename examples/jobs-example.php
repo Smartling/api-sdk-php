@@ -17,12 +17,12 @@ $longOpts = [
     'secret-key:',
 ];
 
-$options = getopt('', $longOpts);
+$options = \getopt('', $longOpts);
 
 if (
-    !array_key_exists('project-id', $options)
-    || !array_key_exists('user-id', $options)
-    || !array_key_exists('secret-key', $options)
+    !\array_key_exists('project-id', $options)
+    || !\array_key_exists('user-id', $options)
+    || !\array_key_exists('secret-key', $options)
 ) {
     echo 'Missing required params.' . PHP_EOL;
     exit;
@@ -30,7 +30,7 @@ if (
 
 $autoloader = '../vendor/autoload.php';
 
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
+if (!\file_exists($autoloader) || !\is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 } else {
@@ -54,7 +54,7 @@ function listJobsDemo($authProvider, $projectId)
 
     $response = [];
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $params = new \Smartling\Jobs\Params\ListJobsParameters();
@@ -64,16 +64,16 @@ function listJobsDemo($authProvider, $projectId)
         ]);
         $response = $jobs->listJobs($params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -91,27 +91,27 @@ function createJobDemo($authProvider, $projectId)
     $result = FALSE;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $params = new \Smartling\Jobs\Params\CreateJobParameters();
-    $params->setName("Test Job Name " . time());
-    $params->setDescription("Test Job Description " . time());
+    $params->setName("Test Job Name " . \time());
+    $params->setDescription("Test Job Description " . \time());
     $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2020-01-01 19:19:17', new DateTimeZone('UTC')));
     $params->setTargetLocales(['es', 'fr']);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $jobs->createJob($params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
         $result = $response['translationJobUid'];
 
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $result;
@@ -130,26 +130,26 @@ function updateJobDemo($authProvider, $projectId, $jobId)
     $result = FALSE;
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $params = new \Smartling\Jobs\Params\UpdateJobParameters();
-    $params->setName("Test Job Name Updated " . time());
-    $params->setDescription("Test Job Description Updated " . time());
+    $params->setName("Test Job Name Updated " . \time());
+    $params->setDescription("Test Job Description Updated " . \time());
     $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2030-01-01 19:19:17', new DateTimeZone('UTC')));
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $jobs->updateJob($jobId, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
         $result = $response['translationJobUid'];
 
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $result;
@@ -168,18 +168,18 @@ function cancelJobDemo($authProvider, $projectId, $jobId)
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $params = new \Smartling\Jobs\Params\CancelJobParameters();
     $params->setReason('Some reason to cancel');
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $jobs->cancelJobSync($jobId, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 }
 
 /**
@@ -194,21 +194,21 @@ function getJobDemo($authProvider, $projectId, $jobId)
 
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $info = FALSE;
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $info = $jobs->getJob($jobId);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(TRUE);
+    $et = \microtime(TRUE);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($info)) {
-        var_dump($info);
+        \var_dump($info);
     }
 
     return $info;
@@ -230,21 +230,21 @@ function searchJobDemo($authProvider, $projectId, $fileUri)
     $searchParameters->setFileUris([
         $fileUri,
     ]);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $info = $jobs->searchJobs($searchParameters);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($info)) {
-        var_dump($info['items']);
+        \var_dump($info['items']);
     }
 
     return $info;
@@ -264,18 +264,18 @@ function addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri)
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
     $params = new AddFileToJobParameters();
     $params->setFileUri($fileUri);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $jobs->addFileToJobSync($jobId, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 }
 
 /**
@@ -289,18 +289,18 @@ function authorizeJobDemo($authProvider, $projectId, $jobId)
     echo "--- Authorize job ---\n";
 
     $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $jobs->authorizeJob($jobId);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 }
 
 $fileUri = 'JobID1_en_fr.xml';

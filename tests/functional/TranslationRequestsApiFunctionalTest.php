@@ -22,9 +22,9 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $projectId = getenv('project_id');
-        $userIdentifier = getenv('user_id');
-        $userSecretKey = getenv('user_key');
+        $projectId = \getenv('project_id');
+        $userIdentifier = \getenv('user_id');
+        $userSecretKey = \getenv('user_key');
 
         if (
             empty($projectId) ||
@@ -44,12 +44,12 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateTranslationRequest()
     {
-        $time = (string)microtime(true);
+        $time = (string)\microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
             ->setOriginalAssetKey(['a' => $time])
-            ->setTitle(vsprintf('Submission %s', [$time]))
-            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setTitle(\vsprintf('Submission %s', [$time]))
+            ->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
@@ -63,12 +63,12 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function testUpdateTranslationRequest()
     {
-        $time = (string)microtime(true);
+        $time = (string)\microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
             ->setOriginalAssetKey(['a' => $time])
-            ->setTitle(vsprintf('Submission %s', [$time]))
-            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setTitle(\vsprintf('Submission %s', [$time]))
+            ->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
@@ -94,12 +94,12 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTranslationRequest()
     {
-        $time = (string)microtime(true);
+        $time = (string)\microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
             ->setOriginalAssetKey(['a' => $time])
-            ->setTitle(vsprintf('Submission %s', [$time]))
-            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setTitle(\vsprintf('Submission %s', [$time]))
+            ->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
@@ -120,12 +120,12 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function testSearchTranslationRequests()
     {
-        $time = (string)microtime(true);
+        $time = (string)\microtime(true);
 
         $createParams = (new CreateTranslationRequestParams())
             ->setOriginalAssetKey(['a' => $time])
-            ->setTitle(vsprintf('Submission %s', [$time]))
-            ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            ->setTitle(\vsprintf('Submission %s', [$time]))
+            ->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
@@ -136,24 +136,24 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         $translationRequestUid = $response['translationRequestUid'];
 
         $searchResponseEmpty = $this->translationRequestsApi->searchTranslationRequests(self::BUCKET_NAME,
-            (new SearchTranslationRequestParams())->setFileUri(vsprintf('%%%s%%', [md5($time)]))
+            (new SearchTranslationRequestParams())->setFileUri(\vsprintf('%%%s%%', [\md5($time)]))
         );
 
-        self::assertTrue(is_array($searchResponseEmpty));
+        self::assertTrue(\is_array($searchResponseEmpty));
         self::assertArrayHasKey('items', $searchResponseEmpty);
         $items = $searchResponseEmpty['items'];
-        self::assertTrue(is_array($items));
-        self::assertTrue(0 === count($items));
+        self::assertTrue(\is_array($items));
+        self::assertTrue(0 === \count($items));
 
         $searchResponse = $this->translationRequestsApi->searchTranslationRequests(self::BUCKET_NAME,
-            (new SearchTranslationRequestParams())->setFileUri(vsprintf('%%%s%%', [$time]))
+            (new SearchTranslationRequestParams())->setFileUri(\vsprintf('%%%s%%', [$time]))
         );
 
-        self::assertTrue(is_array($searchResponse));
+        self::assertTrue(\is_array($searchResponse));
         self::assertArrayHasKey('items', $searchResponse);
         $items = $searchResponse['items'];
-        self::assertTrue(is_array($items));
-        self::assertTrue(1 === count($items));
+        self::assertTrue(\is_array($items));
+        self::assertTrue(1 === \count($items));
         self::assertTrue($translationRequestUid === $items[0]['translationRequestUid']);
     }
 

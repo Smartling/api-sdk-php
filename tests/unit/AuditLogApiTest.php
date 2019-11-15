@@ -13,7 +13,7 @@ class AuditLogApiTest extends ApiTestAbstract
      */
     public function testCreateProjectLevelLogRecord()
     {
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/projects/%s/logs',
             [
                 AuditLogApi::ENDPOINT_URL,
@@ -46,7 +46,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -86,7 +86,7 @@ class AuditLogApiTest extends ApiTestAbstract
     public function testCreateAccountLevelLogRecord()
     {
         $accountUid = "account_uid";
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/accounts/%s/logs',
             [
                 AuditLogApi::ENDPOINT_URL,
@@ -119,7 +119,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -158,7 +158,7 @@ class AuditLogApiTest extends ApiTestAbstract
      */
     public function testSearchProjectLevelLogRecord()
     {
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/projects/%s/logs',
             [
                 AuditLogApi::ENDPOINT_URL,
@@ -177,7 +177,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -201,7 +201,7 @@ class AuditLogApiTest extends ApiTestAbstract
     public function testSearchAccountLevelLogRecord()
     {
         $accountUid = "account_uid";
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/accounts/%s/logs',
             [
                 AuditLogApi::ENDPOINT_URL,
@@ -220,7 +220,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),

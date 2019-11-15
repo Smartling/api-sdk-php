@@ -59,7 +59,7 @@ class BatchApiTest extends ApiTestAbstract
         $params->setAuthorize($authorize);
         $params->setCallbackUrl($callbackUrl);
 
-        $endpointUrl = vsprintf('%s/%s/batches', [
+        $endpointUrl = \vsprintf('%s/%s/batches', [
             BatchApi::ENDPOINT_URL,
             $this->projectId
         ]);
@@ -70,7 +70,7 @@ class BatchApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -109,14 +109,14 @@ class BatchApiTest extends ApiTestAbstract
     {
         $batchId = 'test_batch_id';
         $localesToApprove = 'fr-FR';
-        $fileRealPath = realpath(__DIR__ . '/../resources/test.xml');
+        $fileRealPath = \realpath(__DIR__ . '/../resources/test.xml');
         $fileUri = 'test-file-uri.xml';
         $extension = 'xml';
 
         $params = new UploadFileParameters();
         $params->setLocalesToApprove($localesToApprove);
 
-        $endpointUrl = vsprintf('%s/%s/batches/%s/file', [
+        $endpointUrl = \vsprintf('%s/%s/batches/%s/file', [
             BatchApi::ENDPOINT_URL,
             $this->projectId,
             $batchId,
@@ -128,7 +128,7 @@ class BatchApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -141,7 +141,7 @@ class BatchApiTest extends ApiTestAbstract
                     ],
                     [
                         'name' => 'smartling.client_lib_id',
-                        'contents' => json_encode(
+                        'contents' => \json_encode(
                             [
                                 'client' => BatchApi::CLIENT_LIB_ID_SDK,
                                 'version' => BatchApi::CLIENT_LIB_ID_VERSION,
@@ -178,7 +178,7 @@ class BatchApiTest extends ApiTestAbstract
     public function testExecuteBatch() {
         $batchId = 'test_batch_id';
 
-        $endpointUrl = vsprintf('%s/%s/batches/%s', [
+        $endpointUrl = \vsprintf('%s/%s/batches/%s', [
             BatchApi::ENDPOINT_URL,
             $this->projectId,
             $batchId,
@@ -190,7 +190,7 @@ class BatchApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -211,7 +211,7 @@ class BatchApiTest extends ApiTestAbstract
     public function testGetBatchStatus() {
         $batchId = 'test_batch_id';
 
-        $endpointUrl = vsprintf('%s/%s/batches/%s', [
+        $endpointUrl = \vsprintf('%s/%s/batches/%s', [
             BatchApi::ENDPOINT_URL,
             $this->projectId,
             $batchId,
@@ -223,7 +223,7 @@ class BatchApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -240,7 +240,7 @@ class BatchApiTest extends ApiTestAbstract
      * @covers \Smartling\Batch\BatchApi::listBatches
      */
     public function testListBatches() {
-        $endpointUrl = vsprintf('%s/%s/batches', [
+        $endpointUrl = \vsprintf('%s/%s/batches', [
             BatchApi::ENDPOINT_URL,
             $this->projectId,
         ]);
@@ -251,7 +251,7 @@ class BatchApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),

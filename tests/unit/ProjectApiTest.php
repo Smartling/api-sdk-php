@@ -14,7 +14,7 @@ class ProjectApiTest extends ApiTestAbstract
      */
     public function testGetProjectDetails()
     {
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/%s/',
             [
                 ProjectApi::ENDPOINT_URL,
@@ -27,7 +27,7 @@ class ProjectApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
