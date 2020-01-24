@@ -71,6 +71,8 @@ class ContextApi extends BaseApiAbstract implements Waitable
 
     /**
      * {@inheritdoc}
+     *
+     * @throws SmartlingApiException
      */
     protected function processBodyOptions($requestData = []) {
         $opts = parent::processBodyOptions($requestData);
@@ -80,6 +82,14 @@ class ContextApi extends BaseApiAbstract implements Waitable
             foreach ($opts['multipart'] as &$data) {
                 if (in_array($data['name'], $keys)) {
                     $data['contents'] = $this->readFile($data['contents']);
+
+                    if ($data['name'] === 'content' && substr($requestData['multipart']['content'], 0, 7) === 'data://') {
+                      if (!isset($requestData['multipart']['name'])) {
+                        throw new SmartlingApiException('When content is specified using the data:// protocol, name is a required request body field');
+                      }
+
+                      $data['filename'] = $requestData['multipart']['name'];
+                    }
                 }
 
                 if ($data['name'] == 'matchParams') {

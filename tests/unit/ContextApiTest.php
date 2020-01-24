@@ -26,7 +26,7 @@ class ContextApiTest extends ApiTestAbstract
         $this->prepareContextApiMock();
     }
 
-    private function prepareContextApiMock()
+    private function prepareContextApiMock($stream = null)
     {
         $this->object = $this->getMockBuilder('Smartling\Context\ContextApi')
             ->setMethods(['readFile'])
@@ -40,7 +40,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->object->expects(self::any())
             ->method('readFile')
-            ->willReturn($this->streamPlaceholder);
+            ->willReturn(is_null($stream) ? $this->streamPlaceholder : $stream);
 
         $this->invokeMethod(
             $this->object,
@@ -176,6 +176,81 @@ class ContextApiTest extends ApiTestAbstract
                 ],
             ])
             ->willReturn($this->responseMock);
+
+        $this->object->uploadAndMatchContext($params);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::uploadAndMatchContext
+     */
+    public function testUploadAndMatchContextWithDataProtocol() {
+        $fileUri = './tests/resources/context.html';
+        $name = 'test_context.html';
+
+        $matchParams = new MatchContextParameters();
+        $matchParams->setContentFileUri($fileUri);
+
+        $params = new UploadContextParameters();
+        $params->setContent(sprintf('data://text/html;base64,%s', base64_encode(file_get_contents($fileUri))));
+        $params->setName($name);
+        $params->setMatchParams($matchParams);
+
+        $endpointUrl = vsprintf('%s/%s/contexts/upload-and-match-async', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('post', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'multipart' => [
+                    [
+                        'name' => 'content',
+                        'contents' => $this->streamPlaceholder,
+                        'filename' => $name,
+                    ],
+                    [
+                        'name' => 'name',
+                        'contents' => $name,
+                    ],
+                    [
+                        'name' => 'matchParams',
+                        'contents' => '{"contentFileUri":".\/tests\/resources\/context.html"}',
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                        ]
+                    ],
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->uploadAndMatchContext($params);
+    }
+    /**
+     * @covers \Smartling\Context\ContextApi::uploadAndMatchContext
+     *
+     * @expectedException \Smartling\Exceptions\SmartlingApiException
+     * @expectedExceptionMessage When content is specified using the data:// protocol, name is a required request body field
+     */
+    public function testUploadAndMatchContextWithDataProtocolFailsWhenNoNameSupplied() {
+        $fileUri = './tests/resources/context.html';
+
+        $matchParams = new MatchContextParameters();
+        $matchParams->setContentFileUri($fileUri);
+
+        $params = new UploadContextParameters();
+        $params->setContent(sprintf('data://text/html;base64,%s', base64_encode(file_get_contents($fileUri))));
+        $params->setMatchParams($matchParams);
 
         $this->object->uploadAndMatchContext($params);
     }
