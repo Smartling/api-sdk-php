@@ -26,7 +26,7 @@ class ContextApiTest extends ApiTestAbstract
         $this->prepareContextApiMock();
     }
 
-    private function prepareContextApiMock($stream = null)
+    private function prepareContextApiMock()
     {
         $this->object = $this->getMockBuilder('Smartling\Context\ContextApi')
             ->setMethods(['readFile'])
@@ -40,7 +40,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->object->expects(self::any())
             ->method('readFile')
-            ->willReturn(is_null($stream) ? $this->streamPlaceholder : $stream);
+            ->willReturn($this->streamPlaceholder);
 
         $this->invokeMethod(
             $this->object,
