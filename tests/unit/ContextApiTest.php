@@ -236,6 +236,7 @@ class ContextApiTest extends ApiTestAbstract
 
         $this->object->uploadAndMatchContext($params);
     }
+
     /**
      * @covers \Smartling\Context\ContextApi::uploadAndMatchContext
      *
