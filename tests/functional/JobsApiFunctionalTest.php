@@ -87,7 +87,7 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
             $params = new CreateJobParameters();
             $params->setName('Test Job Name ' . time());
             $params->setDescription('Test Job Description ' . time());
-            $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2020-01-01 19:19:17',
+            $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2120-01-01 19:19:17',
                 new DateTimeZone('UTC')));
             $params->setTargetLocales(['es', 'fr']);
             $result = $this->jobsApi->createJob($params);
