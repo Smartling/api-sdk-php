@@ -32,7 +32,7 @@ class UploadFileParameters extends BaseParameters
 
         $this->set(
             'smartling.client_lib_id',
-            json_encode(
+            \json_encode(
                 [
                     'client' => $client_lib_id,
                     'version' => $version,
@@ -75,7 +75,7 @@ class UploadFileParameters extends BaseParameters
      */
     public function setLocalesToApprove($locales_to_approve)
     {
-        if (is_string($locales_to_approve)) {
+        if (\is_string($locales_to_approve)) {
             $locales_to_approve = [$locales_to_approve];
         }
         $this->set('localeIdsToAuthorize', $locales_to_approve);
@@ -90,7 +90,7 @@ class UploadFileParameters extends BaseParameters
     {
         $params = $this->params;
 
-        $params['authorize'] = array_key_exists('localeIdsToAuthorize', $params)
+        $params['authorize'] = \array_key_exists('localeIdsToAuthorize', $params)
             ? false
             : (bool)$params['authorize'];
 

@@ -23,7 +23,7 @@ class SearchRecordParameters extends BaseParameters
     }
 
     public function setOffset($offset) {
-        if (!is_int($offset) || $offset < 0) {
+        if (!\is_int($offset) || $offset < 0) {
             throw new InvalidArgumentException('Offset value must be grater or equal to zero.');
         }
 
@@ -33,7 +33,7 @@ class SearchRecordParameters extends BaseParameters
     }
 
     public function setLimit($limit) {
-        if (!is_int($limit) || $limit < 1) {
+        if (!\is_int($limit) || $limit < 1) {
             throw new InvalidArgumentException('Limit value must be grater or equal to one.');
         }
 
@@ -48,8 +48,8 @@ class SearchRecordParameters extends BaseParameters
             SearchRecordParameters::ORDER_ASC
         ];
 
-        if (!in_array($order, $allowedSortOrders)) {
-            throw new InvalidArgumentException('Allowed sort orders are: ' . implode(', ', $allowedSortOrders));
+        if (!\in_array($order, $allowedSortOrders)) {
+            throw new InvalidArgumentException('Allowed sort orders are: ' . \implode(', ', $allowedSortOrders));
         }
 
         $this->set('sort', "$field:$order");

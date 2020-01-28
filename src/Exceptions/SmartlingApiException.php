@@ -38,10 +38,10 @@ class SmartlingApiException extends \Exception
     {
         $message = '';
         
-        if (is_string($errors)) {
+        if (\is_string($errors)) {
             $message = $errors;
-        } elseif (is_array($errors)) {
-            $message = print_r($errors, TRUE);
+        } elseif (\is_array($errors)) {
+            $message = \print_r($errors, TRUE);
             $this->errors = $errors;
         }
         
@@ -70,11 +70,11 @@ class SmartlingApiException extends \Exception
      */
     public function getErrorsByKey($key)
     {
-        if (!is_string($key)) {
+        if (!\is_string($key)) {
             throw new \Exception('Key must be a string');
         }
         
-        $errors = array_filter($this->errors, function ($el) use ($key) {
+        $errors = \array_filter($this->errors, function ($el) use ($key) {
             return $el['key'] === $key;
         });
         
@@ -95,17 +95,17 @@ class SmartlingApiException extends \Exception
         foreach ($this->errors as $k => $error) {
             $details = [];
             
-            if (isset($error['details']) && is_array($error['details'])) {
+            if (isset($error['details']) && \is_array($error['details'])) {
                 foreach ($error['details'] as $name => $value) {
-                    $details[] = sprintf('%s:%s', $name, $value);
+                    $details[] = \sprintf('%s:%s', $name, $value);
                 }
             }
             
-            $body = sprintf(
+            $body = \sprintf(
                 'key: %smessage: %sdetails: %s',
                 $error['key'] . PHP_EOL,
                 $error['message'] . PHP_EOL,
-                implode(' | ', $details) . PHP_EOL
+                \implode(' | ', $details) . PHP_EOL
             );
             $errorsStr .= $body . self::ERROR_OUTPUT_SEPARATOR . PHP_EOL;
         }
@@ -114,11 +114,11 @@ class SmartlingApiException extends \Exception
             . 'Response code: %s' . PHP_EOL
             . 'Response errors (%s): %s%s' . PHP_EOL;
     
-        $output = vsprintf(
+        $output = \vsprintf(
             $messageTemplate,
             [
                 $this->getCode(),
-                count($this->errors),
+                \count($this->errors),
                 PHP_EOL . self::ERROR_OUTPUT_SEPARATOR,
                 $errorsStr,
             ]

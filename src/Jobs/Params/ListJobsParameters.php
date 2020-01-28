@@ -17,7 +17,7 @@ class ListJobsParameters extends BaseParameters
     public function setName($jobName)
     {
         if (null !== $jobName) {
-            if (mb_strlen($jobName, 'UTF-8') >= 170) {
+            if (\mb_strlen($jobName, 'UTF-8') >= 170) {
                 throw new \InvalidArgumentException('Job name should be less than 170 characters.');
             }
             $this->set('jobName', $jobName);

@@ -36,8 +36,8 @@ class DownloadMultipleFilesParameters extends DownloadFileParameters
             self::FILE_NAME_MODE_UNCHANGED
         ];
 
-        if (!in_array($fileNameMode, $allowedModes)) {
-            $allowedModesString = implode(", ", $allowedModes);
+        if (!\in_array($fileNameMode, $allowedModes)) {
+            $allowedModesString = \implode(", ", $allowedModes);
 
             throw new \InvalidArgumentException("File name mode '$fileNameMode' is not allowed. Allowed modes are: $allowedModesString.");
         }
@@ -54,8 +54,8 @@ class DownloadMultipleFilesParameters extends DownloadFileParameters
             self::LOCALE_MODE_LOCALE_IN_NAME_AND_PATH
         ];
 
-        if (!in_array($localeMode, $allowedModes)) {
-            $allowedModesString = implode(", ", $allowedModes);
+        if (!\in_array($localeMode, $allowedModes)) {
+            $allowedModesString = \implode(", ", $allowedModes);
 
             throw new \InvalidArgumentException("Locale mode '$localeMode' is not allowed. Allowed modes are: $allowedModesString.");
         }

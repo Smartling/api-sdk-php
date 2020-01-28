@@ -66,8 +66,8 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
      * Reset all files in Smartling after tests.
      */
     public static function tearDownAfterClass() {
-        $authProvider = AuthTokenProvider::create(getenv('user_id'), getenv('user_key'));
-        $fileApi = FileApi::create($authProvider, getenv('project_id'));
+        $authProvider = AuthTokenProvider::create(\getenv('user_id'), \getenv('user_key'));
+        $fileApi = FileApi::create($authProvider, \getenv('project_id'));
 
         foreach ([self::FILE_NAME, self::NEW_FILE_NAME] as $file) {
             try {
@@ -83,9 +83,9 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
      * Test mixture.
      */
     public function setUp() {
-        $projectId = getenv('project_id');
-        $userIdentifier = getenv('user_id');
-        $userSecretKey = getenv('user_key');
+        $projectId = \getenv('project_id');
+        $userIdentifier = \getenv('user_id');
+        $userSecretKey = \getenv('user_key');
 
         if (
             empty($projectId) ||
@@ -96,7 +96,7 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
         }
 
         $this->fileUri = 'tests/resources/test.xml';
-        $this->fileRealPath = realpath($this->fileUri);
+        $this->fileRealPath = \realpath($this->fileUri);
         $this->fileType = 'xml';
         $this->retrievalType = 'pseudo';
         $this->translationState = 'PUBLISHED';
@@ -132,7 +132,7 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('totalCount', $result);
             $this->assertArrayHasKey('items', $result);
 
-            date_default_timezone_set('Pacific/Auckland');
+            \date_default_timezone_set('Pacific/Auckland');
             $result_new_timezone = $this->fileApi->lastModified(self::FILE_NAME);
 
             $this->assertEquals(

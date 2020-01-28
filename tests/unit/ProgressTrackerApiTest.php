@@ -16,7 +16,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
     public function testGetToken()
     {
         $accountUid = "account_uid";
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/accounts/%s/token',
             [
                 ProgressTrackerApi::ENDPOINT_URL,
@@ -29,7 +29,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -53,7 +53,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
         $data = [
           "foo" => "bar",
         ];
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/projects/%s/spaces/%s/objects/%s/records',
             [
                 ProgressTrackerApi::ENDPOINT_URL,
@@ -72,7 +72,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -96,7 +96,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
         $spaceId = "space";
         $objectId = "object";
         $recordId = "record";
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/projects/%s/spaces/%s/objects/%s/records/%s',
             [
                 ProgressTrackerApi::ENDPOINT_URL,
@@ -112,7 +112,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ->with('delete', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -137,7 +137,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
         $data = [
             "foo" => "bar",
         ];
-        $endpointUrl = vsprintf(
+        $endpointUrl = \vsprintf(
             '%s/projects/%s/spaces/%s/objects/%s/records/%s',
             [
                 ProgressTrackerApi::ENDPOINT_URL,
@@ -157,7 +157,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ->with('put', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),

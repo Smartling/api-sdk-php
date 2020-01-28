@@ -70,7 +70,7 @@ class FileApi extends BaseApiAbstract
 
         if ($parametersType == 'query') {
             foreach ($parameters as $key => $value) {
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     $queryStringAsStringNeeded = true;
 
                     break;
@@ -81,16 +81,16 @@ class FileApi extends BaseApiAbstract
                 $queryStringParts = [];
 
                 foreach ($parameters as $key => $value) {
-                    if (is_array($value)) {
+                    if (\is_array($value)) {
                         foreach ($value as $item) {
-                            $queryStringParts[] = $key . "[]=" . urlencode($item);
+                            $queryStringParts[] = $key . "[]=" . \urlencode($item);
                         }
                     } else {
-                        $queryStringParts[] = $key . "=" . urlencode($value);
+                        $queryStringParts[] = $key . "=" . \urlencode($value);
                     }
                 }
 
-                $options[$parametersType] = implode("&", $queryStringParts);
+                $options[$parametersType] = \implode("&", $queryStringParts);
             }
         }
 
@@ -127,7 +127,7 @@ class FileApi extends BaseApiAbstract
      */
     public function uploadFile($realPath, $file_name, $file_type, UploadFileParameters $params = null)
     {
-        if (is_null($params)) {
+        if (\is_null($params)) {
             $params = new UploadFileParameters();
         }
         $params = $params->exportToArray();
@@ -172,18 +172,18 @@ class FileApi extends BaseApiAbstract
      */
     public function downloadFile($fileUri, $locale = '', DownloadFileParameters $params = null)
     {
-        if ((!is_string($locale)) || strlen($locale) < 2) {
-            $message = vsprintf(
+        if ((!\is_string($locale)) || \strlen($locale) < 2) {
+            $message = \vsprintf(
                 'Invalid locale value got. Expected a string of at least 2 chars length, but got: %s',
                 [
-                    '' === $locale ? 'Empty string' : var_export($locale, true)
+                    '' === $locale ? 'Empty string' : \var_export($locale, true)
                 ]
             );
 
             throw new SmartlingApiException($message);
         }
 
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
@@ -194,7 +194,7 @@ class FileApi extends BaseApiAbstract
 
     public function downloadAllTranslationsOfFile($fileUri, DownloadFileParameters $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
@@ -205,7 +205,7 @@ class FileApi extends BaseApiAbstract
 
     public function downloadMultipleTranslationsOfFiles(DownloadMultipleFilesParameters $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
 
         $requestData = $this->getDefaultRequestData('query', $params);
         unset($requestData['headers']['Accept']);
@@ -230,7 +230,7 @@ class FileApi extends BaseApiAbstract
      */
     public function getStatus($fileUri, $locale, ParameterInterface $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
@@ -253,7 +253,7 @@ class FileApi extends BaseApiAbstract
      */
     public function getStatusForAllLocales($fileUri, ParameterInterface $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
@@ -293,7 +293,7 @@ class FileApi extends BaseApiAbstract
      */
     public function getList(ListFilesParameters $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
 
         $requestData = $this->getDefaultRequestData('query', $params);
 
@@ -309,7 +309,7 @@ class FileApi extends BaseApiAbstract
      */
     public function getExtendedList($locale, ExtendedListFilesParameters $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
 
         $requestData = $this->getDefaultRequestData('query', $params);
 
@@ -336,7 +336,7 @@ class FileApi extends BaseApiAbstract
      */
     public function renameFile($fileUri, $newFileUri, ParameterInterface $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
         $params['newFileUri'] = $newFileUri;
 
@@ -362,7 +362,7 @@ class FileApi extends BaseApiAbstract
      */
     public function deleteFile($fileUri, ParameterInterface $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('form_params', $params);
@@ -424,7 +424,7 @@ class FileApi extends BaseApiAbstract
      */
     public function getAuthorizedLocales($fileUri, ParameterInterface $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
@@ -443,7 +443,7 @@ class FileApi extends BaseApiAbstract
      */
     public function getStatusAllLocales($fileUri, ParameterInterface $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
@@ -463,7 +463,7 @@ class FileApi extends BaseApiAbstract
      */
     public function getLastModified($fileUri, ParameterInterface $params = null)
     {
-        $params = (is_null($params)) ? [] : $params->exportToArray();
+        $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
         $requestData = $this->getDefaultRequestData('query', $params);
@@ -488,8 +488,8 @@ class FileApi extends BaseApiAbstract
     {
         $result = $this->getLastModified($fileUri, $params);
 
-        if (!is_array($result) || !array_key_exists('items', $result) || !is_array($result['items'])) {
-            throw new SmartlingApiException(vsprintf(
+        if (!\is_array($result) || !\array_key_exists('items', $result) || !\is_array($result['items'])) {
+            throw new SmartlingApiException(\vsprintf(
                 'No data found for file %s.', [
                     $fileUri,
                 ]
@@ -509,7 +509,7 @@ class FileApi extends BaseApiAbstract
 
             if (!($date instanceof \DateTime))
             {
-                throw new SmartlingApiException(vsprintf(
+                throw new SmartlingApiException(\vsprintf(
                     'Can\'t parse formatted time string: %s.', [
                         $item['lastModified'],
                     ]

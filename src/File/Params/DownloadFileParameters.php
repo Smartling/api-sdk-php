@@ -30,7 +30,7 @@ class DownloadFileParameters extends BaseParameters
     public function setRetrievalType($retrievalType)
     {
 
-        $validRetrievalType = in_array(
+        $validRetrievalType = \in_array(
             $retrievalType,
             [
                 self::RETRIEVAL_TYPE_PENDING,
@@ -42,7 +42,7 @@ class DownloadFileParameters extends BaseParameters
         );
 
         if (!$validRetrievalType) {
-            throw new SmartlingApiException('Unknown retrieval type: ' . var_export($retrievalType, true));
+            throw new SmartlingApiException('Unknown retrieval type: ' . \var_export($retrievalType, true));
         }
 
         $this->set('retrievalType', $retrievalType);

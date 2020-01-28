@@ -37,7 +37,7 @@ class AuthApiTest extends ApiTestAbstract
      * Test auth method.
      */
     public function testAuthenticate() {
-        $endpointUrl = vsprintf('%s/authenticate', [
+        $endpointUrl = \vsprintf('%s/authenticate', [
             AuthTokenProvider::ENDPOINT_URL,
         ]);
         $this->client
@@ -76,7 +76,7 @@ class AuthApiTest extends ApiTestAbstract
     public function testAuthenticateWithInvalidCredentials() {
         $response_mock = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
             ->setMethods(
-                array_merge(
+                \array_merge(
                     self::$responseInterfaceMethods,
                     self::$messageInterfaceMethods
                 )
@@ -90,7 +90,7 @@ class AuthApiTest extends ApiTestAbstract
 
         $client_mock = $this->getMockBuilder('GuzzleHttp\Client')
             ->setMethods(
-                array_merge(
+                \array_merge(
                     self::$clientInterfaceMethods,
                     self::$hasEmitterInterfaceMethods
                 )

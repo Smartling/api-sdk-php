@@ -45,7 +45,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
     {
         $this->responseMock = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
             ->setMethods(
-                array_merge(
+                \array_merge(
                     self::$responseInterfaceMethods,
                     self::$messageInterfaceMethods
                 )
@@ -53,7 +53,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->responseMock->expects(self::any())->method('json')->willReturn(json_decode($body, true));
+        $this->responseMock->expects(self::any())->method('json')->willReturn(\json_decode($body, true));
         $this->responseMock->expects(self::any())->method('getBody')->willReturn($body);
 
         $this->responseMock->expects($this->any())->method('getStatusCode')->willReturn($code);
@@ -71,7 +71,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             ->setFileUri('/posts/hello-world_1_1_post.xml')
             ->setOriginalLocaleId('en-US');
 
-        $testRawResponse = json_encode(
+        $testRawResponse = \json_encode(
             [
                 "response" => [
                     "code" => "SUCCESS",
@@ -98,17 +98,17 @@ class TranslationRequestsApiTest extends ApiTestAbstract
 
         $this->mockClientResponse(200, $testRawResponse);
 
-        $testExpectedResponse = json_decode($testRawResponse, true)['response']['data'];
+        $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests',
+        $endpointUrl = \vsprintf('%s/%s/buckets/%s/translation-requests',
             [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
 
 
         $requestStructure = [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => vsprintf('%s %s',
+                'Authorization' => \vsprintf('%s %s',
                     [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
             ],
             'exceptions' => false,
@@ -135,7 +135,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
 
         $updateParams = (new UpdateTranslationRequestParams())->setTitle('Submission 2');
 
-        $testRawResponse = json_encode(
+        $testRawResponse = \json_encode(
             [
                 "response" => [
                     "code" => "SUCCESS",
@@ -162,17 +162,17 @@ class TranslationRequestsApiTest extends ApiTestAbstract
 
         $this->mockClientResponse(200, $testRawResponse);
 
-        $testExpectedResponse = json_decode($testRawResponse, true)['response']['data'];
+        $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests/%s',
+        $endpointUrl = \vsprintf('%s/%s/buckets/%s/translation-requests/%s',
             [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName, $translationRequestUid]);
 
 
         $requestStructure = [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => vsprintf('%s %s',
+                'Authorization' => \vsprintf('%s %s',
                     [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
             ],
             'exceptions' => false,
@@ -197,7 +197,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
 
         $translationRequestUid = '8264fd9133d3';
 
-        $testRawResponse = json_encode(
+        $testRawResponse = \json_encode(
             [
                 "response" => [
                     "code" => "SUCCESS",
@@ -224,17 +224,17 @@ class TranslationRequestsApiTest extends ApiTestAbstract
 
         $this->mockClientResponse(200, $testRawResponse);
 
-        $testExpectedResponse = json_decode($testRawResponse, true)['response']['data'];
+        $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests/%s',
+        $endpointUrl = \vsprintf('%s/%s/buckets/%s/translation-requests/%s',
             [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName, $translationRequestUid]);
 
 
         $requestStructure = [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => vsprintf('%s %s',
+                'Authorization' => \vsprintf('%s %s',
                     [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
             ],
             'exceptions' => false,
@@ -288,7 +288,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             [
                 (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"]),
                 [
-                    'originalAssetKey' => json_encode(["a" => "1"])
+                    'originalAssetKey' => \json_encode(["a" => "1"])
                 ],
                 [
                     "response" => [
@@ -398,20 +398,20 @@ class TranslationRequestsApiTest extends ApiTestAbstract
      */
     public function testSearchTranslationRequests(SearchTranslationRequestParams $searchParams, array $queryParams, array $rawResponse)
     {
-        $testRawResponse = json_encode($rawResponse);
+        $testRawResponse = \json_encode($rawResponse);
 
         $this->mockClientResponse(200, $testRawResponse);
 
         $testExpectedResponse = $rawResponse['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = vsprintf('%s/%s/buckets/%s/translation-requests',
+        $endpointUrl = \vsprintf('%s/%s/buckets/%s/translation-requests',
             [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
 
         $requestStructure = [
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => vsprintf('%s %s',
+                'Authorization' => \vsprintf('%s %s',
                     [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
             ],
             'exceptions' => false,

@@ -24,9 +24,9 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $projectId = getenv('project_id');
-        $userIdentifier = getenv('user_id');
-        $userSecretKey = getenv('user_key');
+        $projectId = \getenv('project_id');
+        $userIdentifier = \getenv('user_id');
+        $userSecretKey = \getenv('user_key');
 
         if (
             empty($projectId) ||
@@ -118,7 +118,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testGetToken()
     {
         try {
-            $result = $this->progressTrackerApi->getToken(getenv("account_uid"));
+            $result = $this->progressTrackerApi->getToken(\getenv("account_uid"));
 
             $this->assertArrayHasKey('token', $result);
             $this->assertArrayHasKey('config', $result);

@@ -16,7 +16,7 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
         $exceptionMessage = 'Exception message';
         $e = new SmartlingApiException($exceptionMessage);
 
-        $this->assertTrue(is_string($e->getMessage()));
+        $this->assertTrue(\is_string($e->getMessage()));
         $this->assertNotEmpty($e->getMessage());
         $this->assertSame($exceptionMessage, $e->getMessage());
     }
@@ -38,9 +38,9 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
         ];
         $e = new SmartlingApiException($exceptionArray);
 
-        $this->assertTrue(is_string($e->getMessage()));
+        $this->assertTrue(\is_string($e->getMessage()));
         $this->assertNotEmpty($e->getMessage());
-        $this->assertSame(print_r($exceptionArray, TRUE), $e->getMessage());
+        $this->assertSame(\print_r($exceptionArray, TRUE), $e->getMessage());
     }
 
 }

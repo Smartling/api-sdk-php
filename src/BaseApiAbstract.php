@@ -220,13 +220,13 @@ abstract class BaseApiAbstract
         $this->setProjectId($projectId);
         $this->setHttpClient($client);
 
-        if (is_null($logger)) {
+        if (\is_null($logger)) {
             $logger = new DevNullLogger();
         }
 
         $this->setLogger($logger);
 
-        $this->setBaseUrl(rtrim($service_url, '/') . '/' . $projectId);
+        $this->setBaseUrl(\rtrim($service_url, '/') . '/' . $projectId);
     }
 
     /**
@@ -242,7 +242,7 @@ abstract class BaseApiAbstract
                 'base_uri' => $serviceUrl,
                 'debug' => $debug,
                 'headers' => [
-                    'User-Agent' => vsprintf(
+                    'User-Agent' => \vsprintf(
                         '%s/%s %s %s',
                         [
                             self::getCurrentClientId(),
@@ -270,7 +270,7 @@ abstract class BaseApiAbstract
      */
     protected function readFile($realPath)
     {
-        $stream = @fopen($realPath, 'r');
+        $stream = @\fopen($realPath, 'r');
 
         if (!$stream) {
             throw new SmartlingApiException("File $realPath was not able to be read.");
@@ -292,7 +292,7 @@ abstract class BaseApiAbstract
             $accessToken = $this->getAuth()->getAccessToken();
             $tokenType = $this->getAuth()->getTokenType();
 
-            $options['headers']['Authorization'] = vsprintf('%s %s', [
+            $options['headers']['Authorization'] = \vsprintf('%s %s', [
                 $tokenType,
                 $accessToken,
             ]);
@@ -303,7 +303,7 @@ abstract class BaseApiAbstract
 
         if ($parametersType == 'query') {
             foreach ($parameters as $key => $value) {
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     $queryStringAsStringNeeded = true;
 
                     break;
@@ -314,16 +314,16 @@ abstract class BaseApiAbstract
                 $queryStringParts = [];
 
                 foreach ($parameters as $key => $value) {
-                    if (is_array($value)) {
+                    if (\is_array($value)) {
                         foreach ($value as $item) {
-                            $queryStringParts[] = $key . "=" . urlencode($item);
+                            $queryStringParts[] = $key . "=" . \urlencode($item);
                         }
                     } else {
-                        $queryStringParts[] = $key . "=" . urlencode($value);
+                        $queryStringParts[] = $key . "=" . \urlencode($value);
                     }
                 }
 
-                $options[$parametersType] = implode("&", $queryStringParts);
+                $options[$parametersType] = \implode("&", $queryStringParts);
             }
         }
 
@@ -342,11 +342,11 @@ abstract class BaseApiAbstract
 
             foreach ($requestData['multipart'] as $key => $value) {
                 // Hack to cast FALSE to '0' instead of empty string.
-                if (is_bool($value)) {
+                if (\is_bool($value)) {
                     $value = (int) $value;
                 }
 
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     foreach ($value as $_item) {
                         $body[] = [
                             'name' => $key . '[]',
@@ -375,7 +375,7 @@ abstract class BaseApiAbstract
      */
     private function normalizeUri($uri = '')
     {
-        return rtrim($this->getBaseUrl(), '/') . '/' . ltrim($uri, '/');
+        return \rtrim($this->getBaseUrl(), '/') . '/' . \ltrim($uri, '/');
     }
 
     /**
@@ -387,9 +387,9 @@ abstract class BaseApiAbstract
         //Special handling for 401 error - authentication error => expire token
         if (401 === (int)$response->getStatusCode()) {
             if (!($this->getAuth() instanceof AuthApiInterface)) {
-                $type = gettype($this->getAuth());
+                $type = \gettype($this->getAuth());
                 if ('object' === $type) {
-                    $type .= '::' . get_class($this->getAuth());
+                    $type .= '::' . \get_class($this->getAuth());
                 }
                 throw new SmartlingApiException('AuthProvider expected to be instance of AuthApiInterface, type given:' . $type, 401);
             } else {
@@ -417,12 +417,12 @@ abstract class BaseApiAbstract
     private function processError(Response $response)
     {
         try {
-            $json = json_decode($response->getBody(), true);
+            $json = \json_decode($response->getBody(), true);
 
-            if (is_null($json)
-                || !array_key_exists('response', $json)
-                || !is_array($json['response'])
-                || !array_key_exists('errors', $json['response'])
+            if (\is_null($json)
+                || !\array_key_exists('response', $json)
+                || !\is_array($json['response'])
+                || !\array_key_exists('errors', $json['response'])
                 || empty($json['response']['errors'])
             ) {
                 $message = 'Bad response format from Smartling';
@@ -430,20 +430,20 @@ abstract class BaseApiAbstract
                 throw new SmartlingApiException($message);
             }
 
-            $error_msg = array_map(
+            $error_msg = \array_map(
                 function ($a) {
                     return $a['message'];
                 },
                 $json['response']['errors']
             );
 
-            $message = implode(' || ', $error_msg);
+            $message = \implode(' || ', $error_msg);
 
             $this->getLogger()->error($message);
             throw new SmartlingApiException($json['response']['errors'], $response->getStatusCode());
 
         } catch (RuntimeException $e) {
-            $message = vsprintf('Bad response format from Smartling: %s', [$response->getBody()]);
+            $message = \vsprintf('Bad response format from Smartling: %s', [$response->getBody()]);
             $this->getLogger()->error($message);
             throw new SmartlingApiException($message, 0, $e);
         }
@@ -467,16 +467,16 @@ abstract class BaseApiAbstract
         // Dump full request data to log except sensitive data.
         $logRequestData = $options;
         if (isset($logRequestData['headers']['Authorization'])) {
-            $logRequestData['headers']['Authorization'] = substr($logRequestData['headers']['Authorization'], 0,
+            $logRequestData['headers']['Authorization'] = \substr($logRequestData['headers']['Authorization'], 0,
                     12) . '*****';
         }
         if (isset($logRequestData['json']) &&
-            is_array($logRequestData['json']) &&
+            \is_array($logRequestData['json']) &&
             isset($logRequestData['json']['userIdentifier'])
         ) {
-            $logRequestData['json']['userIdentifier'] = substr($logRequestData['json']['userIdentifier'], 0,
+            $logRequestData['json']['userIdentifier'] = \substr($logRequestData['json']['userIdentifier'], 0,
                     5) . '*****';
-            $logRequestData['json']['userSecret'] = substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
+            $logRequestData['json']['userSecret'] = \substr($logRequestData['json']['userSecret'], 0, 5) . '*****';
         }
         $toLog = [
             'request' => [
@@ -485,7 +485,7 @@ abstract class BaseApiAbstract
                 'requestData' => $logRequestData,
             ],
         ];
-        $serialized = var_export($toLog, true);
+        $serialized = \var_export($toLog, true);
         $this->getLogger()->debug($serialized);
 
         try {
@@ -498,25 +498,25 @@ abstract class BaseApiAbstract
                 $response = $this->getHttpClient()->request($method, $endpoint, $options);
             }
         } catch (RequestException $e) {
-            $message = vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
+            $message = \vsprintf('Guzzle:RequestException: %s', [$e->getMessage(),]);
             $this->getLogger()->error($message);
             throw new SmartlingApiException($message, 0, $e);
         } catch (\LogicException $e) {
-            $message = vsprintf('Guzzle:LogicException: %s', [$e->getMessage()]);
+            $message = \vsprintf('Guzzle:LogicException: %s', [$e->getMessage()]);
             $this->getLogger()->error($message);
             throw new SmartlingApiException($message, 0, $e);
         } catch (\Exception $e) {
-            $message = vsprintf('Guzzle:Exception: %s', [$e->getMessage()]);
+            $message = \vsprintf('Guzzle:Exception: %s', [$e->getMessage()]);
             $this->getLogger()->error($message);
             throw new SmartlingApiException($message, 0, $e);
         }
 
         // Dump full response to log except sensitive data.
         $logResponseData = (string)$response->getBody();
-        $logResponseData = preg_replace('/(accessToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
-        $logResponseData = preg_replace('/(refreshToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
+        $logResponseData = \preg_replace('/(accessToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
+        $logResponseData = \preg_replace('/(refreshToken":".{5})([^"]+)/', '${1}*****', $logResponseData);
         $this->getLogger()->debug(
-            json_encode(
+            \json_encode(
                 [
                     'response' => [
                         'statusCode' => $response->getStatusCode(),
@@ -538,12 +538,12 @@ abstract class BaseApiAbstract
         }
         else {
             try {
-                $json = json_decode($response->getBody(), true);
+                $json = \json_decode($response->getBody(), true);
 
-                if (!array_key_exists('response', $json)
-                    || !is_array($json['response'])
+                if (!\array_key_exists('response', $json)
+                    || !\is_array($json['response'])
                     || empty($json['response']['code'])
-                    || !in_array($json['response']['code'], [
+                    || !\in_array($json['response']['code'], [
                         'SUCCESS',
                         'ACCEPTED',
                     ])

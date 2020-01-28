@@ -33,16 +33,16 @@ class ContextApi extends BaseApiAbstract implements Waitable
      */
     public function wait(array $data) {
         if (!empty($data['matchId'])) {
-            $start_time = time();
+            $start_time = \time();
 
             do {
-                $delta = time() - $start_time;
+                $delta = \time() - $start_time;
 
                 if ($delta > $this->getTimeOut()) {
-                    throw new SmartlingApiException(vsprintf('Async operation is not completed after %s seconds.', [$delta]));
+                    throw new SmartlingApiException(\vsprintf('Async operation is not completed after %s seconds.', [$delta]));
                 }
 
-                sleep(1);
+                \sleep(1);
 
                 $result = $this->getMatchStatus($data['matchId']);
             }
@@ -80,7 +80,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
 
         if (!empty($opts['multipart'])) {
             foreach ($opts['multipart'] as &$data) {
-                if (in_array($data['name'], $keys)) {
+                if (\in_array($data['name'], $keys)) {
                     $data['contents'] = $this->readFile($data['contents']);
 
                     if ($data['name'] === 'content' && substr($requestData['multipart']['content'], 0, 7) === 'data://') {
@@ -119,7 +119,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * @return string
      */
     private function getXSLContextSourceHeader() {
-        return vsprintf('group=connectors;name=%s;version=%s', [
+        return \vsprintf('group=connectors;name=%s;version=%s', [
             static::getCurrentClientId(),
             static::getCurrentClientVersion(),
         ]);
@@ -150,8 +150,8 @@ class ContextApi extends BaseApiAbstract implements Waitable
      */
     public function matchContext($contextUid, MatchContextParameters $params = null)
     {
-        $endpoint = vsprintf('contexts/%s/match/async', $contextUid);
-        $requestData = $this->getDefaultRequestData('json', is_null($params) ? [] : $params->exportToArray());
+        $endpoint = \vsprintf('contexts/%s/match/async', $contextUid);
+        $requestData = $this->getDefaultRequestData('json', \is_null($params) ? [] : $params->exportToArray());
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
     }
@@ -202,7 +202,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * @throws SmartlingApiException
      */
     public function getMatchStatus($matchId) {
-        $endpoint = vsprintf('/match/%s', $matchId);
+        $endpoint = \vsprintf('/match/%s', $matchId);
         $requestData = $this->getDefaultRequestData('query', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
@@ -216,7 +216,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
     public function getMissingResources(MissingResourcesParameters $params = null) {
-        $requestData = $this->getDefaultRequestData('query', is_null($params) ? [] : $params->exportToArray());
+        $requestData = $this->getDefaultRequestData('query', \is_null($params) ? [] : $params->exportToArray());
 
         return $this->sendRequest('missing-resources', $requestData, self::HTTP_METHOD_GET);
     }
@@ -236,10 +236,10 @@ class ContextApi extends BaseApiAbstract implements Waitable
         $missingResources = [];
         $offset = FALSE;
         $all = TRUE;
-        $start_time = time();
+        $start_time = \time();
 
-        while (!is_null($offset)) {
-            $delta = time() - $start_time;
+        while (!\is_null($offset)) {
+            $delta = \time() - $start_time;
 
             if ($delta > $this->getTimeOut()) {
                 $all = FALSE;
@@ -256,7 +256,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
 
             $response = $this->getMissingResources($params);
             $offset = !empty($response['offset']) ? $response['offset'] : NULL;
-            $missingResources = array_merge($missingResources, $response['items']);
+            $missingResources = \array_merge($missingResources, $response['items']);
         }
 
         return [
@@ -275,7 +275,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      */
     public function uploadResource($resourceId, UploadResourceParameters $params)
     {
-        $endpoint = vsprintf('resources/%s', $resourceId);
+        $endpoint = \vsprintf('resources/%s', $resourceId);
         $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
@@ -290,7 +290,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      */
     public function renderContext($contextUid)
     {
-        $endpoint = vsprintf('contexts/%s/render', $contextUid);
+        $endpoint = \vsprintf('contexts/%s/render', $contextUid);
         $requestData = $this->getDefaultRequestData('form_params', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);

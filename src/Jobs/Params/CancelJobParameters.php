@@ -15,7 +15,7 @@ class CancelJobParameters extends BaseParameters
      * @param string $reason
      */
     public function setReason($reason) {
-        if (mb_strlen($reason, 'UTF-8') > 4096) {
+        if (\mb_strlen($reason, 'UTF-8') > 4096) {
             throw new \InvalidArgumentException('Reason should be less or equal to 4096 characters.');
         }
 

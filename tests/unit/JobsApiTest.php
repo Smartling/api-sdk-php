@@ -73,7 +73,7 @@ class JobsApiTest extends ApiTestAbstract
         $params->setCallbackUrl($callbackUrl);
         $params->setCallbackMethod($callbackMethod);
         $params->setTargetLocales($locales);
-        $endpointUrl = vsprintf('%s/%s/jobs', [
+        $endpointUrl = \vsprintf('%s/%s/jobs', [
             JobsApi::ENDPOINT_URL,
             $this->projectId
         ]);
@@ -84,7 +84,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -120,7 +120,7 @@ class JobsApiTest extends ApiTestAbstract
         $params->setDueDate($dueDate);
         $params->setCallbackUrl($callbackUrl);
         $params->setCallbackMethod($callbackMethod);
-        $endpointUrl = vsprintf('%s/%s/jobs/%s', [
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
             $jobId,
@@ -132,7 +132,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('put', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -159,7 +159,7 @@ class JobsApiTest extends ApiTestAbstract
         $reason = 'Some reason';
         $params = new CancelJobParameters();
         $params->setReason($reason);
-        $endpointUrl = vsprintf('%s/%s/jobs/%s/cancel', [
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s/cancel', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
             $jobId,
@@ -171,7 +171,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -197,7 +197,7 @@ class JobsApiTest extends ApiTestAbstract
         $params->setName($name);
         $params->setLimit($limit);
         $params->setOffset($offset);
-        $endpointUrl = vsprintf('%s/%s/jobs', [
+        $endpointUrl = \vsprintf('%s/%s/jobs', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
         ]);
@@ -208,7 +208,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -238,7 +238,7 @@ class JobsApiTest extends ApiTestAbstract
         ]);
         $params->setLimit($limit);
         $params->setOffset($offset);
-        $endpointUrl = vsprintf('%s/%s/jobs', [
+        $endpointUrl = \vsprintf('%s/%s/jobs', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
         ]);
@@ -249,7 +249,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -271,7 +271,7 @@ class JobsApiTest extends ApiTestAbstract
         $params->setStatuses([
             "123:/content/page.html#anchor?param1=!&param2=*"
         ]);
-        $endpointUrl = vsprintf('%s/%s/jobs', [
+        $endpointUrl = \vsprintf('%s/%s/jobs', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
         ]);
@@ -282,7 +282,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -300,7 +300,7 @@ class JobsApiTest extends ApiTestAbstract
      */
     public function testGetJob() {
         $jobId = 'Some job id';
-        $endpointUrl = vsprintf('%s/%s/jobs/%s', [
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
             $jobId,
@@ -312,7 +312,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -330,7 +330,7 @@ class JobsApiTest extends ApiTestAbstract
      */
     public function testAuthorizeJob() {
         $jobId = 'Some job id';
-        $endpointUrl = vsprintf('%s/%s/jobs/%s/authorize', [
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s/authorize', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
             $jobId,
@@ -342,7 +342,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -364,7 +364,7 @@ class JobsApiTest extends ApiTestAbstract
         $fileUri = 'some_file.xml';
         $params = new AddFileToJobParameters();
         $params->setFileUri($fileUri);
-        $endpointUrl = vsprintf('%s/%s/jobs/%s/file/add', [
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s/file/add', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
             $jobId,
@@ -376,7 +376,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -402,7 +402,7 @@ class JobsApiTest extends ApiTestAbstract
             $fileToSearch,
         ]);
 
-        $endpointUrl = vsprintf('%s/%s/jobs/search', [JobsApi::ENDPOINT_URL, $this->projectId]);
+        $endpointUrl = \vsprintf('%s/%s/jobs/search', [JobsApi::ENDPOINT_URL, $this->projectId]);
 
         $this->client
             ->expects(self::once())
@@ -410,7 +410,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -435,7 +435,7 @@ class JobsApiTest extends ApiTestAbstract
         $localeId = 'Some locale id';
         $params = new AddLocaleToJobParameters();
         $params->setSyncContent(false);
-        $endpointUrl = vsprintf('%s/%s/jobs/%s/locales/%s', [
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s/locales/%s', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
             $jobId,
@@ -448,7 +448,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -469,7 +469,7 @@ class JobsApiTest extends ApiTestAbstract
     public function testCheckAsynchronousProcessingStatus() {
         $jobId = 'Some job id';
         $processId = 'Some process id';
-        $endpointUrl = vsprintf('%s/%s/jobs/%s/processes/%s', [
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s/processes/%s', [
             JobsApi::ENDPOINT_URL,
             $this->projectId,
             $jobId,
@@ -482,7 +482,7 @@ class JobsApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
