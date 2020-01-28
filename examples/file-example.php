@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL);
+\error_reporting(E_ALL);
 
 /**
  * This file contains examples of Smartling API 2.x usage.
@@ -17,12 +17,12 @@ $longOpts = [
     'secret-key:',
 ];
 
-$options = getopt('', $longOpts);
+$options = \getopt('', $longOpts);
 
 if (
-    !array_key_exists('project-id', $options)
-    || !array_key_exists('user-id', $options)
-    || !array_key_exists('secret-key', $options)
+    !\array_key_exists('project-id', $options)
+    || !\array_key_exists('user-id', $options)
+    || !\array_key_exists('secret-key', $options)
 ) {
     echo 'Missing required params.' . PHP_EOL;
     exit;
@@ -30,7 +30,7 @@ if (
 
 $autoloader = '../vendor/autoload.php';
 
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
+if (!\file_exists($autoloader) || !\is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 }
@@ -46,11 +46,11 @@ $userSecretKey = $options['secret-key'];
 
 $fileName = 'test.xml';
 $fileUri = '../tests/resources/test.xml';
-$fileRealPath = realpath($fileUri);
+$fileRealPath = \realpath($fileUri);
 $fileType = 'xml';
 $newFileName = 'new_test_file.xml';
 $retrievalType = 'pseudo';
-$content = file_get_contents(realpath($fileUri));
+$content = \file_get_contents(\realpath($fileUri));
 $fileContentUri = 'testing_content.xml';
 $translationState = 'PUBLISHED';
 $locale = 'ru-RU';
@@ -73,7 +73,7 @@ try {
     $result = $fileApi->uploadFile($fileRealPath, $fileName, $fileType);
 
     echo 'File upload result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while uploading file');
@@ -92,7 +92,7 @@ try {
     $result = $fileApi->lastModified($fileName);
 
     echo 'Last Modified result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while getting last modified');
@@ -114,7 +114,7 @@ try {
     $result = $fileApi->downloadFile($fileName, $locale, $params);
 
     echo 'File download result:' . PHP_EOL;
-    echo var_export((string) $result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export((string) $result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while downloading file');
@@ -135,10 +135,10 @@ try {
 
     $result = $fileApi->downloadAllTranslationsOfFile($fileName, $params);
 
-    file_put_contents("downloadAllTranslationsOfFile.zip", (string) $result);
+    \file_put_contents("downloadAllTranslationsOfFile.zip", (string) $result);
 
     echo 'File download result:' . PHP_EOL;
-    echo var_export((string) $result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export((string) $result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while downloading file');
@@ -169,10 +169,10 @@ try {
 
     $result = $fileApi->downloadMultipleTranslationsOfFiles($params);
 
-    file_put_contents("downloadMultipleTranslationsOfFiles.zip", (string) $result);
+    \file_put_contents("downloadMultipleTranslationsOfFiles.zip", (string) $result);
 
     echo 'File download result:' . PHP_EOL;
-    echo var_export((string) $result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export((string) $result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while downloading file');
@@ -191,7 +191,7 @@ try {
     $result = $fileApi->getStatus($fileName, $locale);
 
     echo 'Get File Status result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while getting file status');
@@ -211,7 +211,7 @@ try {
     $result = $fileApi->getStatusForAllLocales($fileName);
 
     echo 'Get File Status For All Locales result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while getting file status for all locales');
@@ -232,7 +232,7 @@ try {
     $result = $fileApi->getAuthorizedLocales($fileName);
 
     echo 'Get File Authorized Locales result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while getting file authorized locales');
@@ -257,7 +257,7 @@ try {
     $result = $fileApi->getList($params);
 
     echo 'List Files result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while getting file list');
@@ -276,7 +276,7 @@ try {
     $result = $fileApi->import($locale, $fileName, $fileType, $fileRealPath, $translationState, true);
 
     echo 'File Import result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while importing file');
@@ -295,7 +295,7 @@ try {
     $result = $fileApi->renameFile($fileName, $newFileName);
 
     echo 'Rename File result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while renaming files');
@@ -314,7 +314,7 @@ try {
     $result = $fileApi->deleteFile($newFileName);
 
     echo 'File Delete result:' . PHP_EOL;
-    echo var_export($result, true) . PHP_EOL . PHP_EOL;
+    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
 
 } catch (\Smartling\Exceptions\SmartlingApiException $e) {
     echo $e->formatErrors('Error happened while deleting file');

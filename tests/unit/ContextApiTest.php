@@ -58,7 +58,7 @@ class ContextApiTest extends ApiTestAbstract
         $params = new UploadContextParameters();
         $params->setContent('./tests/resources/context.html');
         $params->setName('test_context.html');
-        $endpointUrl = vsprintf('%s/%s/contexts', [
+        $endpointUrl = \vsprintf('%s/%s/contexts', [
             ContextApi::ENDPOINT_URL,
             $this->projectId
         ]);
@@ -69,7 +69,7 @@ class ContextApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -102,7 +102,7 @@ class ContextApiTest extends ApiTestAbstract
         $params = new MatchContextParameters();
         $params->setContentFileUri($fileUri);
 
-        $endpointUrl = vsprintf('%s/%s/contexts/%s/match/async', [
+        $endpointUrl = \vsprintf('%s/%s/contexts/%s/match/async', [
             ContextApi::ENDPOINT_URL,
             $this->projectId,
             $contextUid
@@ -114,7 +114,7 @@ class ContextApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -143,7 +143,7 @@ class ContextApiTest extends ApiTestAbstract
         $params->setContent($fileUri);
         $params->setMatchParams($matchParams);
 
-        $endpointUrl = vsprintf('%s/%s/contexts/upload-and-match-async', [
+        $endpointUrl = \vsprintf('%s/%s/contexts/upload-and-match-async', [
             ContextApi::ENDPOINT_URL,
             $this->projectId
         ]);
@@ -154,7 +154,7 @@ class ContextApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -261,7 +261,7 @@ class ContextApiTest extends ApiTestAbstract
      */
     public function testGetMatchStatus() {
         $matchId = 'test_match_id';
-        $endpointUrl = vsprintf('%s/%s/match/%s', [
+        $endpointUrl = \vsprintf('%s/%s/match/%s', [
             ContextApi::ENDPOINT_URL,
             $this->projectId,
             $matchId,
@@ -273,7 +273,7 @@ class ContextApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -294,7 +294,7 @@ class ContextApiTest extends ApiTestAbstract
         $offset = 'some_offset';
         $params = new MissingResourcesParameters();
         $params->setOffset($offset);
-        $endpointUrl = vsprintf('%s/%s/missing-resources', [
+        $endpointUrl = \vsprintf('%s/%s/missing-resources', [
             ContextApi::ENDPOINT_URL,
             $this->projectId
         ]);
@@ -305,7 +305,7 @@ class ContextApiTest extends ApiTestAbstract
             ->with('get', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -328,7 +328,7 @@ class ContextApiTest extends ApiTestAbstract
         $resourceId = 'some_resource_id';
         $params = new UploadResourceParameters();
         $params->setFile('./tests/resources/test.png');
-        $endpointUrl = vsprintf('%s/%s/resources/%s', [
+        $endpointUrl = \vsprintf('%s/%s/resources/%s', [
             ContextApi::ENDPOINT_URL,
             $this->projectId,
             $resourceId,
@@ -340,7 +340,7 @@ class ContextApiTest extends ApiTestAbstract
             ->with('put', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),
@@ -364,7 +364,7 @@ class ContextApiTest extends ApiTestAbstract
      */
     public function testRenderContext() {
         $contextUid = 'someContextUid';
-        $endpointUrl = vsprintf('%s/%s/contexts/%s/render', [
+        $endpointUrl = \vsprintf('%s/%s/contexts/%s/render', [
             ContextApi::ENDPOINT_URL,
             $this->projectId,
             $contextUid
@@ -376,7 +376,7 @@ class ContextApiTest extends ApiTestAbstract
             ->with('post', $endpointUrl, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Authorization' => vsprintf('%s %s', [
+                    'Authorization' => \vsprintf('%s %s', [
                         $this->authProvider->getTokenType(),
                         $this->authProvider->getAccessToken(),
                     ]),

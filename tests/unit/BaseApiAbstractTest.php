@@ -26,7 +26,7 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $http_client = $this->invokeMethod($instance, 'getHttpClient');
 
         $this->assertTrue(
-            strpos(
+            \strpos(
                 $http_client->getConfig()['headers']['User-Agent'],
                 'smartling-api-sdk-php/3.7.0 (no extensions) GuzzleHttp/6'
             ) !== FALSE
@@ -45,7 +45,7 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $http_client = $this->invokeMethod($instance, 'getHttpClient');
 
         $this->assertTrue(
-            strpos(
+            \strpos(
                 $http_client->getConfig()['headers']['User-Agent'],
                 'php-connector/1.2.3 (no extensions) GuzzleHttp/6'
             ) !== FALSE
@@ -65,7 +65,7 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $http_client = $this->invokeMethod($instance, 'getHttpClient');
 
         $this->assertTrue(
-            strpos(
+            \strpos(
                 $http_client->getConfig()['headers']['User-Agent'],
                 'php-connector/1.2.3 dependency-1/version-1 dependency-2/version-2 GuzzleHttp/6'
             ) !== FALSE

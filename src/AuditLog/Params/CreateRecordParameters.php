@@ -15,15 +15,15 @@ class CreateRecordParameters extends BaseParameters
     const ACTION_TYPE_UPDATE_SETTINGS = 'UPDATE_SETTINGS';
 
     public function __construct() {
-        $this->setActionTime(time());
+        $this->setActionTime(\time());
     }
 
     public function setActionTime($timeStamp) {
-        if (!is_int($timeStamp)) {
+        if (!\is_int($timeStamp)) {
             throw new InvalidArgumentException('Time value must be a timestamp.');
         }
 
-        $this->set('actionTime', date('Y-m-d\TH:i:s\Z', $timeStamp));
+        $this->set('actionTime', \date('Y-m-d\TH:i:s\Z', $timeStamp));
 
         return $this;
     }
@@ -38,8 +38,8 @@ class CreateRecordParameters extends BaseParameters
             CreateRecordParameters::ACTION_TYPE_UPDATE_SETTINGS,
         ];
 
-        if (!in_array($actionType, $allowedActionTypes)) {
-            throw new InvalidArgumentException('Allowed action types are: ' . implode(', ', $allowedActionTypes));
+        if (!\in_array($actionType, $allowedActionTypes)) {
+            throw new InvalidArgumentException('Allowed action types are: ' . \implode(', ', $allowedActionTypes));
         }
 
         $this->set('actionType', $actionType);

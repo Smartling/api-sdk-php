@@ -16,9 +16,9 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $projectId = getenv('project_id');
-        $userIdentifier = getenv('user_id');
-        $userSecretKey = getenv('user_key');
+        $projectId = \getenv('project_id');
+        $userIdentifier = \getenv('user_id');
+        $userSecretKey = \getenv('user_key');
 
         if (
             empty($projectId) ||
@@ -35,9 +35,9 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testCreateProjectLevelLogRecord()
     {
         try {
-            $user_id = uniqid();
+            $user_id = \uniqid();
             $params = (new CreateRecordParameters())
-                ->setActionTime(time())
+                ->setActionTime(\time())
                 ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setFileUri("file_uri")
                 ->setFileUid("file_uid")
@@ -71,9 +71,9 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testCreateAccountLevelLogRecord()
     {
         try {
-            $user_id = uniqid();
+            $user_id = \uniqid();
             $params = (new CreateRecordParameters())
-                ->setActionTime(time())
+                ->setActionTime(\time())
                 ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
                 ->setFileUri("file_uri")
                 ->setFileUid("file_uid")
@@ -91,7 +91,7 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
                 ->setEnvId("env_id")
                 ->setClientData("foo", "bar");
 
-            $result = $this->auditLogApi->createAccountLevelLogRecord(getenv("account_uid"), $params);
+            $result = $this->auditLogApi->createAccountLevelLogRecord(\getenv("account_uid"), $params);
 
             $this->assertArrayHasKey('_index', $result);
             $this->assertArrayHasKey('_type', $result);
@@ -107,8 +107,8 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testSearchProjectLevelLogRecord()
     {
         try {
-            $user_id = uniqid();
-            $time = time();
+            $user_id = \uniqid();
+            $time = \time();
 
             $createParams = (new CreateRecordParameters())
                 ->setActionTime($time)
@@ -134,7 +134,7 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
 
             $this->auditLogApi->createProjectLevelLogRecord($createParams);
 
-            sleep(1);
+            \sleep(1);
 
             $params = (new SearchRecordParameters())
                 ->setSearchQuery("clientUserId:$user_id");
@@ -145,7 +145,7 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('items', $result);
 
             $this->assertEquals($result['totalCount'], 1);
-            $this->assertEquals(count($result['items']), 1);
+            $this->assertEquals(\count($result['items']), 1);
 
             $this->assertEquals($result['items'][0]['actionTime'], $createParamsArray['actionTime']);
             $this->assertEquals($result['items'][0]['actionType'], $createParamsArray['actionType']);
@@ -164,8 +164,8 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($result['items'][0]['clientUserName'], $createParamsArray['clientUserName']);
             $this->assertEquals($result['items'][0]['envId'], $createParamsArray['envId']);
             $this->assertEquals($result['items'][0]['clientData'], $createParamsArray['clientData']);
-            $this->assertEquals($result['items'][0]['accountUid'], getenv("account_uid"));
-            $this->assertEquals($result['items'][0]['projectUid'], getenv('project_id'));
+            $this->assertEquals($result['items'][0]['accountUid'], \getenv("account_uid"));
+            $this->assertEquals($result['items'][0]['projectUid'], \getenv('project_id'));
         } catch (SmartlingApiException $e) {
             $result = false;
         }
@@ -176,8 +176,8 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
     public function testSearchAccountLevelLogRecord()
     {
         try {
-            $user_id = uniqid();
-            $time = time();
+            $user_id = \uniqid();
+            $time = \time();
 
             $createParams = (new CreateRecordParameters())
                 ->setActionTime($time)
@@ -201,20 +201,20 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
 
             $createParamsArray = $createParams->exportToArray();
 
-            $this->auditLogApi->createAccountLevelLogRecord(getenv("account_uid"), $createParams);
+            $this->auditLogApi->createAccountLevelLogRecord(\getenv("account_uid"), $createParams);
 
-            sleep(1);
+            \sleep(1);
 
             $params = (new SearchRecordParameters())
                 ->setSearchQuery("clientUserId:$user_id");
 
-            $result = $this->auditLogApi->searchAccountLevelLogRecord(getenv("account_uid"), $params);
+            $result = $this->auditLogApi->searchAccountLevelLogRecord(\getenv("account_uid"), $params);
 
             $this->assertArrayHasKey('totalCount', $result);
             $this->assertArrayHasKey('items', $result);
 
             $this->assertEquals($result['totalCount'], 1);
-            $this->assertEquals(count($result['items']), 1);
+            $this->assertEquals(\count($result['items']), 1);
 
             $this->assertEquals($result['items'][0]['actionTime'], $createParamsArray['actionTime']);
             $this->assertEquals($result['items'][0]['actionType'], $createParamsArray['actionType']);
@@ -233,7 +233,7 @@ class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($result['items'][0]['clientUserName'], $createParamsArray['clientUserName']);
             $this->assertEquals($result['items'][0]['envId'], $createParamsArray['envId']);
             $this->assertEquals($result['items'][0]['clientData'], $createParamsArray['clientData']);
-            $this->assertEquals($result['items'][0]['accountUid'], getenv("account_uid"));
+            $this->assertEquals($result['items'][0]['accountUid'], \getenv("account_uid"));
             $this->assertEquals($result['items'][0]['projectUid'], 'none');
         } catch (SmartlingApiException $e) {
             $result = false;

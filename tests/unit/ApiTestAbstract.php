@@ -157,7 +157,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
      */
     protected function invokeMethod($object, $methodName, array $parameters = [])
     {
-        $reflection = new \ReflectionClass(get_class($object));
+        $reflection = new \ReflectionClass(\get_class($object));
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);
 
@@ -177,7 +177,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
      */
     protected function readProperty($object, $propertyName)
     {
-        $reflection = new \ReflectionClass(get_class($object));
+        $reflection = new \ReflectionClass(\get_class($object));
         $property = $reflection->getProperty($propertyName);
         $property->setAccessible(true);
 
@@ -188,7 +188,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
     {
         $this->client = $this->getMockBuilder('GuzzleHttp\Client')
             ->setMethods(
-                array_merge(
+                \array_merge(
                     self::$clientInterfaceMethods,
                     self::$hasEmitterInterfaceMethods
                 )
@@ -219,7 +219,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
     {
         $this->responseMock = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
             ->setMethods(
-                array_merge(
+                \array_merge(
                     self::$responseInterfaceMethods,
                     self::$messageInterfaceMethods
                 )
@@ -232,7 +232,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
                 ->expects(self::any())
                 ->method('json')
                 ->willReturn(
-                    json_decode(
+                    \json_decode(
                         $this->validResponse,
                         self::JSON_OBJECT_AS_ARRAY
                     )

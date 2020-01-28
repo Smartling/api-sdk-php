@@ -44,9 +44,9 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $projectId = getenv('project_id');
-        $userIdentifier = getenv('user_id');
-        $userSecretKey = getenv('user_key');
+        $projectId = \getenv('project_id');
+        $userIdentifier = \getenv('user_id');
+        $userSecretKey = \getenv('user_key');
 
         if (
             empty($projectId) ||
@@ -85,10 +85,9 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
     {
         try {
             $params = new CreateJobParameters();
-            $params->setName('Test Job Name ' . time());
-            $params->setDescription('Test Job Description ' . time());
-            $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2037-12-31 23:59:59',
-                new DateTimeZone('UTC')));
+            $params->setName('Test Job Name ' . \time());
+            $params->setDescription('Test Job Description ' . \time());
+            $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2037-12-31 23:59:59', new DateTimeZone('UTC')));
             $params->setTargetLocales(['es', 'fr']);
             $result = $this->jobsApi->createJob($params);
 
@@ -155,8 +154,8 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
     {
         try {
             $params = new UpdateJobParameters();
-            $params->setName("Test Job Name Updated " . time());
-            $params->setDescription("Test Job Description Updated " . time());
+            $params->setName("Test Job Name Updated " . \time());
+            $params->setDescription("Test Job Description Updated " . \time());
             $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2030-01-01 19:19:17',
                 new DateTimeZone('UTC')));
             $result = $this->jobsApi->updateJob($this->jobId, $params);

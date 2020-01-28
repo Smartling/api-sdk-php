@@ -15,12 +15,12 @@ $longOpts = [
     'secret-key:',
 ];
 
-$options = getopt('', $longOpts);
+$options = \getopt('', $longOpts);
 
 if (
-    !array_key_exists('project-id', $options)
-    || !array_key_exists('user-id', $options)
-    || !array_key_exists('secret-key', $options)
+    !\array_key_exists('project-id', $options)
+    || !\array_key_exists('user-id', $options)
+    || !\array_key_exists('secret-key', $options)
 ) {
     echo 'Missing required params.' . PHP_EOL;
     exit;
@@ -28,7 +28,7 @@ if (
 
 $autoloader = '../vendor/autoload.php';
 
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
+if (!\file_exists($autoloader) || !\is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 } else {
@@ -55,21 +55,21 @@ function createTranslationRequestDemo($authProvider, $projectId, $demoBucketName
     $response = [];
     $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $translationRequestsApi->createTranslationRequest($demoBucketName, $demoCreateParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -90,21 +90,21 @@ function updateTranslationRequestDemo($authProvider, $projectId, $demoBucketName
     $response = [];
     $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $translationRequestsApi->updateTranslationRequest($demoBucketName, $translationRequestUid, $demoUpdateParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -124,21 +124,21 @@ function getTranslationRequestDemo($authProvider, $projectId, $demoBucketName, $
     $response = [];
     $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $translationRequestsApi->getTranslationRequest($demoBucketName, $translationRequestUid);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -151,21 +151,21 @@ function searchTranslationRequestDemo($authProvider, $projectId, $demoBucketName
     $response = [];
     $translationRequestsApi = \Smartling\TranslationRequests\TranslationRequestsApi::create($authProvider, $projectId);
 
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $translationRequestsApi->searchTranslationRequests($demoBucketName, $searchParams);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -175,12 +175,12 @@ function searchTranslationRequestDemo($authProvider, $projectId, $demoBucketName
 $demoBucketName = 'tst-bucket';
 
 
-$time = (string)microtime(true);
+$time = (string)\microtime(true);
 
 $demoCreateParams = (new \Smartling\TranslationRequests\Params\CreateTranslationRequestParams())
     ->setOriginalAssetKey(['a' => $time])
-    ->setTitle(vsprintf('Submission %s', [$time]))
-    ->setFileUri(vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+    ->setTitle(\vsprintf('Submission %s', [$time]))
+    ->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
     ->setOriginalLocaleId('en-US');
 
 $demoUpdateParams = (new \Smartling\TranslationRequests\Params\UpdateTranslationRequestParams())

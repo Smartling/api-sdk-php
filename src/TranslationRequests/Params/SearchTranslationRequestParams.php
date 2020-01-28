@@ -22,8 +22,8 @@ class SearchTranslationRequestParams extends BaseParameters
      */
     public function setOriginalAssetKey(array $originalAssetKey = [])
     {
-        if (0 < count($originalAssetKey)) {
-            $this->set('originalAssetKey', json_encode($originalAssetKey));
+        if (0 < \count($originalAssetKey)) {
+            $this->set('originalAssetKey', \json_encode($originalAssetKey));
         }
         return $this;
     }
@@ -54,8 +54,8 @@ class SearchTranslationRequestParams extends BaseParameters
      */
     public function setCustomOriginalData(array $customOriginalData = [])
     {
-        if (0 < count($customOriginalData)) {
-            $this->set('customOriginalData', json_encode($customOriginalData));
+        if (0 < \count($customOriginalData)) {
+            $this->set('customOriginalData', \json_encode($customOriginalData));
         }
         return $this;
     }
@@ -66,8 +66,8 @@ class SearchTranslationRequestParams extends BaseParameters
      */
     public function setTargetAssetKey(array $targetAssetKey = [])
     {
-        if (0 < count($targetAssetKey)) {
-            $this->set('targetAssetKey', json_encode($targetAssetKey));
+        if (0 < \count($targetAssetKey)) {
+            $this->set('targetAssetKey', \json_encode($targetAssetKey));
         }
         return $this;
     }
@@ -89,7 +89,7 @@ class SearchTranslationRequestParams extends BaseParameters
     public function setState($state)
     {
         $state = (string)$state;
-        if (in_array($state, TranslationSubmissionStates::$allowedStates, true)) {
+        if (\in_array($state, TranslationSubmissionStates::$allowedStates, true)) {
             $this->set('state', $state);
         }
         return $this;
@@ -111,8 +111,8 @@ class SearchTranslationRequestParams extends BaseParameters
      */
     public function setCustomTranslationData(array $customTranslationData = [])
     {
-        if (0 < count($customTranslationData)) {
-            $this->set('customTranslationData', json_encode($customTranslationData));
+        if (0 < \count($customTranslationData)) {
+            $this->set('customTranslationData', \json_encode($customTranslationData));
         }
 
         return $this;
@@ -168,12 +168,12 @@ class SearchTranslationRequestParams extends BaseParameters
             SearchTranslationRequestParams::SORT_MODIFIED
         ];
 
-        if (!in_array($order, $allowedSortOrders)) {
-            throw new InvalidArgumentException('Allowed sort orders are: ' . implode(', ', $allowedSortOrders));
+        if (!\in_array($order, $allowedSortOrders)) {
+            throw new InvalidArgumentException('Allowed sort orders are: ' . \implode(', ', $allowedSortOrders));
         }
 
-        if (!in_array($field, $allowedSortFields)) {
-            throw new InvalidArgumentException('Allowed sort fields are: ' . implode(', ', $allowedSortFields));
+        if (!\in_array($field, $allowedSortFields)) {
+            throw new InvalidArgumentException('Allowed sort fields are: ' . \implode(', ', $allowedSortFields));
         }
 
         $this->set("sortBy", $field);

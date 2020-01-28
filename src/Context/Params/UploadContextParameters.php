@@ -34,7 +34,7 @@ class UploadContextParameters extends BaseParameters
 
     public function setMatchParams(MatchContextParameters $params)
     {
-        $this->set('matchParams', json_encode($params->exportToArray()));
+        $this->set('matchParams', \json_encode($params->exportToArray()));
     }
 
 }

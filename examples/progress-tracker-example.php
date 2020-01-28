@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL);
+\error_reporting(E_ALL);
 
 /**
  * This file contains examples of Smartling API 2.x usage.
@@ -18,12 +18,12 @@ $longOpts = [
     'account-uid:'
 ];
 
-$options = getopt('', $longOpts);
+$options = \getopt('', $longOpts);
 
 if (
-    !array_key_exists('project-id', $options)
-    || !array_key_exists('user-id', $options)
-    || !array_key_exists('secret-key', $options)
+    !\array_key_exists('project-id', $options)
+    || !\array_key_exists('user-id', $options)
+    || !\array_key_exists('secret-key', $options)
 ) {
     echo 'Missing required params.' . PHP_EOL;
     exit;
@@ -31,7 +31,7 @@ if (
 
 $autoloader = '../vendor/autoload.php';
 
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
+if (!\file_exists($autoloader) || !\is_readable($autoloader)) {
     echo 'Error. Autoloader not found. Seems you didn\'t run:' . PHP_EOL . '    composer update' . PHP_EOL;
     exit;
 }
@@ -56,21 +56,21 @@ function getTokenDemo($authProvider, $projectId, $accountUid)
 {
     $response = false;
     $progressTracker = \Smartling\ProgressTracker\ProgressTrackerApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     try {
         $response = $progressTracker->getToken($accountUid);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -87,7 +87,7 @@ function createRecordDemo($authProvider, $projectId, $spaceId, $objectId)
 {
     $response = false;
     $progressTracker = \Smartling\ProgressTracker\ProgressTrackerApi::create($authProvider, $projectId);
-    $st = microtime(true);
+    $st = \microtime(true);
 
     $params = new \Smartling\ProgressTracker\Params\RecordParameters();
     $params->setTtl(15);
@@ -98,16 +98,16 @@ function createRecordDemo($authProvider, $projectId, $spaceId, $objectId)
     try {
         $response = $progressTracker->createRecord($spaceId, $objectId, $params);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        var_dump($e->getErrors());
+        \var_dump($e->getErrors());
     }
 
-    $et = microtime(true);
+    $et = \microtime(true);
     $time = $et - $st;
 
-    echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
     if (!empty($response)) {
-        var_dump($response);
+        \var_dump($response);
     }
 
     return $response;
@@ -125,21 +125,21 @@ function deleteRecordDemo($authProvider, $projectId, $spaceId, $objectId, $recor
 {
   $response = false;
   $progressTracker = \Smartling\ProgressTracker\ProgressTrackerApi::create($authProvider, $projectId);
-  $st = microtime(true);
+  $st = \microtime(true);
 
   try {
     $response = $progressTracker->deleteRecord($spaceId, $objectId, $recordId);
   } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    var_dump($e->getErrors());
+    \var_dump($e->getErrors());
   }
 
-  $et = microtime(true);
+  $et = \microtime(true);
   $time = $et - $st;
 
-  echo vsprintf('Request took %s seconds.%s', [round($time, 3), "\n\r"]);
+  echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 
   if (!empty($response)) {
-    var_dump($response);
+    \var_dump($response);
   }
 
   return $response;
