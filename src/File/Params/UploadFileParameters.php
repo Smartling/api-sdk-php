@@ -83,6 +83,18 @@ class UploadFileParameters extends BaseParameters
         return $this;
     }
 
+  /**
+   * @param string $namespace
+   *
+   * @return $this
+   */
+    public function setNamespace($namespace)
+    {
+      $this->set('smartling.namespace', $namespace);
+
+      return $this;
+    }
+
     /**
      * @inheritdoc
      */

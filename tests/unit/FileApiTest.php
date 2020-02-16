@@ -127,6 +127,10 @@ class FileApiTest extends ApiTestAbstract
                         'contents' => 'es',
                     ],
                     [
+                        'name' => 'smartling.namespace',
+                        'contents' => 'namespace_for_deduplication',
+                    ],
+                    [
                         'name' => 'file',
                         'contents' => $this->streamPlaceholder,
                     ],
@@ -145,6 +149,7 @@ class FileApiTest extends ApiTestAbstract
         $params = new UploadFileParameters();
         $params->setAuthorized(true);
         $params->setLocalesToApprove('es');
+        $params->setNamespace('namespace_for_deduplication');
 
         $this->object->uploadFile('tests/resources/test.xml', 'test.xml', 'xml', $params);
     }
@@ -175,6 +180,10 @@ class FileApiTest extends ApiTestAbstract
         $fileUploadParams->setAuthorized(true);
         $exportedSettings = $fileUploadParams->exportToArray();
         $this->assertEquals($exportedSettings['authorize'], false);
+
+        $fileUploadParams->setNamespace('namespace_for_deduplication');
+        $exportedSettings = $fileUploadParams->exportToArray();
+        $this->assertEquals($exportedSettings['smartling.namespace'], 'namespace_for_deduplication');
     }
 
     /**
