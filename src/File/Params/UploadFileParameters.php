@@ -3,6 +3,7 @@
 namespace Smartling\File\Params;
 
 use Smartling\BaseApiAbstract;
+use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Parameters\BaseParameters;
 
 /**
@@ -83,13 +84,18 @@ class UploadFileParameters extends BaseParameters
         return $this;
     }
 
-    /**
-     * @param string $namespace
-     *
-     * @return $this
-     */
+  /**
+   * @param string $namespace
+   *
+   * @return $this
+   * @throws SmartlingApiException
+   */
     public function setNamespace($namespace)
     {
+      if (!is_string($namespace) || strlen($namespace) <= 0) {
+        throw new SmartlingApiException('Invalid namespace found, not a string or empty string');
+      }
+
       $this->set('smartling.namespace', $namespace);
 
       return $this;

@@ -187,6 +187,30 @@ class FileApiTest extends ApiTestAbstract
     }
 
     /**
+     * Tests failures of file upload parameters namespace logic
+     *
+     * @dataProvider invalidFileUploadNamespaceParams
+     *
+     * @param mixed $invalidValue
+     *
+     * @expectedException \Smartling\Exceptions\SmartlingApiException
+     * @expectedExceptionMessage Invalid namespace found, not a string or empty string
+     */
+    public function testFileUploadParamsNamespaceFailures($invalidValue)
+    {
+        $fileUploadParams = new UploadFileParameters();
+        $fileUploadParams->setNamespace($invalidValue);
+    }
+
+    public function invalidFileUploadNamespaceParams() {
+        return [
+            [''],
+            [[]],
+            [null],
+        ];
+    }
+
+    /**
      * @covers       \Smartling\File\FileApi::downloadFile
      *
      * @dataProvider downloadFileParams
