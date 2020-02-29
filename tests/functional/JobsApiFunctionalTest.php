@@ -14,6 +14,7 @@ use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\AddLocaleToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
+use Smartling\Jobs\Params\JobProgressParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
 use Smartling\Jobs\Params\SearchJobsParameters;
 use Smartling\Jobs\Params\UpdateJobParameters;
@@ -298,6 +299,31 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
             $this->jobsApi->addLocaleToJobSync($this->jobId, 'de-DE', $params);
 
             $this->fileApi->deleteFile('test.xml');
+        } catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+  /**
+   * Test for retrieving job progress
+   */
+    public function testJobsApiGetJobProgress()
+    {
+        try {
+            $params = new JobProgressParameters();
+            $params->setTargetLocaleId('some_locale');
+
+            $result = $this->jobsApi->getJobProgress($this->jobId, $params);
+
+            $this->assertArrayHasKey('translationJobUid', $result);
+            $this->assertArrayHasKey('contentProgressReport', $result);
+            $this->assertArrayHasKey('targetLocaleDescription', $result);
+            $this->assertArrayHasKey('targetLocaleId', $result);
+            $this->assertArrayHasKey('unauthorizedProgressReport', $result);
+            $this->assertArrayHasKey('percentComplete', $result);
+            $this->assertArrayHasKey('totalWordCount', $result);
+            $this->assertArrayHasKey('percentComplete', $result);
+            $this->assertArrayHasKey('workflowProgressReportList', $result);
         } catch (SmartlingApiException $e) {
             $this->fail($e->getMessage());
         }

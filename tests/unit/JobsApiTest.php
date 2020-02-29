@@ -4,12 +4,14 @@ namespace Smartling\Tests\Unit;
 
 use DateTime;
 use DateTimeZone;
+use Smartling\Exceptions\InvalidAccessTokenException;
 use Smartling\Jobs\JobsApi;
 use Smartling\Jobs\JobStatus;
 use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\AddLocaleToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
+use Smartling\Jobs\Params\JobProgressParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
 use Smartling\Jobs\Params\SearchJobsParameters;
 use Smartling\Jobs\Params\UpdateJobParameters;
@@ -502,5 +504,43 @@ class JobsApiTest extends ApiTestAbstract
     public function testCreateJobParametersSetCallbackMethodValidation()
     {
         (new CreateJobParameters())->setCallbackMethod("TEST");
+    }
+
+  /**
+   * @covers \Smartling\Jobs\JobsApi::getJobProgress
+   *
+   */
+    public function testGetJobProgress()
+    {
+        $jobId = 'Some job id';
+        $localeId = 'some locale id';
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s/progress', [
+            JobsApi::ENDPOINT_URL,
+            $this->projectId,
+            $jobId,
+        ]);
+
+        $params = new JobProgressParameters();
+        $params->setTargetLocaleId($localeId);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => \vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => FALSE,
+                'query' => [
+                    'targetLocaleId' => $localeId
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+      $this->object->getJobProgress($jobId, $params);
     }
 }

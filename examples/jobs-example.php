@@ -9,6 +9,7 @@
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
+use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Jobs\Params\AddFileToJobParameters;
 
 $longOpts = [
@@ -44,7 +45,7 @@ $userSecretKey = $options['secret-key'];
 $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @return bool
  */
@@ -80,7 +81,7 @@ function listJobsDemo($authProvider, $projectId)
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @return string
  */
@@ -118,7 +119,7 @@ function createJobDemo($authProvider, $projectId)
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return string
@@ -156,7 +157,7 @@ function updateJobDemo($authProvider, $projectId, $jobId)
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return string
@@ -183,7 +184,7 @@ function cancelJobDemo($authProvider, $projectId, $jobId)
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return bool
@@ -215,7 +216,7 @@ function getJobDemo($authProvider, $projectId, $jobId)
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $fileUri
  * @return bool
@@ -251,7 +252,7 @@ function searchJobDemo($authProvider, $projectId, $fileUri)
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @param string $fileUri
@@ -279,7 +280,7 @@ function addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri)
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return bool
@@ -303,7 +304,43 @@ function authorizeJobDemo($authProvider, $projectId, $jobId)
     echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 }
 
+/**
+ * @param AuthApiInterface $authProvider
+ * @param string           $projectId
+ * @param string           $jobId
+ * @param string           $targetLocaleId
+ * @return array
+ */
+function getJobProgress($authProvider, $projectId, $jobId, $targetLocaleId)
+{
+    echo "--- Retrieving job progress ---\n";
+
+    $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
+    $info = FALSE;
+    $progressParameters = new \Smartling\Jobs\Params\JobProgressParameters();
+    $progressParameters->setTargetLocaleId($targetLocaleId);
+    $st = \microtime(true);
+
+    try {
+        $info = $jobs->getJobProgress($jobId, $progressParameters);
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        \var_dump($e->getErrors());
+    }
+
+    $et = \microtime(true);
+    $time = $et - $st;
+
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
+
+    if (!empty($info)) {
+        \var_dump($info);
+    }
+
+    return $info;
+}
+
 $fileUri = 'JobID1_en_fr.xml';
+$targetLocaleId = 'fr-CA';
 $jobs = listJobsDemo($authProvider, $projectId);
 $jobId = createJobDemo($authProvider, $projectId);
 $jobId = updateJobDemo($authProvider, $projectId, $jobId);
@@ -312,3 +349,4 @@ addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri);
 $job = searchJobDemo($authProvider, $projectId, $fileUri);
 authorizeJobDemo($authProvider, $projectId, $jobId);
 cancelJobDemo($authProvider, $projectId, $jobId);
+$jobProgress = getJobProgress($authProvider, $projectId, $jobId, $targetLocaleId);
