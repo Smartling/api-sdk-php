@@ -44,7 +44,7 @@ $userSecretKey = $options['secret-key'];
 $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @return bool
  */
@@ -80,7 +80,7 @@ function listJobsDemo($authProvider, $projectId)
 }
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @return string
  */
@@ -118,7 +118,7 @@ function createJobDemo($authProvider, $projectId)
 }
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return string
@@ -156,7 +156,7 @@ function updateJobDemo($authProvider, $projectId, $jobId)
 }
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return string
@@ -183,7 +183,7 @@ function cancelJobDemo($authProvider, $projectId, $jobId)
 }
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return bool
@@ -215,7 +215,7 @@ function getJobDemo($authProvider, $projectId, $jobId)
 }
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $fileUri
  * @return bool
