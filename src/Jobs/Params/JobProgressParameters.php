@@ -7,7 +7,10 @@ use Smartling\Parameters\BaseParameters;
 class JobProgressParameters extends BaseParameters
 {
 
-  public function setTargetLocaleId(string $localeId) {
+  /**
+   * @param string $localeId
+   */
+  public function setTargetLocaleId($localeId) {
     $this->set('targetLocaleId', $localeId);
   }
 
