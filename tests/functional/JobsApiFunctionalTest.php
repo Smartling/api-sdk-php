@@ -311,19 +311,12 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
     {
         try {
             $params = new JobProgressParameters();
-            $params->setTargetLocaleId('some_locale');
+            $params->setTargetLocaleId('fr');
 
             $result = $this->jobsApi->getJobProgress($this->jobId, $params);
 
-            $this->assertArrayHasKey('translationJobUid', $result);
             $this->assertArrayHasKey('contentProgressReport', $result);
-            $this->assertArrayHasKey('targetLocaleDescription', $result);
-            $this->assertArrayHasKey('targetLocaleId', $result);
-            $this->assertArrayHasKey('unauthorizedProgressReport', $result);
-            $this->assertArrayHasKey('percentComplete', $result);
-            $this->assertArrayHasKey('totalWordCount', $result);
-            $this->assertArrayHasKey('percentComplete', $result);
-            $this->assertArrayHasKey('workflowProgressReportList', $result);
+            $this->assertArrayHasKey('progress', $result);
         } catch (SmartlingApiException $e) {
             $this->fail($e->getMessage());
         }
