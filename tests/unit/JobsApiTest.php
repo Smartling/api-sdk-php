@@ -4,7 +4,6 @@ namespace Smartling\Tests\Unit;
 
 use DateTime;
 use DateTimeZone;
-use Smartling\Exceptions\InvalidAccessTokenException;
 use Smartling\Jobs\JobsApi;
 use Smartling\Jobs\JobStatus;
 use Smartling\Jobs\Params\AddFileToJobParameters;

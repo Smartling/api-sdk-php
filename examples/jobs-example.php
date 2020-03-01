@@ -9,7 +9,6 @@
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
-use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Jobs\Params\AddFileToJobParameters;
 
 $longOpts = [
@@ -252,7 +251,7 @@ function searchJobDemo($authProvider, $projectId, $fileUri)
 }
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @param string $fileUri
@@ -280,7 +279,7 @@ function addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri)
 }
 
 /**
- * @param AuthApiInterface $authProvider
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $jobId
  * @return bool
@@ -305,10 +304,10 @@ function authorizeJobDemo($authProvider, $projectId, $jobId)
 }
 
 /**
- * @param AuthApiInterface $authProvider
- * @param string           $projectId
- * @param string           $jobId
- * @param string           $targetLocaleId
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @param string $jobId
+ * @param string $targetLocaleId
  * @return array
  */
 function getJobProgress($authProvider, $projectId, $jobId, $targetLocaleId)
@@ -340,7 +339,7 @@ function getJobProgress($authProvider, $projectId, $jobId, $targetLocaleId)
 }
 
 $fileUri = 'JobID1_en_fr.xml';
-$targetLocaleId = 'fr-CA';
+$targetLocaleId = 'fr';
 $jobs = listJobsDemo($authProvider, $projectId);
 $jobId = createJobDemo($authProvider, $projectId);
 $jobId = updateJobDemo($authProvider, $projectId, $jobId);
