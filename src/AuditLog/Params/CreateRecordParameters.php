@@ -23,7 +23,7 @@ class CreateRecordParameters extends BaseParameters
             throw new InvalidArgumentException('Time value must be a timestamp.');
         }
 
-        $this->set('actionTime', \date('Y-m-d\TH:i:s\Z', $timeStamp));
+        $this->set('actionTime', \gmdate('Y-m-d\TH:i:s\Z', $timeStamp));
 
         return $this;
     }
