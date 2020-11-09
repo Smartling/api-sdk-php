@@ -22,12 +22,13 @@ class TranslationRequestsApi extends BaseApiAbstract
      * @param AuthApiInterface $authProvider
      * @param string $projectId
      * @param LoggerInterface $logger
+     * @param bool $debug
      *
      * @return TranslationRequestsApi
      */
-    public static function create(AuthApiInterface $authProvider, $projectId, $logger = null)
+    public static function create(AuthApiInterface $authProvider, $projectId, $logger = null, $debug = false)
     {
-        $client = static::initializeHttpClient(static::ENDPOINT_URL);
+        $client = static::initializeHttpClient(static::ENDPOINT_URL, $debug);
 
         $instance = new self($projectId, $client, $logger, static::ENDPOINT_URL);
         $instance->setAuth($authProvider);

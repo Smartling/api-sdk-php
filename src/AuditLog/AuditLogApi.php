@@ -29,10 +29,10 @@ class AuditLogApi extends BaseApiAbstract
         $this->setBaseUrl(\rtrim($service_url, '/'));
     }
 
-    public static function create(AuthApiInterface $authProvider, $projectId, LoggerInterface $logger = null)
+    public static function create(AuthApiInterface $authProvider, $projectId, LoggerInterface $logger = null, $debug = false)
     {
 
-        $client = self::initializeHttpClient(self::ENDPOINT_URL);
+        $client = self::initializeHttpClient(self::ENDPOINT_URL, $debug);
 
         $instance = new self($projectId, $client, $logger, self::ENDPOINT_URL);
         $instance->setAuth($authProvider);

@@ -53,7 +53,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'actionTime' => '2009-02-13T23:31:30Z',
+                    'actionTime' => '2009-02-14T01:31:30Z',
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
                     'fileUid' => 'file_uid',
@@ -126,7 +126,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'actionTime' => '2009-02-13T23:31:30Z',
+                    'actionTime' => '2009-02-14T01:31:30Z',
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
                     'fileUid' => 'file_uid',

@@ -27,13 +27,14 @@ class FileApi extends BaseApiAbstract
      * @param AuthApiInterface $authProvider
      * @param string $projectId
      * @param LoggerInterface $logger
+     * @param bool $debug
      *
      * @return FileApi
      */
-    public static function create(AuthApiInterface $authProvider, $projectId, $logger = null)
+    public static function create(AuthApiInterface $authProvider, $projectId, $logger = null, $debug = false)
     {
 
-        $client = self::initializeHttpClient(self::ENDPOINT_URL);
+        $client = self::initializeHttpClient(self::ENDPOINT_URL, $debug);
 
         $instance = new self($projectId, $client, $logger, self::ENDPOINT_URL);
         $instance->setAuth($authProvider);

@@ -34,12 +34,13 @@ class ProgressTrackerApi extends BaseApiAbstract
      * @param AuthApiInterface $authProvider
      * @param string $projectId
      * @param LoggerInterface $logger
+     * @param bool $debug
      *
      * @return ProgressTrackerApi
      */
-    public static function create(AuthApiInterface $authProvider, $projectId, $logger = null)
+    public static function create(AuthApiInterface $authProvider, $projectId, $logger = null, $debug = false)
     {
-        $client = static::initializeHttpClient(self::ENDPOINT_URL);
+        $client = static::initializeHttpClient(self::ENDPOINT_URL, $debug);
 
         $instance = new self($projectId, $client, $logger, self::ENDPOINT_URL);
         $instance->setAuth($authProvider);

@@ -97,12 +97,13 @@ class AuthTokenProvider extends BaseApiAbstract implements AuthApiInterface
      * @param string $userIdentifier
      * @param string $secretKey
      * @param LoggerInterface $logger
+     * @param bool $debug
      *
      * @return AuthTokenProvider
      */
-    public static function create($userIdentifier, $secretKey, $logger = null)
+    public static function create($userIdentifier, $secretKey, $logger = null, $debug = false)
     {
-        $client = self::initializeHttpClient(self::ENDPOINT_URL);
+        $client = self::initializeHttpClient(self::ENDPOINT_URL, $debug);
 
         return new self($userIdentifier, $secretKey, $client, $logger);
     }

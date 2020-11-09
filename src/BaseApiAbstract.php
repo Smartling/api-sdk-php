@@ -5,8 +5,10 @@ namespace Smartling;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
@@ -23,7 +25,7 @@ abstract class BaseApiAbstract
 
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
-    const CLIENT_LIB_ID_VERSION = '3.8.1';
+    const CLIENT_LIB_ID_VERSION = '3.8.2';
 
     const CLIENT_USER_AGENT_EXTENSION = '(no extensions)';
 
@@ -462,6 +464,20 @@ abstract class BaseApiAbstract
      */
     protected function sendRequest($uri, array $options, $method, $returnRawResponseBody = false)
     {
+        $config = $this->getHttpClient()->getConfig();
+        $debug = $config["debug"];
+        $handlerStack = $config["handler"];
+
+        if ($debug) {
+            $handlerStack->push(
+                Middleware::mapRequest(function(RequestInterface $request) {
+                    echo var_export((string) $request->getBody(), true) . PHP_EOL;
+
+                    return $request;
+                }
+            ));
+        }
+
         $endpoint = $this->normalizeUri($uri);
 
         // Dump full request data to log except sensitive data.
