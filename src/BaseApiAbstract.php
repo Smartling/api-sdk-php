@@ -5,6 +5,7 @@ namespace Smartling;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp;
 use Psr\Log\LoggerInterface;
@@ -232,28 +233,33 @@ abstract class BaseApiAbstract
     /**
      * @param string $serviceUrl
      * @param bool $debug
+     * @param HandlerStack|null $handler
      *
      * @return Client
      */
-    protected static function initializeHttpClient($serviceUrl, $debug = false)
+    public static function initializeHttpClient($serviceUrl, $debug = false, $handler = null)
     {
-        $client = new Client(
-            [
-                'base_uri' => $serviceUrl,
-                'debug' => $debug,
-                'headers' => [
-                    'User-Agent' => \vsprintf(
-                        '%s/%s %s %s',
-                        [
-                            self::getCurrentClientId(),
-                            self::getCurrentClientVersion(),
-                            self::getCurrentClientUserAgentExtension(),
-                            GuzzleHttp\default_user_agent()
-                        ]
-                    ),
-                ],
-            ]
-        );
+        $config = [
+            'base_uri' => $serviceUrl,
+            'debug' => $debug,
+            'headers' => [
+                'User-Agent' => \vsprintf(
+                    '%s/%s %s %s',
+                    [
+                        self::getCurrentClientId(),
+                        self::getCurrentClientVersion(),
+                        self::getCurrentClientUserAgentExtension(),
+                        GuzzleHttp\default_user_agent()
+                    ]
+                ),
+            ],
+        ];
+
+        if ($handler instanceof HandlerStack) {
+          $config['handler'] = $handler;
+        }
+
+        $client = new Client($config);
 
         return $client;
     }
