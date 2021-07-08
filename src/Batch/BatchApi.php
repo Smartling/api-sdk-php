@@ -114,17 +114,24 @@ class BatchApi extends BaseApiAbstract
      * Execute batch.
      *
      * @param $batchUid
+     * @param array $localeWorkflows
      *
      * @return bool
      *
      * @throws SmartlingApiException
      */
-    public function executeBatch($batchUid)
+    public function executeBatch($batchUid, array $localeWorkflows = [])
     {
         $endpoint = \vsprintf('batches/%s', [$batchUid]);
-        $requestData = $this->getDefaultRequestData('json', [
+        $params = [
           'action' => self::ACTION_EXECUTE,
-        ]);
+        ];
+
+        if ($localeWorkflows) {
+          $params['localeWorkflows'] = $localeWorkflows;
+        }
+
+        $requestData = $this->getDefaultRequestData('json', $params);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
     }
