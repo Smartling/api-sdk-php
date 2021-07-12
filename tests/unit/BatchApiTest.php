@@ -3,6 +3,7 @@
 namespace Smartling\Tests\Unit;
 use Smartling\Batch\BatchApi;
 use Smartling\Batch\Params\CreateBatchParameters;
+use Smartling\Batch\Params\ExecuteBatchParameters;
 use Smartling\File\Params\UploadFileParameters;
 
 /**
@@ -178,6 +179,11 @@ class BatchApiTest extends ApiTestAbstract
     public function testExecuteBatch() {
         $batchId = 'test_batch_id';
 
+        $params = new ExecuteBatchParameters();
+        $params
+          ->addLocaleWorkflowPair('fr-FR', 'test_wf_uid_1')
+          ->addLocaleWorkflowPair('de-DE', 'test_wf_uid_2');
+
         $endpointUrl = \vsprintf('%s/%s/batches/%s', [
             BatchApi::ENDPOINT_URL,
             $this->projectId,
@@ -202,7 +208,7 @@ class BatchApiTest extends ApiTestAbstract
             ])
             ->willReturn($this->responseMock);
 
-        $this->object->executeBatch($batchId);
+        $this->object->executeBatch($batchId, $params);
     }
 
     /**

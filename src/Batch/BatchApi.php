@@ -6,6 +6,7 @@ use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Batch\Params\CreateBatchParameters;
+use Smartling\Batch\Params\ExecuteBatchParameters;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\Params\UploadFileParameters;
 
@@ -114,24 +115,19 @@ class BatchApi extends BaseApiAbstract
      * Execute batch.
      *
      * @param $batchUid
-     * @param array $localeWorkflows
+     * @param ExecuteBatchParameters $parameters
      *
      * @return bool
      *
      * @throws SmartlingApiException
      */
-    public function executeBatch($batchUid, array $localeWorkflows = [])
+    public function executeBatch($batchUid, ExecuteBatchParameters $parameters = null)
     {
         $endpoint = \vsprintf('batches/%s', [$batchUid]);
-        $params = [
+
+        $requestData = $this->getDefaultRequestData('json', [
           'action' => self::ACTION_EXECUTE,
-        ];
-
-        if ($localeWorkflows) {
-          $params['localeWorkflows'] = $localeWorkflows;
-        }
-
-        $requestData = $this->getDefaultRequestData('json', $params);
+        ] + (\is_null($parameters) ? [] : $parameters->exportToArray()));
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
     }

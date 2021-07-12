@@ -11,6 +11,7 @@
 
 use Smartling\Batch\BatchApi;
 use Smartling\Batch\Params\CreateBatchParameters;
+use Smartling\Batch\Params\ExecuteBatchParameters;
 use Smartling\File\Params\UploadFileParameters;
 
 $longOpts = [
@@ -128,10 +129,14 @@ function executeBatchDemo($authProvider, $projectId, $batchUid)
 
     $response = [];
     $batchApi = BatchApi::create($authProvider, $projectId);
+    $executeParameters = new ExecuteBatchParameters();
+    $executeParameters
+      ->addLocaleWorkflowPair('fr-FR', 'test_wf_uid_1')
+      ->addLocaleWorkflowPair('de-DE', 'test_wf_uid_2');
     $st = \microtime(true);
 
     try {
-        $response = $batchApi->executeBatch($batchUid);
+        $response = $batchApi->executeBatch($batchUid, $executeParameters);
     } catch (\Smartling\Exceptions\SmartlingApiException $e) {
         \var_dump($e->getErrors());
     }
