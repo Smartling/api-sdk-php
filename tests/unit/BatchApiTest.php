@@ -204,6 +204,16 @@ class BatchApiTest extends ApiTestAbstract
                 'exceptions' => FALSE,
                 'json' => [
                   'action' => BatchApi::ACTION_EXECUTE,
+                  'localeWorkflows' => [
+                    [
+                      'targetLocaleId' => 'fr-FR',
+                      'workflowUid' => 'test_wf_uid_1',
+                    ],
+                    [
+                      'targetLocaleId' => 'de-DE',
+                      'workflowUid' => 'test_wf_uid_2',
+                    ],
+                  ],
                 ],
             ])
             ->willReturn($this->responseMock);
