@@ -22,7 +22,7 @@ class AuditLogApiTest extends ApiTestAbstract
         );
 
         $createParams = (new CreateRecordParameters())
-            ->setActionTime(1234567890)
+            ->setActionTime(1234514051)
             ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
             ->setFileUid("file_uid")
@@ -53,7 +53,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'actionTime' => '2009-02-13T23:31:30Z',
+                    'actionTime' => '2009-02-13T10:34:11Z',
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
                     'fileUid' => 'file_uid',
@@ -95,7 +95,7 @@ class AuditLogApiTest extends ApiTestAbstract
         );
 
         $createParams = (new CreateRecordParameters())
-            ->setActionTime(1234567890)
+            ->setActionTime(1234514051)
             ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
             ->setFileUid("file_uid")
@@ -126,7 +126,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'actionTime' => '2009-02-13T23:31:30Z',
+                    'actionTime' => '2009-02-13T10:34:11Z',
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
                     'fileUid' => 'file_uid',
