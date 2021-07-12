@@ -10,6 +10,7 @@ use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\AddLocaleToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
+use Smartling\Jobs\Params\JobProgressParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
 use Smartling\Jobs\Params\SearchJobsParameters;
 use Smartling\Jobs\Params\UpdateJobParameters;
@@ -233,4 +234,18 @@ class JobsApi extends BaseApiAbstract
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
     }
 
+    /**
+     * Returns the status of a job
+     *
+     * @param string                $jobId      Job Id
+     * @param JobProgressParameters $parameters Job Progress parameters
+     * @return array
+     * @throws SmartlingApiException
+     */
+    public function getJobProgress($jobId, JobProgressParameters $parameters) {
+        $endpoint = \vsprintf('jobs/%s/progress', [$jobId]);
+        $requestData = $this->getDefaultRequestData('query', $parameters->exportToArray());
+
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
+    }
 }

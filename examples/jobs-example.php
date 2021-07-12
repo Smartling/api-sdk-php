@@ -303,7 +303,43 @@ function authorizeJobDemo($authProvider, $projectId, $jobId)
     echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
 }
 
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
+ * @param string $jobId
+ * @param string $targetLocaleId
+ * @return array
+ */
+function getJobProgress($authProvider, $projectId, $jobId, $targetLocaleId)
+{
+    echo "--- Retrieving job progress ---\n";
+
+    $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
+    $info = FALSE;
+    $progressParameters = new \Smartling\Jobs\Params\JobProgressParameters();
+    $progressParameters->setTargetLocaleId($targetLocaleId);
+    $st = \microtime(true);
+
+    try {
+        $info = $jobs->getJobProgress($jobId, $progressParameters);
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        \var_dump($e->getErrors());
+    }
+
+    $et = \microtime(true);
+    $time = $et - $st;
+
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
+
+    if (!empty($info)) {
+        \var_dump($info);
+    }
+
+    return $info;
+}
+
 $fileUri = 'JobID1_en_fr.xml';
+$targetLocaleId = 'fr';
 $jobs = listJobsDemo($authProvider, $projectId);
 $jobId = createJobDemo($authProvider, $projectId);
 $jobId = updateJobDemo($authProvider, $projectId, $jobId);
@@ -312,3 +348,4 @@ addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri);
 $job = searchJobDemo($authProvider, $projectId, $fileUri);
 authorizeJobDemo($authProvider, $projectId, $jobId);
 cancelJobDemo($authProvider, $projectId, $jobId);
+$jobProgress = getJobProgress($authProvider, $projectId, $jobId, $targetLocaleId);
