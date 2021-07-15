@@ -300,14 +300,14 @@ class ContextApi extends BaseApiAbstract implements Waitable
     /**
      * Update resource state.
      *
-     * @param $resourceId
+     * @param string $resourceId
      * @param UpdateResourceStateParameters $params
      * @return bool
      * @throws SmartlingApiException
      */
     public function updateResourceState($resourceId, UpdateResourceStateParameters $params)
     {
-        $endpoint = \vsprintf('resources/%s/state', $resourceId);
+        $endpoint = "resources/$resourceId/state";
         $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);

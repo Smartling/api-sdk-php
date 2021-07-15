@@ -11,6 +11,7 @@
  * Be sure you that dependencies are solved bu composer BEFORE running.
  */
 
+use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\UpdateResourceStateParameters;
 use Smartling\Context\Params\UploadContextParameters;
@@ -276,12 +277,12 @@ function uploadResourceDemo($authProvider, $projectId, $resourceId, $fileUri) {
 }
 
 /**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param AuthApiInterface $authProvider
  * @param string $projectId
  * @param string $resourceId
  * @return bool
  */
-function updateResourceStateDemo($authProvider, $projectId, $resourceId) {
+function updateResourceStateDemo(AuthApiInterface $authProvider, $projectId, $resourceId) {
     $response = FALSE;
     $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
     $st = \microtime(true);
