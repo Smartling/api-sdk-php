@@ -5,6 +5,7 @@ namespace Smartling\Tests;
 use Smartling\Context\ContextApi;
 use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\MissingResourcesParameters;
+use Smartling\Context\Params\UpdateResourceStateParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Tests\Unit\ApiTestAbstract;
 use Smartling\Context\Params\UploadResourceParameters;
@@ -357,6 +358,41 @@ class ContextApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $this->object->uploadResource($resourceId, $params);
+    }
+
+    /**
+     * @covers \Smartling\Context\ContextApi::updateResourceState
+     */
+    public function testUpdateResourceState() {
+        $resourceId = 'some_resource_id';
+        $params = new UpdateResourceStateParameters();
+        $params->setState(UpdateResourceStateParameters::STATE_FAILED);
+        $endpointUrl = \vsprintf('%s/%s/resources/%s/state', [
+            ContextApi::ENDPOINT_URL,
+            $this->projectId,
+            $resourceId,
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('put', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => \vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                    'X-SL-Context-Source' => $this->invokeMethod($this->object, 'getXSLContextSourceHeader'),
+                ],
+                'exceptions' => FALSE,
+                'json' => [
+                    'state' => UpdateResourceStateParameters::STATE_FAILED
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->object->updateResourceState($resourceId, $params);
     }
 
     /**

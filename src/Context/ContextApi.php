@@ -7,6 +7,7 @@ use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\MissingResourcesParameters;
+use Smartling\Context\Params\UpdateResourceStateParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
 use Smartling\Exceptions\SmartlingApiException;
@@ -294,6 +295,22 @@ class ContextApi extends BaseApiAbstract implements Waitable
         $requestData = $this->getDefaultRequestData('form_params', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
+    }
+
+    /**
+     * Update resource state.
+     *
+     * @param $resourceId
+     * @param UpdateResourceStateParameters $params
+     * @return bool
+     * @throws SmartlingApiException
+     */
+    public function updateResourceState($resourceId, UpdateResourceStateParameters $params)
+    {
+        $endpoint = \vsprintf('resources/%s/state', $resourceId);
+        $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
+
+        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
     }
 
 }

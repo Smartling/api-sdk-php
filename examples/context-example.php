@@ -12,6 +12,7 @@
  */
 
 use Smartling\Context\Params\MatchContextParameters;
+use Smartling\Context\Params\UpdateResourceStateParameters;
 use Smartling\Context\Params\UploadContextParameters;
 use Smartling\Context\Params\UploadResourceParameters;
 
@@ -277,6 +278,37 @@ function uploadResourceDemo($authProvider, $projectId, $resourceId, $fileUri) {
 /**
  * @param \Smartling\AuthApi\AuthApiInterface $authProvider
  * @param string $projectId
+ * @param string $resourceId
+ * @return bool
+ */
+function updateResourceStateDemo($authProvider, $projectId, $resourceId) {
+    $response = FALSE;
+    $context = \Smartling\Context\ContextApi::create($authProvider, $projectId);
+    $st = \microtime(true);
+
+    try {
+        $params = new UpdateResourceStateParameters();
+        $params->setState(UpdateResourceStateParameters::STATE_FAILED);
+        $response = $context->updateResourceState($resourceId, $params);
+    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
+        \var_dump($e->getErrors());
+    }
+
+    $et = \microtime(TRUE);
+    $time = $et - $st;
+
+    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
+
+    if (!empty($response)) {
+        \var_dump($response);
+    }
+
+    return $response;
+}
+
+/**
+ * @param \Smartling\AuthApi\AuthApiInterface $authProvider
+ * @param string $projectId
  * @param string $contextUid
  * @return array
  */
@@ -311,4 +343,5 @@ $matchStatus = getMatchStatusDemo($authProvider, $projectId, $response['matchId'
 $missingResources = getMissingResources($authProvider, $projectId);
 $allMissingResources = getAllMissingResourcesDemo($authProvider, $projectId);
 $uploadedResourceResponse = uploadResourceDemo($authProvider, $projectId, '[resource_id]', '../tests/resources/test.png');
+$uploadedResourceResponse = updateResourceStateDemo($authProvider, $projectId, '[resource_id]');
 $response = renderContextDemo($authProvider, $projectId, $contextInfo['contextUid']);
