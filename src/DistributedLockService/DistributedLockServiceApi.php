@@ -29,12 +29,19 @@ class DistributedLockServiceApi extends BaseApiAbstract
     /**
      * @param string $key
      * @param float|int $ttlSeconds
+     * @param float|int $timeoutSeconds -1 means "do not try to acquire lock again and fail immediately"
+     * @param float|int $waitSeconds -1 means "do not try to acquire lock again and fail immediately"
      * @return \DateTime lock release time
      * @throws SmartlingApiException
      */
-    public function acquireLock($key, $ttlSeconds)
+    public function acquireLock($key, $ttlSeconds, $timeoutSeconds = -1, $waitSeconds = -1)
     {
-        $result = $this->sendRequest('locks', $this->getDefaultRequestData('json', ['key' => $key, 'ttl' => $ttlSeconds * 1000]), self::HTTP_METHOD_POST);
+        $result = $this->sendRequest('locks', $this->getDefaultRequestData('json', [
+            'key' => $key,
+            'timeout' => $timeoutSeconds * 1000,
+            'ttl' => $ttlSeconds * 1000,
+            'wait' => $waitSeconds * 1000,
+        ]), self::HTTP_METHOD_POST);
         return new \DateTime($result['releaseTime']);
     }
 
