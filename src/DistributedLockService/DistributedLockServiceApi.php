@@ -45,7 +45,7 @@ class DistributedLockServiceApi extends BaseApiAbstract
      */
     public function releaseLock($key)
     {
-        $this->sendRequest('locks', $this->getDefaultRequestData('json', ['key' => $key]), self::HTTP_METHOD_DELETE);
+        $this->sendRequest("locks/$key", $this->getDefaultRequestData('json', []), self::HTTP_METHOD_DELETE);
     }
 
     /**
