@@ -25,11 +25,11 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $instance = FileApi::create($this->authProvider, 'test');
         $http_client = $this->invokeMethod($instance, 'getHttpClient');
 
-        $this->assertTrue(
+        $this->assertNotFalse(
             \strpos(
                 $http_client->getConfig()['headers']['User-Agent'],
-                'smartling-api-sdk-php/3.9.0 (no extensions) GuzzleHttp/6'
-            ) !== FALSE
+                'smartling-api-sdk-php/3.9.1 (no extensions) GuzzleHttp/6'
+            )
         );
     }
 
@@ -44,11 +44,11 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $instance = FileApi::create($this->authProvider, 'test');
         $http_client = $this->invokeMethod($instance, 'getHttpClient');
 
-        $this->assertTrue(
+        $this->assertNotFalse(
             \strpos(
                 $http_client->getConfig()['headers']['User-Agent'],
                 'php-connector/1.2.3 (no extensions) GuzzleHttp/6'
-            ) !== FALSE
+            )
         );
     }
 
@@ -64,11 +64,11 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $instance = FileApi::create($this->authProvider, 'test');
         $http_client = $this->invokeMethod($instance, 'getHttpClient');
 
-        $this->assertTrue(
+        $this->assertNotFalse(
             \strpos(
                 $http_client->getConfig()['headers']['User-Agent'],
                 'php-connector/1.2.3 dependency-1/version-1 dependency-2/version-2 GuzzleHttp/6'
-            ) !== FALSE
+            )
         );
     }
 }
