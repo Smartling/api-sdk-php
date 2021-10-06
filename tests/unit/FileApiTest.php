@@ -120,7 +120,7 @@ class FileApiTest extends ApiTestAbstract
                     ],
                     [
                         'name' => 'smartling.client_lib_id',
-                        'contents' => '{"client":"smartling-api-sdk-php","version":"3.9.0"}',
+                        'contents' => '{"client":"smartling-api-sdk-php","version":"3.9.1"}',
                     ],
                     [
                         'name' => 'localeIdsToAuthorize[]',
@@ -148,7 +148,7 @@ class FileApiTest extends ApiTestAbstract
 
         $params = new UploadFileParameters();
         $params->setAuthorized(true);
-        $params->setLocalesToApprove('es');
+        $params->setLocalesToApprove(['es']);
         $params->setNamespace('namespace_for_deduplication');
 
         $this->object->uploadFile('tests/resources/test.xml', 'test.xml', 'xml', $params);
@@ -171,7 +171,7 @@ class FileApiTest extends ApiTestAbstract
         $exportedSettings = $fileUploadParams->exportToArray();
         $this->assertEquals($exportedSettings['authorize'], true);
 
-        $fileUploadParams->setLocalesToApprove('locale');
+        $fileUploadParams->setLocalesToApprove(['locale']);
 
         $fileUploadParams->setAuthorized(false);
         $exportedSettings = $fileUploadParams->exportToArray();
