@@ -28,7 +28,7 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $this->assertNotFalse(
             \strpos(
                 $http_client->getConfig()['headers']['User-Agent'],
-                'smartling-api-sdk-php/3.9.1 (no extensions) GuzzleHttp/6'
+                'smartling-api-sdk-php/3.9.2 (no extensions) GuzzleHttp/6'
             )
         );
     }

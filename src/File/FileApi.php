@@ -2,6 +2,7 @@
 
 namespace Smartling\File;
 
+use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
@@ -60,12 +61,20 @@ class FileApi extends BaseApiAbstract
     }
 
     /**
-     * {@inheritdoc}
-     *
      * FileAPI requires [] syntax for array values in query string.
      */
-    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false) {
+    protected function getDefaultRequestData($parametersType, $parameters, $auth = true, $httpErrors = false, $tolerateOutdated = true) {
         $options = parent::getDefaultRequestData($parametersType, $parameters, $auth, $httpErrors);
+
+        if ($tolerateOutdated) {
+            $useSecondaryDbHeaderName = 'X-SL-UseSecondaryDB';
+            if (array_key_exists(RequestOptions::HEADERS, $options)) {
+                $options[RequestOptions::HEADERS][$useSecondaryDbHeaderName] = 'true';
+            } else {
+                $options[RequestOptions::HEADERS] = [$useSecondaryDbHeaderName => 'true'];
+            }
+        }
+
         $queryStringAsStringNeeded = false;
 
         if ($parametersType == 'query') {
@@ -222,43 +231,30 @@ class FileApi extends BaseApiAbstract
      *   A locale identifier as specified in project setup.
      * @param ParameterInterface $params
      *   Additional parameters that might be added later
+     * @param bool $tolerateOutdated if true, API might sometimes return slightly outdated data
      *
      * @return array Data about request file.
      * Data about request file.
      * @throws SmartlingApiException
      * @see http://docs.smartling.com/pages/API/FileAPI/Status/
      */
-    public function getStatus($fileUri, $locale, ParameterInterface $params = null)
+    public function getStatus($fileUri, $locale, ParameterInterface $params = null, $tolerateOutdated = true)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData('query', $params);
+        $requestData = $this->getDefaultRequestData('query', $params, true, false, $tolerateOutdated);
 
         return $this->sendRequest("locales/$locale/file/status", $requestData, self::HTTP_METHOD_GET);
     }
 
     /**
-     * Retrieves status about file translation progress for all locales.
-     *
-     * @param string $fileUri
-     *   Value that uniquely identifies the file.
-     * @param ParameterInterface $params
-     *   Additional parameters that might be added later
-     *
-     * @return array Data about request file.
-     * Data about request file.
+     * @see getStatusAllLocales()
      * @throws SmartlingApiException
-     * @see http://docs.smartling.com/pages/API/v2/FileAPI/Status/All-Locales/
      */
-    public function getStatusForAllLocales($fileUri, ParameterInterface $params = null)
+    public function getStatusForAllLocales($fileUri, ParameterInterface $params = null, $tolerateOutdated = true)
     {
-        $params = (\is_null($params)) ? [] : $params->exportToArray();
-        $params['fileUri'] = $fileUri;
-
-        $requestData = $this->getDefaultRequestData('query', $params);
-
-        return $this->sendRequest("/file/status", $requestData, self::HTTP_METHOD_GET);
+        return $this->getStatusAllLocales($fileUri, $params, $tolerateOutdated);
     }
 
     /**
@@ -433,20 +429,21 @@ class FileApi extends BaseApiAbstract
     }
 
     /**
-     * retrieve all statuses about file translations progress
+     * Retrieves status about file translation progress for all locales.
      *
-     * @param                    $fileUri
-     * @param ParameterInterface $params
+     * @param string $fileUri value that uniquely identifies the file.
+     * @param ParameterInterface $params not used
+     * @param bool $tolerateOutdated if true, API might sometimes return slightly outdated data
      *
-     * @return array
+     * @return array Data about request file.
      * @throws SmartlingApiException
      */
-    public function getStatusAllLocales($fileUri, ParameterInterface $params = null)
+    public function getStatusAllLocales($fileUri, ParameterInterface $params = null, $tolerateOutdated = true)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData('query', $params);
+        $requestData = $this->getDefaultRequestData('query', $params, $tolerateOutdated);
 
         return $this->sendRequest('file/status', $requestData, self::HTTP_METHOD_GET);
     }
@@ -457,16 +454,17 @@ class FileApi extends BaseApiAbstract
      *
      * @param string $fileUri
      * @param ParameterInterface $params
+     * @param bool $tolerateOutdated if true, API might sometimes return slightly outdated data.
      *
      * @return array
      * @throws SmartlingApiException
      */
-    public function getLastModified($fileUri, ParameterInterface $params = null)
+    public function getLastModified($fileUri, ParameterInterface $params = null, $tolerateOutdated = true)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
 
-        $requestData = $this->getDefaultRequestData('query', $params);
+        $requestData = $this->getDefaultRequestData('query', $params, true, false, $tolerateOutdated);
 
         return $this->sendRequest('file/last-modified', $requestData, self::HTTP_METHOD_GET);
     }
@@ -477,6 +475,7 @@ class FileApi extends BaseApiAbstract
      *   Value that uniquely identifies the uploaded file. This ID can be used to
      *   request the file back.
      * @param ParameterInterface $params
+     * @param bool $tolerateOutdated if true, API might sometimes return slightly outdated data
      * @return array
      *   Data about uploaded file.
      *
@@ -484,9 +483,9 @@ class FileApi extends BaseApiAbstract
      *
      * @see http://docs.smartling.com/pages/API/v2/FileAPI/Last-Modified/All-Locales/
      */
-    public function lastModified($fileUri, ParameterInterface $params = null)
+    public function lastModified($fileUri, ParameterInterface $params = null, $tolerateOutdated = true)
     {
-        $result = $this->getLastModified($fileUri, $params);
+        $result = $this->getLastModified($fileUri, $params, $tolerateOutdated);
 
         if (!\is_array($result) || !\array_key_exists('items', $result) || !\is_array($result['items'])) {
             throw new SmartlingApiException(\vsprintf(
