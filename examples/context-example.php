@@ -340,7 +340,7 @@ function renderContextDemo($authProvider, $projectId, $contextUid)
 $contextInfo = uploadContextDemo($authProvider, $projectId, '../tests/resources/context.html');
 $response = matchContextDemo($authProvider, $projectId, $contextInfo['contextUid'], 'your/content/file.xml');
 $response = uploadAndMatchContextDemo($authProvider, $projectId, '../tests/resources/context.html', 'your/content/file.xml');
-$matchStatus = getMatchStatusDemo($authProvider, $projectId, $response['matchId']);
+$matchStatus = getMatchStatusDemo($authProvider, $projectId, $response['processUid']);
 $missingResources = getMissingResources($authProvider, $projectId);
 $allMissingResources = getAllMissingResourcesDemo($authProvider, $projectId);
 $uploadedResourceResponse = uploadResourceDemo($authProvider, $projectId, '[resource_id]', '../tests/resources/test.png');

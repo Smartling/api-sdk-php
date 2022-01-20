@@ -33,7 +33,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * @throws SmartlingApiException
      */
     public function wait(array $data) {
-        if (!empty($data['matchId'])) {
+        if (!empty($data['processUid'])) {
             $start_time = \time();
 
             do {
@@ -45,9 +45,9 @@ class ContextApi extends BaseApiAbstract implements Waitable
 
                 \sleep(1);
 
-                $result = $this->getMatchStatus($data['matchId']);
+                $result = $this->getMatchStatus($data['processUid']);
             }
-            while ($result['status'] != 'COMPLETED');
+            while ($result['processState'] != 'COMPLETED');
         }
     }
 
@@ -198,12 +198,12 @@ class ContextApi extends BaseApiAbstract implements Waitable
     /**
      * Get context match status.
      *
-     * @param $matchId
+     * @param $processUid
      * @return array
      * @throws SmartlingApiException
      */
-    public function getMatchStatus($matchId) {
-        $endpoint = \vsprintf('/match/%s', $matchId);
+    public function getMatchStatus($processUid) {
+        $endpoint = \vsprintf('/processes/%s', $processUid);
         $requestData = $this->getDefaultRequestData('query', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);

@@ -262,7 +262,7 @@ class ContextApiTest extends ApiTestAbstract
      */
     public function testGetMatchStatus() {
         $matchId = 'test_match_id';
-        $endpointUrl = \vsprintf('%s/%s/match/%s', [
+        $endpointUrl = \vsprintf('%s/%s/processes/%s', [
             ContextApi::ENDPOINT_URL,
             $this->projectId,
             $matchId,
