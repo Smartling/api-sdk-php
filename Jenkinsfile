@@ -4,7 +4,7 @@ pipeline {
   stages {
     stage('Run tests') {
       steps {
-        sh "docker run --rm -w \"${WORKSPACE}\" -v \"${WORKSPACE}:/${WORKSPACE}\" composer/composer install"
+        sh "docker run --rm -w \"${WORKSPACE}\" -v \"${WORKSPACE}:/${WORKSPACE}\" composer install"
         sh "docker run --rm -w \"${WORKSPACE}\" -e account_uid=${params.ACCOUNT_UID} -e project_id=${params.PROJECT_ID} -e user_id=${params.USER_ID} -e user_key=${params.USER_KEY} -v \"${WORKSPACE}:/${WORKSPACE}\" phpunit/phpunit:4.8.5 --log-junit tests-result.xml --coverage-clover tests-clover.xml --debug --verbose"
       }
     }
