@@ -4,7 +4,7 @@ namespace Smartling\Tests\Functional;
 
 use DateTime;
 use DateTimeZone;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\FileApi;
@@ -21,7 +21,7 @@ use Smartling\Jobs\Params\UpdateJobParameters;
 /**
  * Test class for Jobs API examples.
  */
-class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
+class JobsApiFunctionalTest extends TestCase
 {
 
     /**
@@ -42,7 +42,7 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
     /**
      * Test mixture.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');
@@ -67,7 +67,7 @@ class JobsApiFunctionalTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         try {
             $this->cancelJob($this->jobId);

@@ -2,13 +2,14 @@
 
 namespace Smartling\Tests\Unit;
 
+use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\TranslationRequests\Params\CreateTranslationRequestParams;
 use Smartling\TranslationRequests\Params\SearchTranslationRequestParams;
 use Smartling\TranslationRequests\Params\UpdateTranslationRequestParams;
 use Smartling\TranslationRequests\TranslationRequestsApi;
 
-class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
+class TranslationRequestsApiFunctionalTest extends TestCase
 {
     const BUCKET_NAME = 'tst-bucket';
 
@@ -20,7 +21,7 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
     /**
      * Test mixture.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');

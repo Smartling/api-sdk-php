@@ -3,7 +3,7 @@
 namespace Smartling\Tests\Functional;
 
 use GuzzleHttp\Psr7\Stream;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\FileApi;
@@ -14,7 +14,7 @@ use Smartling\File\Params\ListFilesParameters;
 /**
  * Test class for File API examples.
  */
-class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
+class FileApiFunctionalTest extends TestCase
 {
 
     /**
@@ -65,7 +65,7 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
     /**
      * Reset all files in Smartling after tests.
      */
-    public static function tearDownAfterClass() {
+    public static function tearDownAfterClass(): void {
         $authProvider = AuthTokenProvider::create(\getenv('user_id'), \getenv('user_key'));
         $fileApi = FileApi::create($authProvider, \getenv('project_id'));
 
@@ -82,7 +82,7 @@ class FileApiFunctionalTest extends PHPUnit_Framework_TestCase
     /**
      * Test mixture.
      */
-    public function setUp() {
+    public function setUp(): void {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');
         $userSecretKey = \getenv('user_key');

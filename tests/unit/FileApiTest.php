@@ -2,6 +2,7 @@
 
 namespace Smartling\Tests\Unit;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Smartling\File\FileApi;
 use Smartling\File\Params\DownloadFileParameters;
 use Smartling\File\Params\DownloadMultipleFilesParameters;
@@ -41,7 +42,7 @@ class FileApiTest extends ApiTestAbstract
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->prepareHttpClientMock();
         $this->prepareAuthProviderMock();
@@ -1141,7 +1142,7 @@ class FileApiTest extends ApiTestAbstract
         $validFilePath = './tests/resources/test.xml';
 
         /**
-         * @var \PHPUnit_Framework_MockObject_MockObject|\Smartling\File\FileApi
+         * @var \MockObject|FileApi
          */
         $fileApi = $this->getMockBuilder('Smartling\\File\\FileApi')
             ->setConstructorArgs([$this->projectId, $this->client])
@@ -1164,7 +1165,7 @@ class FileApiTest extends ApiTestAbstract
         $invalidFilePath = 'unexisted';
 
         /**
-         * @var \PHPUnit_Framework_MockObject_MockObject|\Smartling\File\FileApi
+         * @var MockObject|FileApi
          */
         $fileApi = $this->getMockBuilder('Smartling\\File\\FileApi')
             ->setConstructorArgs([$this->projectId, $this->client])

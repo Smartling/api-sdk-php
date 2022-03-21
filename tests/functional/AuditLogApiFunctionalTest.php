@@ -2,19 +2,19 @@
 
 namespace Smartling\Tests\Functional;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Smartling\AuditLog\AuditLogApi;
 use Smartling\AuditLog\Params\CreateRecordParameters;
 use Smartling\AuditLog\Params\SearchRecordParameters;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
 
-class AuditLogApiFunctionalTest extends PHPUnit_Framework_TestCase
+class AuditLogApiFunctionalTest extends TestCase
 {
 
     private $auditLogApi;
 
-    public function setUp()
+    public function setUp(): void
     {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');

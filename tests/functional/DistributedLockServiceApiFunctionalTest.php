@@ -2,16 +2,16 @@
 
 namespace Smartling\Tests\Functional;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\DistributedLockService\DistributedLockServiceApi;
 use Smartling\Exceptions\SmartlingApiException;
 
-class DistributedLockServiceApiFunctionalTest extends PHPUnit_Framework_TestCase
+class DistributedLockServiceApiFunctionalTest extends TestCase
 {
     private $api;
 
-    public function setUp() {
+    public function setUp(): void {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');
         $userSecretKey = \getenv('user_key');

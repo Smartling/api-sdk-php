@@ -238,7 +238,7 @@ class AuditLogApiTest extends ApiTestAbstract
         $this->object->searchAccountLevelLogRecord($accountUid, $createParams);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->prepareAuditLogApiMock();

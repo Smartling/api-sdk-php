@@ -7,7 +7,7 @@ use Smartling\File\FileApi;
 
 class BaseApiAbstractTest extends ApiTestAbstract
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

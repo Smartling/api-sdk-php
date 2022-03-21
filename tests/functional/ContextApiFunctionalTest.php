@@ -2,18 +2,17 @@
 
 namespace Smartling\Tests\Functional;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\UploadContextParameters;
-use Smartling\Context\Params\UploadResourceParameters;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Context\ContextApi;
 
 /**
  * Test class for Project API examples.
  */
-class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
+class ContextApiFunctionalTest extends TestCase
 {
 
     /**
@@ -24,7 +23,7 @@ class ContextApiFunctionalTest extends PHPUnit_Framework_TestCase
     /**
      * Test mixture.
      */
-    public function setUp() {
+    public function setUp(): void {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');
         $userSecretKey = \getenv('user_key');
