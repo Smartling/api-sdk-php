@@ -203,7 +203,7 @@ abstract class ApiTestAbstract extends TestCase
 
     protected function prepareAuthProviderMock()
     {
-        $this->authProvider = $this->getMockBuilder('\Smartling\AuthApi\AuthApiInterface')
+        $this->authProvider = $this->getMockBuilder(AuthTokenProvider::class)
             ->setMethods(
                 [
                     'getAccessToken',
@@ -241,10 +241,13 @@ abstract class ApiTestAbstract extends TestCase
                         self::JSON_OBJECT_AS_ARRAY
                     )
                 );
+            $stream = $this->createMock(StreamInterface::class);
+            $stream->method('read')->willReturn($this->validResponse);
+            $stream->method('__toString')->willReturn($this->validResponse);
 
             $this->responseMock->expects(self::any())
                 ->method('getBody')
-                ->willReturn($this->validResponse);
+                ->willReturn($stream);
         }
 
         $this->responseMock->expects($this->any())
@@ -258,6 +261,7 @@ abstract class ApiTestAbstract extends TestCase
      */
     protected function setUp(): void
     {
+        date_default_timezone_set('Europe/Kiev');
         $this->prepareHttpClientMock();
         $this->prepareAuthProviderMock();
         $this->prepareClientResponseMock();
