@@ -11,10 +11,6 @@
         </testsuite>
     </testsuites>
     <filter>
-        <blacklist>
-            <directory>./vendor</directory>
-            <file>./src/SmartlingApiException.php</file>
-        </blacklist>
         <whitelist>
             <directory suffix=".php">./src</directory>
         </whitelist>
