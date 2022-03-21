@@ -3,6 +3,7 @@
 namespace Smartling\Tests;
 
 use Smartling\AuthApi\AuthTokenProvider;
+use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Tests\Unit\ApiTestAbstract;
 
 /**
@@ -69,9 +70,6 @@ class AuthApiTest extends ApiTestAbstract
      *
      * AuthTokenProvider::sendRequest() - 401 - Invalid credentials.
      * [Some]Api::sendRequest() - 401 - expired access token.
-     *
-     * @expectedException Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage AuthProvider expected to be instance of AuthApiInterface, type given:NULL
      */
     public function testAuthenticateWithInvalidCredentials() {
         $response_mock = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
@@ -111,6 +109,8 @@ class AuthApiTest extends ApiTestAbstract
             ])
             ->getMock();
 
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('AuthProvider expected to be instance of AuthApiInterface, type given:NULL');
         $this->invokeMethod($auth_api_mock, 'authenticate');
     }
 

@@ -7,6 +7,7 @@ use Smartling\Context\Params\MatchContextParameters;
 use Smartling\Context\Params\MissingResourcesParameters;
 use Smartling\Context\Params\UpdateResourceStateParameters;
 use Smartling\Context\Params\UploadContextParameters;
+use Smartling\Exceptions\SmartlingApiException;
 use Smartling\Tests\Unit\ApiTestAbstract;
 use Smartling\Context\Params\UploadResourceParameters;
 
@@ -240,9 +241,6 @@ class ContextApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\Context\ContextApi::uploadAndMatchContext
-     *
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage When content is specified using the data:// protocol, name is a required request body field
      */
     public function testUploadAndMatchContextWithDataProtocolFailsWhenNoNameSupplied() {
         $fileUri = './tests/resources/context.html';
@@ -254,6 +252,8 @@ class ContextApiTest extends ApiTestAbstract
         $params->setContent(sprintf('data://text/html;base64,%s', base64_encode(file_get_contents($fileUri))));
         $params->setMatchParams($matchParams);
 
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('When content is specified using the data:// protocol, name is a required request body field');
         $this->object->uploadAndMatchContext($params);
     }
 

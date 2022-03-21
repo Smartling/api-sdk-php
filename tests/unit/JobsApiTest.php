@@ -495,12 +495,10 @@ class JobsApiTest extends ApiTestAbstract
         $this->object->checkAsynchronousProcessingStatus($jobId, $processId);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Callback method 'TEST' is not allowed. Allowed methods are: GET, POST.
-     */
     public function testCreateJobParametersSetCallbackMethodValidation()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Callback method 'TEST' is not allowed. Allowed methods are: GET, POST.");
         (new CreateJobParameters())->setCallbackMethod("TEST");
     }
 }

@@ -3,6 +3,7 @@
 namespace Smartling\Tests\Unit;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Smartling\Exceptions\SmartlingApiException;
 use Smartling\File\FileApi;
 use Smartling\File\Params\DownloadFileParameters;
 use Smartling\File\Params\DownloadMultipleFilesParameters;
@@ -193,13 +194,12 @@ class FileApiTest extends ApiTestAbstract
      * @dataProvider invalidFileUploadNamespaceParams
      *
      * @param mixed $invalidValue
-     *
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage Invalid namespace found, not a string or empty string
      */
     public function testFileUploadParamsNamespaceFailures($invalidValue)
     {
         $fileUploadParams = new UploadFileParameters();
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('Invalid namespace found, not a string or empty string');
         $fileUploadParams->setNamespace($invalidValue);
     }
 
@@ -411,7 +411,6 @@ class FileApiTest extends ApiTestAbstract
     /**
      * @covers       \Smartling\File\FileApi::downloadFile
      * @dataProvider downloadFileLocaleCheckSuccessParams
-     * @expectedException Smartling\Exceptions\SmartlingApiException
      *
      * @param $options
      * @param $locale
@@ -419,6 +418,7 @@ class FileApiTest extends ApiTestAbstract
     public function testDownloadFileLocaleCheckFails($options, $locale)
     {
         $this->prepareClientResponseMock();
+        $this->expectException(SmartlingApiException::class);
         $this->object->downloadFile('test.xml', $locale, $options);
     }
 
@@ -450,8 +450,6 @@ class FileApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\File\FileApi::lastModified
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage No data found for file test.xml.
      */
     public function testLastModifiedInvalidResponseNoDataFoundNoItems()
     {
@@ -467,13 +465,13 @@ class FileApiTest extends ApiTestAbstract
               ->method('getBody')
               ->willReturn($response);
 
+        $this->expectException(SmartlingApiException::class);
+        $this->expectErrorMessage('No data found for file test.xml.');
         $this->object->lastModified('test.xml');
     }
 
     /**
      * @covers \Smartling\File\FileApi::lastModified
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage No data found for file test.xml.
      */
     public function testLastModifiedInvalidResponseNoDataFoundItemsNotArray()
     {
@@ -489,13 +487,13 @@ class FileApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn($response);
 
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('No data found for file test.xml.');
         $this->object->lastModified('test.xml');
     }
 
     /**
      * @covers \Smartling\File\FileApi::lastModified
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage Can't parse formatted time string: test.
      */
     public function testLastModifiedInvalidResponseCantParseFormattedTimeString()
     {
@@ -511,13 +509,14 @@ class FileApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn($response);
 
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage("Can't parse formatted time string: test.");
+
         $this->object->lastModified('test.xml');
     }
 
     /**
      * @covers \Smartling\File\FileApi::lastModified
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage Property "lastModified" is not found.
      */
     public function testLastModifiedInvalidResponseLastModifiedIsNotSet()
     {
@@ -533,6 +532,8 @@ class FileApiTest extends ApiTestAbstract
             ->method('getBody')
             ->willReturn($response);
 
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('Property "lastModified" is not found.');
         $this->object->lastModified('test.xml');
     }
 
@@ -753,7 +754,6 @@ class FileApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\File\FileApi::sendRequest
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
      */
     public function testValidationErrorSendRequest()
     {
@@ -790,6 +790,7 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
+        $this->expectException(SmartlingApiException::class);
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
         $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
@@ -797,8 +798,6 @@ class FileApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\File\FileApi::sendRequest
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage Bad response format from Smartling
      */
     public function testBadJsonFormatSendRequest()
     {
@@ -835,6 +834,8 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('Bad response format from Smartling');
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
         $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
@@ -842,8 +843,6 @@ class FileApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\File\FileApi::sendRequest
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage Bad response format from Smartling
      */
     public function testBadJsonFormatInErrorMessageSendRequest()
     {
@@ -880,6 +879,8 @@ class FileApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $requestData = $this->invokeMethod($this->object, 'getDefaultRequestData', ['query', []]);
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('Bad response format from Smartling');
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
         $this->invokeMethod($this->object, 'sendRequest', ['context/html', $requestData, 'get']);
@@ -1155,9 +1156,6 @@ class FileApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\File\FileApi::readFile
-     *
-     * @expectedException \Smartling\Exceptions\SmartlingApiException
-     * @expectedExceptionMessage File unexisted was not able to be read.
      */
     public function testFailedReadFile()
     {
@@ -1173,6 +1171,8 @@ class FileApiTest extends ApiTestAbstract
 
         $stream = $this->invokeMethod($fileApi, 'readFile', [$invalidFilePath]);
 
+        $this->expectException(SmartlingApiException::class);
+        $this->expectExceptionMessage('File unexisted was not able to be read.');
         $this->assertEquals('stream', \get_resource_type($stream));
     }
 
