@@ -10,7 +10,7 @@ class DistributedLockServiceApiTest extends ApiTestAbstract
     public function testAcquireLock() {
         $endpointUrl = 'locks';
 
-        $responseMock = $this->getMock(Response::class);
+        $responseMock = $this->createMock(Response::class);
         $responseMock->method('getBody')
             ->willReturn('{"response":{"data":{"key":"test","releaseTime":"2019-10-01T12:22:00Z"},"code":"SUCCESS"}}');
 
@@ -31,7 +31,7 @@ class DistributedLockServiceApiTest extends ApiTestAbstract
     public function testReleaseLock() {
         $endpointUrl = 'locks/test';
 
-        $responseMock = $this->getMock(Response::class);
+        $responseMock = $this->createMock(Response::class);
         $responseMock->method('getBody')->willReturn('{"response":{"data":null,"code":"SUCCESS"}}');
 
         $this->setExpectations(
@@ -46,7 +46,7 @@ class DistributedLockServiceApiTest extends ApiTestAbstract
     public function testRenewLock() {
         $endpointUrl = 'locks/test';
 
-        $responseMock = $this->getMock(Response::class);
+        $responseMock = $this->createMock(Response::class);
         $responseMock->method('getBody')
             ->willReturn('{"response":{"data":{"key":"test","releaseTime":"2019-10-01T12:22:00Z"},"code":"SUCCESS"}}');
 
