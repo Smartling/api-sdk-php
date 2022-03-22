@@ -3,6 +3,7 @@
 namespace Smartling\Tests\Unit;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -265,5 +266,16 @@ abstract class ApiTestAbstract extends TestCase
         $this->prepareHttpClientMock();
         $this->prepareAuthProviderMock();
         $this->prepareClientResponseMock();
+    }
+
+    protected function getResponse(string $response, int $code = 200): ResponseInterface
+    {
+        $responseMock = $this->createMock(Response::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->method('__toString')->willReturn($response);
+        $responseMock->method('getBody')->willReturn($stream);
+        $responseMock->method('getStatusCode')->willReturn($code);
+
+        return $responseMock;
     }
 }

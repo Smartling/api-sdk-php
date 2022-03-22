@@ -24,7 +24,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
@@ -67,7 +67,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
         $params->setTtl($ttl);
         $params->setData($data);
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
@@ -107,7 +107,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('delete', $endpointUrl, [
                 'headers' => [
@@ -152,7 +152,7 @@ class ProgressTrackerApiTest extends ApiTestAbstract
         $params->setTtl($ttl);
         $params->setData($data);
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('put', $endpointUrl, [
                 'headers' => [

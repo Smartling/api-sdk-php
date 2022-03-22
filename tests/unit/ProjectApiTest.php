@@ -22,7 +22,7 @@ class ProjectApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [

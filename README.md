@@ -33,7 +33,7 @@ Run tests
 ---------
 `composer install`
 
-`project_id=project_id user_id=user_id user_key=user_key ./vendor/bin/phpunit`
+`account_uid=account_uid project_id=project_id user_id=user_id user_key=user_key ./vendor/bin/phpunit`
 
 Copyright and license
 ---------------------

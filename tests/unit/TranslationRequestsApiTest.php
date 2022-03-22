@@ -64,7 +64,6 @@ class TranslationRequestsApiTest extends ApiTestAbstract
      */
     public function testCreateTranslationRequest()
     {
-
         $createParams = (new CreateTranslationRequestParams())
             ->setOriginalAssetKey(['a' => '1'])
             ->setTitle('Submission 1')
@@ -96,7 +95,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->mockClientResponse(200, $testRawResponse);
+        $this->responseMock = $this->getResponse($testRawResponse);
 
         $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
 
@@ -130,7 +129,6 @@ class TranslationRequestsApiTest extends ApiTestAbstract
      */
     public function testUpdateTranslationRequest()
     {
-
         $translationRequestUid = '8264fd9133d3';
 
         $updateParams = (new UpdateTranslationRequestParams())->setTitle('Submission 2');
@@ -160,7 +158,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->mockClientResponse(200, $testRawResponse);
+        $this->responseMock = $this->getResponse($testRawResponse);
 
         $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
 
@@ -194,7 +192,6 @@ class TranslationRequestsApiTest extends ApiTestAbstract
      */
     public function testGetTranslationRequest()
     {
-
         $translationRequestUid = '8264fd9133d3';
 
         $testRawResponse = \json_encode(
@@ -222,7 +219,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             ]
         );
 
-        $this->mockClientResponse(200, $testRawResponse);
+        $this->responseMock =  $this->getResponse($testRawResponse);
 
         $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
 
@@ -400,7 +397,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
     {
         $testRawResponse = \json_encode($rawResponse);
 
-        $this->mockClientResponse(200, $testRawResponse);
+        $this->responseMock = $this->getResponse($testRawResponse);
 
         $testExpectedResponse = $rawResponse['response']['data'];
 

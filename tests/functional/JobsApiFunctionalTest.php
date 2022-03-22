@@ -76,43 +76,32 @@ class JobsApiFunctionalTest extends TestCase
         }
     }
 
-    /**
-     * Create job.
-     *
-     * @return string
-     */
-    private function createJob()
+    private function createJob(): string
     {
-        try {
-            $params = new CreateJobParameters();
-            $params->setName('Test Job Name ' . \time());
-            $params->setDescription('Test Job Description ' . \time());
-            $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2037-12-31 23:59:59', new DateTimeZone('UTC')));
-            $params->setTargetLocales(['es', 'fr']);
-            $result = $this->jobsApi->createJob($params);
+        $params = new CreateJobParameters();
+        $params->setName('Test Job Name ' . \time());
+        $params->setDescription('Test Job Description ' . \time());
+        $params->setDueDate(DateTime::createFromFormat('Y-m-d H:i:s', '2037-12-31 23:59:59', new DateTimeZone('UTC')));
+        $params->setTargetLocales(['es-ES', 'fr-FR']);
+        $result = $this->jobsApi->createJob($params);
 
-            $this->assertArrayHasKey('translationJobUid', $result);
-            $this->assertArrayHasKey('jobName', $result);
-            $this->assertArrayHasKey('targetLocaleIds', $result);
-            $this->assertArrayHasKey('description', $result);
-            $this->assertArrayHasKey('dueDate', $result);
-            $this->assertArrayHasKey('referenceNumber', $result);
-            $this->assertArrayHasKey('callbackUrl', $result);
-            $this->assertArrayHasKey('callbackMethod', $result);
-            $this->assertArrayHasKey('createdDate', $result);
-            $this->assertArrayHasKey('modifiedDate', $result);
-            $this->assertArrayHasKey('createdByUserUid', $result);
-            $this->assertArrayHasKey('modifiedByUserUid', $result);
-            $this->assertArrayHasKey('firstCompletedDate', $result);
-            $this->assertArrayHasKey('lastCompletedDate', $result);
-            $this->assertArrayHasKey('jobStatus', $result);
+        $this->assertArrayHasKey('translationJobUid', $result);
+        $this->assertArrayHasKey('jobName', $result);
+        $this->assertArrayHasKey('targetLocaleIds', $result);
+        $this->assertArrayHasKey('description', $result);
+        $this->assertArrayHasKey('dueDate', $result);
+        $this->assertArrayHasKey('referenceNumber', $result);
+        $this->assertArrayHasKey('callbackUrl', $result);
+        $this->assertArrayHasKey('callbackMethod', $result);
+        $this->assertArrayHasKey('createdDate', $result);
+        $this->assertArrayHasKey('modifiedDate', $result);
+        $this->assertArrayHasKey('createdByUserUid', $result);
+        $this->assertArrayHasKey('modifiedByUserUid', $result);
+        $this->assertArrayHasKey('firstCompletedDate', $result);
+        $this->assertArrayHasKey('lastCompletedDate', $result);
+        $this->assertArrayHasKey('jobStatus', $result);
 
-            $result = $result['translationJobUid'];
-        } catch (SmartlingApiException $e) {
-            $result = false;
-        }
-
-        return $result;
+        return $result['translationJobUid'];
     }
 
     /**

@@ -55,7 +55,9 @@ class TranslationRequestsApiFunctionalTest extends TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
     }
 
@@ -74,7 +76,9 @@ class TranslationRequestsApiFunctionalTest extends TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
 
         $translationRequestUid = $response['translationRequestUid'];
@@ -82,10 +86,11 @@ class TranslationRequestsApiFunctionalTest extends TestCase
         $updateParams = (new UpdateTranslationRequestParams())
             ->setTitle('Submission UPDATED');
 
-
         $updateResponse = $this->translationRequestsApi->updateTranslationRequest(self::BUCKET_NAME, $translationRequestUid, $updateParams);
 
-        self::assertArraySubset($updateParams->exportToArray(), $updateResponse);
+        foreach (array_keys($updateParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $updateResponse);
+        }
         self::assertArrayHasKey('translationRequestUid', $updateResponse);
         self::assertEquals($translationRequestUid, $updateResponse['translationRequestUid']);
     }
@@ -105,14 +110,18 @@ class TranslationRequestsApiFunctionalTest extends TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
 
         $translationRequestUid = $response['translationRequestUid'];
 
         $getResponsePositive = $this->translationRequestsApi->getTranslationRequest(self::BUCKET_NAME, $translationRequestUid);
 
-        self::assertArraySubset($createParams->exportToArray(), $getResponsePositive);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $getResponsePositive);
+        }
         self::assertArrayHasKey('translationRequestUid', $getResponsePositive);
     }
 
@@ -131,7 +140,9 @@ class TranslationRequestsApiFunctionalTest extends TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
 
         $translationRequestUid = $response['translationRequestUid'];
@@ -147,7 +158,7 @@ class TranslationRequestsApiFunctionalTest extends TestCase
         self::assertTrue(0 === \count($items));
 
         $searchResponse = $this->translationRequestsApi->searchTranslationRequests(self::BUCKET_NAME,
-            (new SearchTranslationRequestParams())->setFileUri(\vsprintf('%%%s%%', [$time]))
+            (new SearchTranslationRequestParams())->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
         );
 
         self::assertTrue(\is_array($searchResponse));
@@ -157,5 +168,4 @@ class TranslationRequestsApiFunctionalTest extends TestCase
         self::assertTrue(1 === \count($items));
         self::assertTrue($translationRequestUid === $items[0]['translationRequestUid']);
     }
-
 }

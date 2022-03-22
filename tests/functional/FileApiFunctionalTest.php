@@ -25,12 +25,12 @@ class FileApiFunctionalTest extends TestCase
     /**
      * @var string
      */
-    const FILE_NAME = 'test.xml';
+    const FILE_NAME = '/test.xml';
 
     /**
      * @var string
      */
-    const NEW_FILE_NAME = 'new_test.xml';
+    const NEW_FILE_NAME = '/new_test.xml';
 
     /**
      * @var string
@@ -185,8 +185,8 @@ class FileApiFunctionalTest extends TestCase
                 self::FILE_NAME
             ]);
             $params->setLocaleIds([
-                "fr",
-                "de"
+                "fr-FR",
+                "de-DE"
             ]);
             $params->setLocaleMode(DownloadMultipleFilesParameters::LOCALE_MODE_LOCALE_IN_NAME_AND_PATH);
             $params->setFileNameMode(DownloadMultipleFilesParameters::FILE_NAME_MODE_LOCALE_LAST);
@@ -295,6 +295,7 @@ class FileApiFunctionalTest extends TestCase
 
     /**
      * Test for renaming file.
+     * @depends testFileApiUploadFile
      */
     public function testFileApiRenameFile() {
         try {

@@ -122,7 +122,7 @@ class FileApiTest extends ApiTestAbstract
                     ],
                     [
                         'name' => 'smartling.client_lib_id',
-                        'contents' => '{"client":"smartling-api-sdk-php","version":"3.9.1"}',
+                        'contents' => '{"client":"smartling-api-sdk-php","version":"4.0.0"}',
                     ],
                     [
                         'name' => 'localeIdsToAuthorize[]',
@@ -221,11 +221,7 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testDownloadFile($options, $locale, $expected_translated_file)
     {
-        $this->prepareClientResponseMock(false);
-
-        $this->responseMock->expects($this->any())
-            ->method('getBody')
-            ->willReturn($expected_translated_file);
+        $this->responseMock = $this->getResponse($expected_translated_file);
 
         $endpointUrl = \vsprintf(
             '%s/%s/locales/%s/file',
@@ -453,17 +449,11 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testLastModifiedInvalidResponseNoDataFoundNoItems()
     {
-        $this->prepareClientResponseMock(false);
+        $this->responseMock = $this->getResponse('{"response":{"code":"SUCCESS","messages":[], "data":{}}}');
 
         $this->client->expects($this->once())
             ->method('request')
             ->willReturn($this->responseMock);
-
-        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{}}}';
-
-        $this->responseMock->expects(self::any())
-              ->method('getBody')
-              ->willReturn($response);
 
         $this->expectException(SmartlingApiException::class);
         $this->expectErrorMessage('No data found for file test.xml.');
@@ -475,17 +465,11 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testLastModifiedInvalidResponseNoDataFoundItemsNotArray()
     {
-        $this->prepareClientResponseMock(false);
+        $this->responseMock = $this->getResponse('{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": "not_array"}}}');
 
         $this->client->expects($this->once())
             ->method('request')
             ->willReturn($this->responseMock);
-
-        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": "not_array"}}}';
-
-        $this->responseMock->expects(self::any())
-            ->method('getBody')
-            ->willReturn($response);
 
         $this->expectException(SmartlingApiException::class);
         $this->expectExceptionMessage('No data found for file test.xml.');
@@ -497,17 +481,11 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testLastModifiedInvalidResponseCantParseFormattedTimeString()
     {
-        $this->prepareClientResponseMock(false);
+        $this->responseMock = $this->getResponse('{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "test"}]}}}');
 
         $this->client->expects($this->once())
             ->method('request')
             ->willReturn($this->responseMock);
-
-        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "test"}]}}}';
-
-        $this->responseMock->expects(self::any())
-            ->method('getBody')
-            ->willReturn($response);
 
         $this->expectException(SmartlingApiException::class);
         $this->expectExceptionMessage("Can't parse formatted time string: test.");
@@ -520,17 +498,11 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testLastModifiedInvalidResponseLastModifiedIsNotSet()
     {
-        $this->prepareClientResponseMock(false);
+        $this->responseMock = $this->getResponse('{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test"}]}}}');
 
         $this->client->expects($this->once())
             ->method('request')
             ->willReturn($this->responseMock);
-
-        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test"}]}}}';
-
-        $this->responseMock->expects(self::any())
-            ->method('getBody')
-            ->willReturn($response);
 
         $this->expectException(SmartlingApiException::class);
         $this->expectExceptionMessage('Property "lastModified" is not found.');
@@ -542,17 +514,11 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testLastModifiedTimeZone()
     {
-        $this->prepareClientResponseMock(false);
+        $this->responseMock = $this->getResponse('{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "2018-01-01T00:00:00Z"}]}}}');
 
         $this->client->expects($this->exactly(2))
             ->method('request')
             ->willReturn($this->responseMock);
-
-        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "2018-01-01T00:00:00Z"}]}}}';
-
-        $this->responseMock->expects(self::any())
-            ->method('getBody')
-            ->willReturn($response);
 
         \date_default_timezone_set('UTC');
         $result_default_utc = $this->object->lastModified('test.xml');
@@ -580,7 +546,7 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testLastModified()
     {
-        $this->prepareClientResponseMock(false);
+        $this->responseMock = $this->getResponse('{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "1970-01-01T00:00:00Z"}]}}}');
         $endpointUrl = \vsprintf(
             '%s/%s/file/last-modified',
             [
@@ -605,12 +571,6 @@ class FileApiTest extends ApiTestAbstract
                 ],
             ])
             ->willReturn($this->responseMock);
-
-        $response = '{"response":{"code":"SUCCESS","messages":[], "data":{"totalCount":1629,"items": [{"localId": "locale-test","lastModified": "1970-01-01T00:00:00Z"}]}}}';
-
-        $this->responseMock->expects(self::any())
-            ->method('getBody')
-            ->willReturn($response);
 
         $this->object->lastModified('test.xml');
     }
@@ -757,14 +717,7 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testValidationErrorSendRequest()
     {
-        $this->prepareClientResponseMock(false);
-
-        $this->responseMock->expects($this->any())
-            ->method('getStatusCode')
-            ->willReturn(400);
-        $this->responseMock->expects($this->any())
-            ->method('getBody')
-            ->willReturn($this->responseWithException);
+        $this->responseMock = $this->getResponse($this->responseWithException, 400);
 
         $endpointUrl = \vsprintf(
             '%s/%s/context/html',
@@ -801,14 +754,7 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testBadJsonFormatSendRequest()
     {
-        $this->prepareClientResponseMock(false);
-
-        $this->responseMock->expects($this->any())
-            ->method('getStatusCode')
-            ->willReturn(400);
-        $this->responseMock->expects($this->any())
-            ->method('getBody')
-            ->willReturn(\rtrim($this->responseWithException, '}'));
+        $this->responseMock = $this->getResponse(\rtrim($this->responseWithException, '}'), 400);
 
         $endpointUrl = \vsprintf(
             '%s/%s/context/html',
@@ -846,14 +792,7 @@ class FileApiTest extends ApiTestAbstract
      */
     public function testBadJsonFormatInErrorMessageSendRequest()
     {
-        $this->prepareClientResponseMock(false);
-
-        $this->responseMock->expects($this->any())
-            ->method('getStatusCode')
-            ->willReturn(401);
-        $this->responseMock->expects($this->any())
-            ->method('getBody')
-            ->willReturn(\rtrim($this->responseWithException, '}'));
+        $this->responseMock = $this->getResponse(\rtrim($this->responseWithException, '}'), 400);
 
         $endpointUrl = \vsprintf(
             '%s/%s/context/html',
@@ -1143,7 +1082,7 @@ class FileApiTest extends ApiTestAbstract
         $validFilePath = './tests/resources/test.xml';
 
         /**
-         * @var \MockObject|FileApi
+         * @var MockObject|FileApi
          */
         $fileApi = $this->getMockBuilder('Smartling\\File\\FileApi')
             ->setConstructorArgs([$this->projectId, $this->client])
@@ -1169,10 +1108,11 @@ class FileApiTest extends ApiTestAbstract
             ->setConstructorArgs([$this->projectId, $this->client])
             ->getMock();
 
-        $stream = $this->invokeMethod($fileApi, 'readFile', [$invalidFilePath]);
-
         $this->expectException(SmartlingApiException::class);
         $this->expectExceptionMessage('File unexisted was not able to be read.');
+
+        $stream = $this->invokeMethod($fileApi, 'readFile', [$invalidFilePath]);
+
         $this->assertEquals('stream', \get_resource_type($stream));
     }
 
@@ -1182,30 +1122,7 @@ class FileApiTest extends ApiTestAbstract
      * It should not throw "Bad response format" exception.
      */
     public function testAcceptResponse() {
-        $this->prepareClientResponseMock();
-        $responseMock = $this->getMockBuilder('Guzzle\Message\ResponseInterface')
-            ->setMethods(
-                \array_merge(
-                    self::$responseInterfaceMethods,
-                    self::$messageInterfaceMethods
-                )
-            )
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $responseMock->expects(self::any())
-            ->method('getStatusCode')
-            ->willReturn(202);
-
-        $responseMock->expects(self::any())
-            ->method('getBody')
-            ->willReturn($this->responseAsync);
-
-        $responseMock->expects(self::any())
-            ->method('json')
-            ->willReturn(
-                \json_decode($this->responseAsync, true)
-            );
+        $responseMock = $this->getResponse($this->responseAsync, 202);
 
         $this->client->expects(self::once())
             ->method('request')
@@ -1214,5 +1131,4 @@ class FileApiTest extends ApiTestAbstract
         // Just random api call to mock async response of 'send' method.
         $this->object->renameFile('test.xml', 'new_test.xml');
     }
-
 }

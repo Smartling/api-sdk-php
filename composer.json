@@ -14,7 +14,7 @@
   "authors": [],
   "require": {
     "psr/log": "~1.0",
-    "php": ">=7.2",
+    "php": ">=7.4",
     "ext-json": "*",
     "guzzlehttp/guzzle": "~7"
   },
