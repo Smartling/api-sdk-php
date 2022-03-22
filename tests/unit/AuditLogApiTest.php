@@ -13,6 +13,7 @@ class AuditLogApiTest extends ApiTestAbstract
      */
     public function testCreateProjectLevelLogRecord()
     {
+        $actionTime = \DateTime::createFromFormat('Y-m-d H:i:s', '2037-12-31 23:59:59', new \DateTimeZone('UTC'));
         $endpointUrl = \vsprintf(
             '%s/projects/%s/logs',
             [
@@ -22,7 +23,7 @@ class AuditLogApiTest extends ApiTestAbstract
         );
 
         $createParams = (new CreateRecordParameters())
-            ->setActionTime(1234514051)
+            ->setActionTime($actionTime->getTimestamp())
             ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
             ->setFileUid("file_uid")
@@ -53,7 +54,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'actionTime' => '2009-02-13T10:34:11Z',
+                    'actionTime' => $actionTime->format('Y-m-d\TH:i:s\Z'),
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
                     'fileUid' => 'file_uid',
@@ -85,6 +86,7 @@ class AuditLogApiTest extends ApiTestAbstract
      */
     public function testCreateAccountLevelLogRecord()
     {
+        $actionTime = \DateTime::createFromFormat('Y-m-d H:i:s', '2037-12-31 23:59:59', new \DateTimeZone('UTC'));
         $accountUid = "account_uid";
         $endpointUrl = \vsprintf(
             '%s/accounts/%s/logs',
@@ -95,7 +97,7 @@ class AuditLogApiTest extends ApiTestAbstract
         );
 
         $createParams = (new CreateRecordParameters())
-            ->setActionTime(1234514051)
+            ->setActionTime($actionTime->getTimestamp())
             ->setActionType(CreateRecordParameters::ACTION_TYPE_UPLOAD)
             ->setFileUri("file_uri")
             ->setFileUid("file_uid")
@@ -126,7 +128,7 @@ class AuditLogApiTest extends ApiTestAbstract
                 ],
                 'exceptions' => false,
                 'json' => [
-                    'actionTime' => '2009-02-13T10:34:11Z',
+                    'actionTime' => $actionTime->format('Y-m-d\TH:i:s\Z'),
                     'actionType' => CreateRecordParameters::ACTION_TYPE_UPLOAD,
                     'fileUri' => 'file_uri',
                     'fileUid' => 'file_uid',

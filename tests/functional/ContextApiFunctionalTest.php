@@ -76,7 +76,7 @@ class ContextApiFunctionalTest extends TestCase
 
             $result = $this->contextApi->matchContext($contextInfo['contextUid'], $params);
 
-            $this->assertArrayHasKey('matchId', $result);
+            $this->assertArrayHasKey('processUid', $result);
         } catch (SmartlingApiException $e) {
             $this->fail($e->getMessage());
         }
@@ -99,7 +99,7 @@ class ContextApiFunctionalTest extends TestCase
 
             $result = $this->contextApi->uploadAndMatchContext($params);
 
-            $this->assertArrayHasKey('matchId', $result);
+            $this->assertArrayHasKey('processUid', $result);
         } catch (SmartlingApiException $e) {
             $this->fail($e->getMessage());
         }
