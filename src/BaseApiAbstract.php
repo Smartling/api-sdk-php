@@ -7,6 +7,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
@@ -23,7 +24,7 @@ abstract class BaseApiAbstract
 
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
-    const CLIENT_LIB_ID_VERSION = '3.9.2';
+    const CLIENT_LIB_ID_VERSION = '4.0.0';
 
     const CLIENT_USER_AGENT_EXTENSION = '(no extensions)';
 
@@ -411,10 +412,9 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param Response $response
      * @throws SmartlingApiException
      */
-    private function processError(Response $response)
+    private function processError(ResponseInterface $response): void
     {
         try {
             $json = \json_decode($response->getBody(), true);

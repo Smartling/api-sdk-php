@@ -15,7 +15,7 @@ class BatchApiTest extends ApiTestAbstract
     /**
      * {@inheritdoc}
      */
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $this->prepareBatchApiMock();
     }
@@ -90,8 +90,6 @@ class BatchApiTest extends ApiTestAbstract
 
     /**
      * @covers \Smartling\Batch\BatchApi::uploadBatchFile
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessage BatchUid cannot be empty.
      */
     public function testUploadBatchFileWithEmptyBatchUid()
     {
@@ -100,6 +98,8 @@ class BatchApiTest extends ApiTestAbstract
         $fileUri = 'dummy file uri`';
         $extension = 'xml';
         $params = new UploadFileParameters();
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('BatchUid cannot be empty');
         $this->object->uploadBatchFile($fileRealPath, $fileUri, $extension, $batchId, $params);
     }
 

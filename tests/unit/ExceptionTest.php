@@ -1,12 +1,13 @@
 <?php
 
 namespace Smartling\Tests;
+use PHPUnit\Framework\TestCase;
 use Smartling\Exceptions\SmartlingApiException;
 
 /**
  * Test class for Smartling\Exceptions\SmartlingApiException.
  */
-class ExceptionTest extends \PHPUnit_Framework_TestCase
+class ExceptionTest extends TestCase
 {
 
     /**

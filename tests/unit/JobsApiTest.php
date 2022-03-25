@@ -29,7 +29,7 @@ class JobsApiTest extends ApiTestAbstract
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->prepareJobsApiMock();
@@ -495,12 +495,10 @@ class JobsApiTest extends ApiTestAbstract
         $this->object->checkAsynchronousProcessingStatus($jobId, $processId);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Callback method 'TEST' is not allowed. Allowed methods are: GET, POST.
-     */
     public function testCreateJobParametersSetCallbackMethodValidation()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Callback method 'TEST' is not allowed. Allowed methods are: GET, POST.");
         (new CreateJobParameters())->setCallbackMethod("TEST");
     }
 }

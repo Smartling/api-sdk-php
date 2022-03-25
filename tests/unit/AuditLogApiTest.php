@@ -42,7 +42,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->setClientData("foo", "bar")
             ->setClientData("foo1", "bar1");
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
@@ -116,7 +116,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->setClientData("foo", "bar")
             ->setClientData("foo1", "bar1");
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('post', $endpointUrl, [
                 'headers' => [
@@ -174,7 +174,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->setLimit(100)
             ->setSort("baz", SearchRecordParameters::ORDER_ASC);
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
@@ -217,7 +217,7 @@ class AuditLogApiTest extends ApiTestAbstract
             ->setLimit(100)
             ->setSort("baz", SearchRecordParameters::ORDER_ASC);
 
-        $this->client->expects($this->any())
+        $this->client->expects($this->once())
             ->method('request')
             ->with('get', $endpointUrl, [
                 'headers' => [
@@ -240,7 +240,7 @@ class AuditLogApiTest extends ApiTestAbstract
         $this->object->searchAccountLevelLogRecord($accountUid, $createParams);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->prepareAuditLogApiMock();

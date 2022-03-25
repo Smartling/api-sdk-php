@@ -2,13 +2,14 @@
 
 namespace Smartling\Tests\Unit;
 
+use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\TranslationRequests\Params\CreateTranslationRequestParams;
 use Smartling\TranslationRequests\Params\SearchTranslationRequestParams;
 use Smartling\TranslationRequests\Params\UpdateTranslationRequestParams;
 use Smartling\TranslationRequests\TranslationRequestsApi;
 
-class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
+class TranslationRequestsApiFunctionalTest extends TestCase
 {
     const BUCKET_NAME = 'tst-bucket';
 
@@ -20,7 +21,7 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
     /**
      * Test mixture.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');
@@ -54,7 +55,9 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
     }
 
@@ -73,7 +76,9 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
 
         $translationRequestUid = $response['translationRequestUid'];
@@ -81,10 +86,11 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         $updateParams = (new UpdateTranslationRequestParams())
             ->setTitle('Submission UPDATED');
 
-
         $updateResponse = $this->translationRequestsApi->updateTranslationRequest(self::BUCKET_NAME, $translationRequestUid, $updateParams);
 
-        self::assertArraySubset($updateParams->exportToArray(), $updateResponse);
+        foreach (array_keys($updateParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $updateResponse);
+        }
         self::assertArrayHasKey('translationRequestUid', $updateResponse);
         self::assertEquals($translationRequestUid, $updateResponse['translationRequestUid']);
     }
@@ -104,14 +110,18 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
 
         $translationRequestUid = $response['translationRequestUid'];
 
         $getResponsePositive = $this->translationRequestsApi->getTranslationRequest(self::BUCKET_NAME, $translationRequestUid);
 
-        self::assertArraySubset($createParams->exportToArray(), $getResponsePositive);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $getResponsePositive);
+        }
         self::assertArrayHasKey('translationRequestUid', $getResponsePositive);
     }
 
@@ -130,7 +140,9 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->translationRequestsApi->createTranslationRequest(self::BUCKET_NAME, $createParams);
 
-        self::assertArraySubset($createParams->exportToArray(), $response);
+        foreach (array_keys($createParams->exportToArray()) as $key) {
+            self::assertArrayHasKey($key, $response);
+        }
         self::assertArrayHasKey('translationRequestUid', $response);
 
         $translationRequestUid = $response['translationRequestUid'];
@@ -146,7 +158,7 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         self::assertTrue(0 === \count($items));
 
         $searchResponse = $this->translationRequestsApi->searchTranslationRequests(self::BUCKET_NAME,
-            (new SearchTranslationRequestParams())->setFileUri(\vsprintf('%%%s%%', [$time]))
+            (new SearchTranslationRequestParams())->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
         );
 
         self::assertTrue(\is_array($searchResponse));
@@ -156,5 +168,4 @@ class TranslationRequestsApiFunctionalTest extends \PHPUnit_Framework_TestCase
         self::assertTrue(1 === \count($items));
         self::assertTrue($translationRequestUid === $items[0]['translationRequestUid']);
     }
-
 }

@@ -2,7 +2,7 @@
 
 namespace Smartling\Tests\Functional;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\ProgressTracker\Params\RecordParameters;
@@ -11,7 +11,7 @@ use Smartling\ProgressTracker\ProgressTrackerApi;
 /**
  * Test class for Progress Tracker API examples.
  */
-class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
+class ProgressTrackerApiFunctionalTest extends TestCase
 {
 
     /**
@@ -22,7 +22,7 @@ class ProgressTrackerApiFunctionalTest extends PHPUnit_Framework_TestCase
     /**
      * Test mixture.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $projectId = \getenv('project_id');
         $userIdentifier = \getenv('user_id');

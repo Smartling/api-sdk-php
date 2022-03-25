@@ -3,21 +3,26 @@
 namespace Smartling\Tests\Unit;
 
 use GuzzleHttp\ClientInterface;
-use PHPUnit_Framework_MockObject_MockObject;
+use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Smartling\AuthApi\AuthApiInterface;
+use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\BaseApiAbstract;
 
 /**
  * Class ApiTestAbstract
  * @package Smartling\Tests
  */
-abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
+abstract class ApiTestAbstract extends TestCase
 {
     const JSON_OBJECT_AS_ARRAY = 1;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|BaseApiAbstract
+     * @var MockObject|BaseApiAbstract
      */
     protected $object;
 
@@ -52,12 +57,12 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
     protected $responseAsync = '{"response":{"data":{"message":"message", "url":"url"},"code":"ACCEPTED"}}';
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|ClientInterface
+     * @var MockObject|ClientInterface
      */
     protected $client;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|AuthApiInterface
+     * @var MockObject|AuthApiInterface
      */
     protected $authProvider;
 
@@ -67,12 +72,12 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
     protected $streamPlaceholder = 'stream';
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|ResponseInterface
+     * @var MockObject|ResponseInterface
      */
     protected $responseMock;
 
     /**
-     * @var RequestInterface | PHPUnit_Framework_MockObject_MockObject
+     * @var RequestInterface|MockObject
      */
     protected $requestMock;
 
@@ -199,7 +204,7 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
 
     protected function prepareAuthProviderMock()
     {
-        $this->authProvider = $this->getMockBuilder('\Smartling\AuthApi\AuthApiInterface')
+        $this->authProvider = $this->getMockBuilder(AuthTokenProvider::class)
             ->setMethods(
                 [
                     'getAccessToken',
@@ -237,10 +242,13 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
                         self::JSON_OBJECT_AS_ARRAY
                     )
                 );
+            $stream = $this->createMock(StreamInterface::class);
+            $stream->method('read')->willReturn($this->validResponse);
+            $stream->method('__toString')->willReturn($this->validResponse);
 
             $this->responseMock->expects(self::any())
                 ->method('getBody')
-                ->willReturn($this->validResponse);
+                ->willReturn($stream);
         }
 
         $this->responseMock->expects($this->any())
@@ -252,11 +260,21 @@ abstract class ApiTestAbstract extends \PHPUnit_Framework_TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->prepareHttpClientMock();
         $this->prepareAuthProviderMock();
         $this->prepareClientResponseMock();
     }
 
+    protected function getResponse(string $response, int $code = 200): ResponseInterface
+    {
+        $responseMock = $this->createMock(Response::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->method('__toString')->willReturn($response);
+        $responseMock->method('getBody')->willReturn($stream);
+        $responseMock->method('getStatusCode')->willReturn($code);
+
+        return $responseMock;
+    }
 }

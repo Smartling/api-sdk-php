@@ -1,7 +1,6 @@
 <?php
 
 namespace Smartling\Tests\Unit;
-use GuzzleHttp\Psr7\Response;
 use Smartling\BaseApiAbstract;
 use Smartling\DistributedLockService\DistributedLockServiceApi;
 
@@ -9,10 +8,6 @@ class DistributedLockServiceApiTest extends ApiTestAbstract
 {
     public function testAcquireLock() {
         $endpointUrl = 'locks';
-
-        $responseMock = $this->getMock(Response::class);
-        $responseMock->method('getBody')
-            ->willReturn('{"response":{"data":{"key":"test","releaseTime":"2019-10-01T12:22:00Z"},"code":"SUCCESS"}}');
 
         $this->setExpectations(
             BaseApiAbstract::HTTP_METHOD_POST,
@@ -23,7 +18,7 @@ class DistributedLockServiceApiTest extends ApiTestAbstract
                 'timeout' => -1000,
                 'wait' => -1000,
             ],
-            $responseMock
+            $this->getResponse('{"response":{"data":{"key":"test","releaseTime":"2019-10-01T12:22:00Z"},"code":"SUCCESS"}}'),
         );
         $this->getApiMock()->acquireLock('test', 5);
     }
@@ -31,14 +26,11 @@ class DistributedLockServiceApiTest extends ApiTestAbstract
     public function testReleaseLock() {
         $endpointUrl = 'locks/test';
 
-        $responseMock = $this->getMock(Response::class);
-        $responseMock->method('getBody')->willReturn('{"response":{"data":null,"code":"SUCCESS"}}');
-
         $this->setExpectations(
             BaseApiAbstract::HTTP_METHOD_DELETE,
             DistributedLockServiceApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $endpointUrl,
             [],
-            $responseMock
+            $this->getResponse('{"response":{"data":null,"code":"SUCCESS"}}'),
         );
         $this->getApiMock()->releaseLock('test');
     }
@@ -46,17 +38,13 @@ class DistributedLockServiceApiTest extends ApiTestAbstract
     public function testRenewLock() {
         $endpointUrl = 'locks/test';
 
-        $responseMock = $this->getMock(Response::class);
-        $responseMock->method('getBody')
-            ->willReturn('{"response":{"data":{"key":"test","releaseTime":"2019-10-01T12:22:00Z"},"code":"SUCCESS"}}');
-
         $this->setExpectations(
             BaseApiAbstract::HTTP_METHOD_PUT,
             DistributedLockServiceApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $endpointUrl,
             [
                 'ttl' => 5000,
             ],
-            $responseMock
+            $this->getResponse('{"response":{"data":{"key":"test","releaseTime":"2019-10-01T12:22:00Z"},"code":"SUCCESS"}}'),
         );
         $this->getApiMock()->renewLock('test', 5);
     }
