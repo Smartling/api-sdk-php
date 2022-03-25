@@ -262,7 +262,6 @@ abstract class ApiTestAbstract extends TestCase
      */
     protected function setUp(): void
     {
-        date_default_timezone_set('Europe/Kiev');
         $this->prepareHttpClientMock();
         $this->prepareAuthProviderMock();
         $this->prepareClientResponseMock();

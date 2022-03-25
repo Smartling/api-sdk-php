@@ -25,12 +25,12 @@ class FileApiFunctionalTest extends TestCase
     /**
      * @var string
      */
-    const FILE_NAME = '/test.xml';
+    const FILE_NAME = 'test.xml';
 
     /**
      * @var string
      */
-    const NEW_FILE_NAME = '/new_test.xml';
+    const NEW_FILE_NAME = 'new_test.xml';
 
     /**
      * @var string
