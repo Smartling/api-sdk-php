@@ -1,6 +1,6 @@
 {
   "name": "smartling/api-sdk-php",
-  "version": "4.0.0",
+  "version": "4.0.2",
   "type": "library",
   "description": "PHP library to communicate with SmartlingAPI",
   "keywords": [
