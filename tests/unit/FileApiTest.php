@@ -138,7 +138,7 @@ class FileApiTest extends ApiTestAbstract
                         [
                             'name' => 'file',
                             'contents' => $this->streamPlaceholder,
-                            'filename' => 'unknown'
+                            'filename' => FileApi::FILE_NAME_NOT_SET
                         ],
                         [
                             'name' => 'fileUri',
@@ -915,7 +915,7 @@ class FileApiTest extends ApiTestAbstract
                       [
                         'name' => 'file',
                         'contents' => $this->streamPlaceholder,
-                        'filename' => 'unknown',
+                        'filename' => FileApi::FILE_NAME_NOT_SET,
                       ],
                     ],
                 ],
@@ -1060,7 +1060,7 @@ class FileApiTest extends ApiTestAbstract
                     [
                         'name' => 'file',
                         'contents' => $this->streamPlaceholder,
-                        'filename' => 'unknown'
+                        'filename' => FileApi::FILE_NAME_NOT_SET
                     ],
                     [
                         'name' => 'translationState',

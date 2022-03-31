@@ -20,7 +20,7 @@ use Smartling\File\Params\UploadFileParameters;
  */
 class FileApi extends BaseApiAbstract
 {
-
+    public const FILE_NAME_NOT_SET = 'filename_not_set';
     const ENDPOINT_URL = 'https://api.smartling.com/files-api/v2/projects';
 
     /**
@@ -51,7 +51,7 @@ class FileApi extends BaseApiAbstract
             foreach ($opts['multipart'] as &$data) {
                 if ($data['name'] === 'file') {
                     $data['contents'] = $this->readFile($data['contents']);
-                    $data['filename'] = array_key_exists('name', $opts) ? $opts['name'] : 'unknown';
+                    $data['filename'] = array_key_exists('name', $opts) ? $opts['name'] : self::FILE_NAME_NOT_SET;
                 }
             }
         }
