@@ -2,7 +2,7 @@
 
 namespace Smartling\Exceptions;
 
-use Exception;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * Class SmartlingApiException
@@ -91,7 +91,7 @@ class SmartlingApiException extends \Exception
     public function formatErrors($title = '')
     {
         $errorsStr = PHP_EOL;
-        
+
         foreach ($this->errors as $k => $error) {
             $details = [];
             
@@ -123,7 +123,12 @@ class SmartlingApiException extends \Exception
                 $errorsStr,
             ]
         );
-        
+
+        $previous = $this->getPrevious();
+        if ($previous instanceof ClientException) {
+            $output .= PHP_EOL . 'Guzzle::ClientException: ' . $previous->getResponse()->getBody();
+        }
+
         return $output;
     }
 }

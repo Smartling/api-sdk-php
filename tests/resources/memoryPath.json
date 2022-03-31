@@ -1,0 +1,20 @@
+{
+  "smartling": {
+    "translate_paths": {
+      "path": "*\/translation",
+      "key": "{*}\/translation",
+      "instruction": "*\/translation-note"
+    },
+    "string_format": "icu",
+    "variants_enabled": "true",
+    "feature_branch": "translations_For_huge_file_browse",
+    "repository": "sf-ui-browse",
+    "owner": "shared",
+    "file_path": "translations\/stores\/browse\/filtering\/messages.po",
+    "base_branch": "main"
+  },
+  "someKey": {
+    "translation": "TestTranslation",
+    "translation-note": []
+  }
+}

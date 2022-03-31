@@ -46,12 +46,12 @@ class FileApi extends BaseApiAbstract
      */
     protected function processBodyOptions($requestData = []) {
         $opts = parent::processBodyOptions($requestData);
-        $key = 'file';
 
         if (!empty($opts['multipart'])) {
             foreach ($opts['multipart'] as &$data) {
-                if ($data['name'] == $key) {
+                if ($data['name'] === 'file') {
                     $data['contents'] = $this->readFile($data['contents']);
+                    $data['filename'] = array_key_exists('name', $opts) ? $opts['name'] : 'unknown';
                 }
             }
         }

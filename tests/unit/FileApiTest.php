@@ -106,47 +106,52 @@ class FileApiTest extends ApiTestAbstract
         $this->client
             ->expects($this->once())
             ->method('request')
-            ->with('post', FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => \vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'multipart' => [
-                    [
-                        'name' => 'authorize',
-                        'contents' => 0,
+            ->willReturnCallback(function(string $method, string $uri, array $options) {
+                $this->assertEquals('post', $method);
+                $this->assertEquals(FileApi::ENDPOINT_URL . '/' . $this->projectId . '/file', $uri);
+                $this->assertEquals([
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Authorization' => \vsprintf('%s %s', [
+                            $this->authProvider->getTokenType(),
+                            $this->authProvider->getAccessToken(),
+                        ]),
                     ],
-                    [
-                        'name' => 'smartling.client_lib_id',
-                        'contents' => '{"client":"smartling-api-sdk-php","version":"4.0.2"}',
+                    'exceptions' => false,
+                    'multipart' => [
+                        [
+                            'name' => 'authorize',
+                            'contents' => 0,
+                        ],
+                        [
+                            'name' => 'smartling.client_lib_id',
+                            'contents' => '{"client":"smartling-api-sdk-php","version":"4.0.2"}',
+                        ],
+                        [
+                            'name' => 'localeIdsToAuthorize[]',
+                            'contents' => 'es',
+                        ],
+                        [
+                            'name' => 'smartling.namespace',
+                            'contents' => 'namespace_for_deduplication',
+                        ],
+                        [
+                            'name' => 'file',
+                            'contents' => $this->streamPlaceholder,
+                            'filename' => 'unknown'
+                        ],
+                        [
+                            'name' => 'fileUri',
+                            'contents' => 'test.xml',
+                        ],
+                        [
+                            'name' => 'fileType',
+                            'contents' => 'xml',
+                        ],
                     ],
-                    [
-                        'name' => 'localeIdsToAuthorize[]',
-                        'contents' => 'es',
-                    ],
-                    [
-                        'name' => 'smartling.namespace',
-                        'contents' => 'namespace_for_deduplication',
-                    ],
-                    [
-                        'name' => 'file',
-                        'contents' => $this->streamPlaceholder,
-                    ],
-                    [
-                        'name' => 'fileUri',
-                        'contents' => 'test.xml',
-                    ],
-                    [
-                        'name' => 'fileType',
-                        'contents' => 'xml',
-                    ],
-                ],
-            ])
-            ->willReturn($this->responseMock);
+                ], $options);
+                return $this->responseMock;
+            });
 
         $params = new UploadFileParameters();
         $params->setAuthorized(true);
@@ -846,8 +851,12 @@ class FileApiTest extends ApiTestAbstract
 
         $this->client->expects($this->once())
             ->method('request')
-            ->with($method, FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $params)
-            ->willReturn($this->responseMock);
+            ->willReturnCallback(function(string $actualMethod, string $actualUri, array $options) use ($method, $uri, $params) {
+                $this->assertEquals($method, $actualMethod);
+                $this->assertEquals(FileApi::ENDPOINT_URL . '/' . $this->projectId . '/' . $uri, $actualUri);
+                $this->assertEquals($params, $options);
+                return $this->responseMock;
+            });
 
         $this->invokeMethod($this->object, 'setBaseUrl', [FileApi::ENDPOINT_URL . '/' . $this->projectId]);
 
@@ -906,6 +915,7 @@ class FileApiTest extends ApiTestAbstract
                       [
                         'name' => 'file',
                         'contents' => $this->streamPlaceholder,
+                        'filename' => 'unknown',
                       ],
                     ],
                 ],
@@ -1050,6 +1060,7 @@ class FileApiTest extends ApiTestAbstract
                     [
                         'name' => 'file',
                         'contents' => $this->streamPlaceholder,
+                        'filename' => 'unknown'
                     ],
                     [
                         'name' => 'translationState',

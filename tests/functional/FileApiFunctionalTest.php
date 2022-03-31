@@ -16,7 +16,6 @@ use Smartling\File\Params\ListFilesParameters;
  */
 class FileApiFunctionalTest extends TestCase
 {
-
     /**
      * @var FileApi
      */
@@ -31,6 +30,8 @@ class FileApiFunctionalTest extends TestCase
      * @var string
      */
     const NEW_FILE_NAME = 'new_test.xml';
+
+    private const STREAM_UPLOAD_FILE_NAME = 'test_stream_upload.json';
 
     /**
      * @var string
@@ -69,7 +70,7 @@ class FileApiFunctionalTest extends TestCase
         $authProvider = AuthTokenProvider::create(\getenv('user_id'), \getenv('user_key'));
         $fileApi = FileApi::create($authProvider, \getenv('project_id'));
 
-        foreach ([self::FILE_NAME, self::NEW_FILE_NAME] as $file) {
+        foreach ([self::FILE_NAME, self::NEW_FILE_NAME, self::STREAM_UPLOAD_FILE_NAME] as $file) {
             try {
                 $fileApi->deleteFile($file);
             }
@@ -118,6 +119,15 @@ class FileApiFunctionalTest extends TestCase
             $this->assertArrayHasKey('overWritten', $result);
         }
         catch (SmartlingApiException $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    public function testFileApiUploadDataStream() {
+        try {
+            $result = $this->fileApi->uploadFile('data://text/plain;base64,' . base64_encode(file_get_contents(__DIR__ . '/../resources/memoryPath.json')), self::STREAM_UPLOAD_FILE_NAME, 'json');
+            $this->assertArrayHasKey('wordCount', $result);
+        } catch (SmartlingApiException $e) {
             $this->fail($e->getMessage());
         }
     }
