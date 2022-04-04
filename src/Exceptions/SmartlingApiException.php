@@ -126,7 +126,7 @@ class SmartlingApiException extends \Exception
 
         $previous = $this->getPrevious();
         if ($previous instanceof ClientException) {
-            $output .= PHP_EOL . 'Guzzle::ClientException: ' . $previous->getResponse()->getBody();
+            $output .= PHP_EOL . ClientException::class . ': ' . $previous->getResponse()->getBody();
         }
 
         return $output;
