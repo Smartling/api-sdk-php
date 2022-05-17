@@ -10,7 +10,6 @@ use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\AddLocaleToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
-use Smartling\Jobs\Params\ListJobFilesParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
 use Smartling\Jobs\Params\SearchJobsParameters;
 use Smartling\Jobs\Params\UpdateJobParameters;
@@ -230,22 +229,6 @@ class JobsApi extends BaseApiAbstract
     {
         $endpoint = \vsprintf('jobs/%s/processes/%s', [$jobId, $processId]);
         $requestData = $this->getDefaultRequestData('query', []);
-
-        return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
-    }
-
-    /**
-     * Returns files within the job.
-     *
-     * @param $jobId
-     * @param ListJobFilesParameters $parameters
-     * @return mixed
-     * @throws SmartlingApiException
-     */
-    public function listJobFiles($jobId, ListJobFilesParameters $parameters)
-    {
-        $endpoint = \vsprintf('jobs/%s/files', [$jobId]);
-        $requestData = $this->getDefaultRequestData('query', $parameters->exportToArray());
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
     }

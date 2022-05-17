@@ -161,38 +161,6 @@ function updateJobDemo($authProvider, $projectId, $jobId)
  * @param string $jobId
  * @return string
  */
-function listJobFilesDemo($authProvider, $projectId, $jobId)
-{
-    echo "--- List job files job ---\n";
-
-    $jobs = \Smartling\Jobs\JobsApi::create($authProvider, $projectId);
-    $params = new \Smartling\Jobs\Params\ListJobFilesParameters(1, 0);
-    $st = \microtime(true);
-
-    try {
-        $response = $jobs->listJobFiles($jobId, $params);
-    } catch (\Smartling\Exceptions\SmartlingApiException $e) {
-        \var_dump($e->getErrors());
-    }
-
-    $et = \microtime(true);
-    $time = $et - $st;
-
-    echo \vsprintf('Request took %s seconds.%s', [\round($time, 3), "\n\r"]);
-
-    if (!empty($response)) {
-        \var_dump($response);
-    }
-
-    return NULL;
-}
-
-/**
- * @param \Smartling\AuthApi\AuthApiInterface $authProvider
- * @param string $projectId
- * @param string $jobId
- * @return string
- */
 function cancelJobDemo($authProvider, $projectId, $jobId)
 {
     echo "--- Cancel job ---\n";
@@ -339,7 +307,6 @@ $fileUri = 'JobID1_en_fr.xml';
 $jobs = listJobsDemo($authProvider, $projectId);
 $jobId = createJobDemo($authProvider, $projectId);
 $jobId = updateJobDemo($authProvider, $projectId, $jobId);
-listJobFilesDemo($authProvider, $projectId, $jobId);
 $job = getJobDemo($authProvider, $projectId, $jobId);
 addFileToJobDemo($authProvider, $projectId, $jobId, $fileUri);
 $job = searchJobDemo($authProvider, $projectId, $fileUri);
