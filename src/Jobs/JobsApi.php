@@ -239,6 +239,7 @@ class JobsApi extends BaseApiAbstract
      *
      * @param $jobId
      * @param ListJobFilesParameters $parameters
+     *
      * @return mixed
      * @throws SmartlingApiException
      */
