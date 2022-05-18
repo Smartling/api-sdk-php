@@ -6,7 +6,7 @@ use Smartling\Parameters\BaseParameters;
 
 class ListJobFilesParameters extends BaseParameters
 {
-    public function __construct($limit = null, $offset = null)
+    public function __construct($limit, $offset)
     {
         $this->setLimit($limit);
         $this->setOffset($offset);
