@@ -151,7 +151,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      */
     public function matchContext($contextUid, MatchContextParameters $params = null)
     {
-        $endpoint = \vsprintf('contexts/%s/match/async', $contextUid);
+        $endpoint = \vsprintf('contexts/%s/match/async', [$contextUid]);
         $requestData = $this->getDefaultRequestData('json', \is_null($params) ? [] : $params->exportToArray());
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
@@ -203,7 +203,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * @throws SmartlingApiException
      */
     public function getMatchStatus($processUid) {
-        $endpoint = \vsprintf('/processes/%s', $processUid);
+        $endpoint = \vsprintf('/processes/%s', [$processUid]);
         $requestData = $this->getDefaultRequestData('query', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_GET);
@@ -276,7 +276,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      */
     public function uploadResource($resourceId, UploadResourceParameters $params)
     {
-        $endpoint = \vsprintf('resources/%s', $resourceId);
+        $endpoint = \vsprintf('resources/%s', [$resourceId]);
         $requestData = $this->getDefaultRequestData('multipart', $params->exportToArray());
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_PUT);
@@ -291,7 +291,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      */
     public function renderContext($contextUid)
     {
-        $endpoint = \vsprintf('contexts/%s/render', $contextUid);
+        $endpoint = \vsprintf('contexts/%s/render', [$contextUid]);
         $requestData = $this->getDefaultRequestData('form_params', []);
 
         return $this->sendRequest($endpoint, $requestData, self::HTTP_METHOD_POST);
