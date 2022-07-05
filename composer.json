@@ -1,6 +1,6 @@
 {
   "name": "smartling/api-sdk-php",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "type": "library",
   "description": "PHP library to communicate with SmartlingAPI",
   "keywords": [
@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "authors": [],
   "require": {
-    "psr/log": "~1.0",
+    "psr/log": "^1.0.0 || ^3.0.0",
     "php": ">=7.3",
     "ext-json": "*",
     "guzzlehttp/guzzle": "~7"
