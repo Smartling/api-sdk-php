@@ -413,7 +413,7 @@ abstract class BaseApiAbstract
     /**
      * @throws SmartlingApiException
      */
-    private function processError(ResponseInterface $response): void
+    private function processError(Response $response): void
     {
         try {
             $json = \json_decode($response->getBody(), true);
