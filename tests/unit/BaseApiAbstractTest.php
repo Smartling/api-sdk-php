@@ -25,7 +25,7 @@ class BaseApiAbstractTest extends ApiTestAbstract
         $instance = FileApi::create($this->authProvider, 'test');
         $http_client = $this->invokeMethod($instance, 'getHttpClient');
 
-        $this->assertEquals('smartling-api-sdk-php/4.0.3 (no extensions) GuzzleHttp/7', $http_client->getConfig()['headers']['User-Agent']);
+        $this->assertEquals('smartling-api-sdk-php/4.0.4 (no extensions) GuzzleHttp/7', $http_client->getConfig()['headers']['User-Agent']);
     }
 
     /**

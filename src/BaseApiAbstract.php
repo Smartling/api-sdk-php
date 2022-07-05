@@ -9,10 +9,10 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\Exceptions\SmartlingApiException;
-use Smartling\Logger\DevNullLogger;
 
 /**
  * Class BaseApiAbstract
@@ -23,7 +23,7 @@ abstract class BaseApiAbstract
 {
     const CLIENT_LIB_ID_SDK = 'smartling-api-sdk-php';
 
-    const CLIENT_LIB_ID_VERSION = '4.0.3';
+    const CLIENT_LIB_ID_VERSION = '4.0.4';
 
     const CLIENT_USER_AGENT_EXTENSION = '(no extensions)';
 
@@ -221,7 +221,7 @@ abstract class BaseApiAbstract
         $this->setHttpClient($client);
 
         if (\is_null($logger)) {
-            $logger = new DevNullLogger();
+            $logger = new NullLogger();
         }
 
         $this->setLogger($logger);
