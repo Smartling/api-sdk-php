@@ -5,8 +5,8 @@ namespace Smartling;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
@@ -378,10 +378,10 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      * @throws SmartlingApiException
      */
-    private function checkAuthenticationError(Response $response)
+    private function checkAuthenticationError(ResponseInterface $response)
     {
         //Special handling for 401 error - authentication error => expire token
         if (401 === (int)$response->getStatusCode()) {
@@ -398,10 +398,10 @@ abstract class BaseApiAbstract
     }
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      * @throws SmartlingApiException
      */
-    private function processErrors(Response $response)
+    private function processErrors(ResponseInterface $response)
     {
         // Catch all errors from Smartling and throw appropriate exception.
         if (400 <= (int)$response->getStatusCode()) {
@@ -412,7 +412,7 @@ abstract class BaseApiAbstract
     /**
      * @throws SmartlingApiException
      */
-    private function processError(Response $response): void
+    private function processError(ResponseInterface $response): void
     {
         try {
             $json = \json_decode($response->getBody(), true);
