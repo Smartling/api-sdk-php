@@ -10,6 +10,7 @@ use Smartling\Jobs\Params\AddFileToJobParameters;
 use Smartling\Jobs\Params\AddLocaleToJobParameters;
 use Smartling\Jobs\Params\CancelJobParameters;
 use Smartling\Jobs\Params\CreateJobParameters;
+use Smartling\Jobs\Params\ListJobFilesParameters;
 use Smartling\Jobs\Params\ListJobsParameters;
 use Smartling\Jobs\Params\SearchJobsParameters;
 use Smartling\Jobs\Params\UpdateJobParameters;
@@ -493,6 +494,42 @@ class JobsApiTest extends ApiTestAbstract
             ->willReturn($this->responseMock);
 
         $this->object->checkAsynchronousProcessingStatus($jobId, $processId);
+    }
+
+    /**
+     * @covers \Smartling\Jobs\JobsApi::listJobFiles
+     */
+    public function testListJobFiles() {
+        $limit = 1;
+        $offset = 2;
+        $jobId = "test_job_uid";
+        $params = new ListJobFilesParameters($limit, $offset);
+        $endpointUrl = \vsprintf('%s/%s/jobs/%s/files', [
+            JobsApi::ENDPOINT_URL,
+            $this->projectId,
+            $jobId
+        ]);
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('get', $endpointUrl, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => \vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => FALSE,
+                'query' => [
+                    'limit' => $limit,
+                    'offset' => $offset,
+                ],
+            ])
+          ->willReturn($this->responseMock);
+
+        $this->object->listJobFiles($jobId, $params);
     }
 
     public function testCreateJobParametersSetCallbackMethodValidation()
