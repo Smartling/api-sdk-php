@@ -5,7 +5,10 @@ namespace Smartling\Tests\Unit;
 
 use Smartling\TranslationRequests\Params\CreateTranslationRequestParams;
 use Smartling\TranslationRequests\Params\SearchTranslationRequestParams;
+use Smartling\TranslationRequests\Params\SearchTranslationSubmissionParams;
+use Smartling\TranslationRequests\Params\TranslationSubmissionStates;
 use Smartling\TranslationRequests\Params\UpdateTranslationRequestParams;
+use Smartling\TranslationRequests\Params\UpdateTranslationSubmissionParams;
 use Smartling\TranslationRequests\TranslationRequestsApi;
 
 class TranslationRequestsApiTest extends ApiTestAbstract
@@ -402,7 +405,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
         $testExpectedResponse = $rawResponse['response']['data'];
 
         $bucketName = 'name';
-        $endpointUrl = \vsprintf('%s/%s/buckets/%s/translation-requests',
+        $endpointUrl = \vsprintf('%s/%s/buckets/%s/search/translation-requests',
             [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
 
         $requestStructure = [
@@ -412,16 +415,114 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                     [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
             ],
             'exceptions' => false,
-            'query' => $queryParams
+            'json' => $queryParams
         ];
 
         $this->client
             ->expects(self::once())
             ->method('request')
-            ->with('get', $endpointUrl, $requestStructure)
+            ->with('post', $endpointUrl, $requestStructure)
             ->willReturn($this->responseMock);
 
         $response = $this->object->searchTranslationRequests($bucketName, $searchParams);
+        self::assertEquals($testExpectedResponse, $response);
+    }
+
+    /**
+     * @covers \Smartling\TranslationRequests\TranslationRequestsApi::updateTranslationSubmission
+     */
+    public function testUpdateTranslationSubmission()
+    {
+        $translationSubmissionUid = '8264fd9133d3';
+
+        $updateParams = (new UpdateTranslationSubmissionParams())->setSubmitterName('Submitter name');
+
+        $testRawResponse = \json_encode(
+            [
+                "response" => [
+                    "code" => "SUCCESS",
+                    "data" => [
+                        "translationSubmissionUid" => $translationSubmissionUid,
+                        "submitterName" => "Submitter name"
+                    ]
+                ]
+            ]
+        );
+
+        $this->responseMock = $this->getResponse($testRawResponse);
+
+        $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
+
+        $bucketName = 'name';
+        $endpointUrl = \vsprintf('%s/%s/buckets/%s/translation-submissions/%s',
+            [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName, $translationSubmissionUid]);
+
+
+        $requestStructure = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => \vsprintf('%s %s',
+                    [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
+            ],
+            'exceptions' => false,
+            'json' => $updateParams->exportToArray()
+        ];
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('put', $endpointUrl, $requestStructure)
+            ->willReturn($this->responseMock);
+
+        $response = $this->object->updateTranslationSubmission($bucketName, $translationSubmissionUid, $updateParams);
+        self::assertEquals($testExpectedResponse, $response);
+    }
+
+    /**
+     * @covers \Smartling\TranslationRequests\TranslationRequestsApi::searchTranslationSubmissions
+     */
+    public function testSearchTranslationSubmissions()
+    {
+        $testRawResponse = \json_encode(
+            [
+                "response" => [
+                    "code" => "SUCCESS",
+                    "data" => [
+                        "translationSubmissionUid" => 1
+                    ]
+                ]
+            ]
+        );
+
+        $this->responseMock = $this->getResponse($testRawResponse);
+
+        $testExpectedResponse = \json_decode($testRawResponse, true)['response']['data'];
+
+        $searchParams = new SearchTranslationSubmissionParams();
+
+        $searchParams->setTargetLocaleId("test_locale");
+
+        $bucketName = 'name';
+        $endpointUrl = \vsprintf('%s/%s/buckets/%s/search/translation-submissions',
+            [TranslationRequestsApi::ENDPOINT_URL, $this->projectId, $bucketName]);
+
+        $requestStructure = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => \vsprintf('%s %s',
+                    [$this->authProvider->getTokenType(), $this->authProvider->getAccessToken()]),
+            ],
+            'exceptions' => false,
+            'json' => $searchParams->exportToArray()
+        ];
+
+        $this->client
+            ->expects(self::once())
+            ->method('request')
+            ->with('post', $endpointUrl, $requestStructure)
+            ->willReturn($this->responseMock);
+
+        $response = $this->object->searchTranslationSubmissions($bucketName, $searchParams);
         self::assertEquals($testExpectedResponse, $response);
     }
 }
