@@ -103,6 +103,15 @@ class SearchTranslationSubmissionParams extends BaseParameters
         return $this;
     }
 
+    public function setTranslationRequestUid(array $translationRequestUids = [])
+    {
+        if (\count($translationRequestUids) > 0) {
+            $this->set('translationRequestUid', \json_encode($translationRequestUids));
+        }
+
+        return $this;
+    }
+
     public function setSort($field, $order)
     {
         $allowedSortOrders = [
