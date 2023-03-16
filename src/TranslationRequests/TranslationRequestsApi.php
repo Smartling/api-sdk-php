@@ -8,7 +8,9 @@ use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\TranslationRequests\Params\CreateTranslationRequestParams;
 use Smartling\TranslationRequests\Params\SearchTranslationRequestParams;
+use Smartling\TranslationRequests\Params\SearchTranslationSubmissionParams;
 use Smartling\TranslationRequests\Params\UpdateTranslationRequestParams;
+use Smartling\TranslationRequests\Params\UpdateTranslationSubmissionParams;
 
 /**
  * Class TranslationRequestsApi
@@ -16,7 +18,7 @@ use Smartling\TranslationRequests\Params\UpdateTranslationRequestParams;
  */
 class TranslationRequestsApi extends BaseApiAbstract
 {
-    const ENDPOINT_URL = 'https://api.smartling.com/submission-service-api/v2/projects';
+    const ENDPOINT_URL = 'https://api.smartling.com/submission-service-api/v3/projects';
 
     /**
      * @param AuthApiInterface $authProvider
@@ -84,8 +86,28 @@ class TranslationRequestsApi extends BaseApiAbstract
      */
     public function searchTranslationRequests($bucketName, SearchTranslationRequestParams $searchParams)
     {
-        $requestData = $this->getDefaultRequestData('query', $searchParams->exportToArray());
-        $requestUri = \vsprintf('buckets/%s/translation-requests', [$bucketName]);
-        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_GET);
+        $requestData = $this->getDefaultRequestData('json', $searchParams->exportToArray());
+        $requestUri = \vsprintf('buckets/%s/search/translation-requests', [$bucketName]);
+        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_POST);
+    }
+
+    /**
+     * @param string $bucketName
+     * @param SearchTranslationSubmissionParams $searchParams
+     * @return array
+     * @throws SmartlingApiException
+     */
+    public function searchTranslationSubmissions($bucketName, SearchTranslationSubmissionParams $searchParams)
+    {
+        $requestData = $this->getDefaultRequestData('json', $searchParams->exportToArray());
+        $requestUri = \vsprintf('buckets/%s/search/translation-submissions', [$bucketName]);
+        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_POST);
+    }
+
+    public function updateTranslationSubmission($bucketName, $translationSubmissionUid, UpdateTranslationSubmissionParams $params)
+    {
+        $requestData = $this->getDefaultRequestData('json', $params->exportToArray());
+        $requestUri = \vsprintf('buckets/%s/translation-submissions/%s', [$bucketName, $translationSubmissionUid]);
+        return $this->sendRequest($requestUri, $requestData, static::HTTP_METHOD_PUT);
     }
 }
