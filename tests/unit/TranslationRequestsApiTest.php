@@ -288,7 +288,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
             [
                 (new SearchTranslationRequestParams())->setOriginalAssetKey(["a" => "1"]),
                 [
-                    'originalAssetKey' => \json_encode(["a" => "1"])
+                    'originalAssetKey' => ["a" => "1"]
                 ],
                 [
                     "response" => [
@@ -352,7 +352,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                     ->setOutdated(0)
                     ->setCustomOriginalData(["b" => "2"])
                     ->setTargetAssetKey(["c" => "3"])
-                    ->setTargetLocaleId('es')
+                    ->setTargetLocaleId(['es'])
                     ->setState('New')
                     ->setSubmitterName('wp')
                     ->setCustomTranslationData(["d" => "4"])
@@ -365,7 +365,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
                     ->setOutdated(0)
                     ->setCustomOriginalData(["b" => "2"])
                     ->setTargetAssetKey(["c" => "3"])
-                    ->setTargetLocaleId('es')
+                    ->setTargetLocaleId(['es'])
                     ->setState('New')
                     ->setSubmitterName('wp')
                     ->setCustomTranslationData(["d" => "4"])
@@ -500,7 +500,7 @@ class TranslationRequestsApiTest extends ApiTestAbstract
 
         $searchParams = new SearchTranslationSubmissionParams();
 
-        $searchParams->setTargetLocaleId("test_locale");
+        $searchParams->setTargetLocaleId(["test_locale"]);
 
         $bucketName = 'name';
         $endpointUrl = \vsprintf('%s/%s/buckets/%s/search/translation-submissions',
