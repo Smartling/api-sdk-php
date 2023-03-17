@@ -132,8 +132,9 @@ class TranslationRequestsApiFunctionalTest extends TestCase
     {
         $time = (string)\microtime(true);
 
+        $originalAssetKey = ['a' => $time];
         $createParams = (new CreateTranslationRequestParams())
-            ->setOriginalAssetKey(['a' => $time])
+            ->setOriginalAssetKey($originalAssetKey)
             ->setTitle(\vsprintf('Submission %s', [$time]))
             ->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
             ->setOriginalLocaleId('en-US');
@@ -158,7 +159,9 @@ class TranslationRequestsApiFunctionalTest extends TestCase
         self::assertTrue(0 === \count($items));
 
         $searchResponse = $this->translationRequestsApi->searchTranslationRequests(self::BUCKET_NAME,
-            (new SearchTranslationRequestParams())->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+            (new SearchTranslationRequestParams())
+                ->setFileUri(\vsprintf('/posts/hello-world_1_%s_post.xml', [$time]))
+                ->setOriginalAssetKey([$originalAssetKey])
         );
 
         self::assertTrue(\is_array($searchResponse));
