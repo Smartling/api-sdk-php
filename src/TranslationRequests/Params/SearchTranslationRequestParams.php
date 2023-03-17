@@ -20,7 +20,7 @@ class SearchTranslationRequestParams extends SearchTranslationSubmissionParams
     public function setOriginalAssetKey(array $originalAssetKey = [])
     {
         if (0 < \count($originalAssetKey)) {
-            $this->set('originalAssetKey', \json_encode($originalAssetKey));
+            $this->set('originalAssetKey', $originalAssetKey);
         }
         return $this;
     }
@@ -52,7 +52,7 @@ class SearchTranslationRequestParams extends SearchTranslationSubmissionParams
     public function setCustomOriginalData(array $customOriginalData = [])
     {
         if (0 < \count($customOriginalData)) {
-            $this->set('customOriginalData', \json_encode($customOriginalData));
+            $this->set('customOriginalData', $customOriginalData);
         }
         return $this;
     }

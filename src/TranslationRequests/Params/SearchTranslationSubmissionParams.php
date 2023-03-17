@@ -23,7 +23,7 @@ class SearchTranslationSubmissionParams extends BaseParameters
     public function setTargetAssetKey(array $targetAssetKey = [])
     {
         if (0 < \count($targetAssetKey)) {
-            $this->set('targetAssetKey', \json_encode($targetAssetKey));
+            $this->set('targetAssetKey', $targetAssetKey);
         }
         return $this;
     }
@@ -32,9 +32,12 @@ class SearchTranslationSubmissionParams extends BaseParameters
      * @param string $targetLocaleId
      * @return $this
      */
-    public function setTargetLocaleId($targetLocaleId)
+    public function setTargetLocaleId(array $targetLocaleId = [])
     {
-        $this->set('targetLocaleId', (string)$targetLocaleId);
+        if (\count($targetLocaleId) > 0) {
+            $this->set('targetLocaleId', $targetLocaleId);
+        }
+
         return $this;
     }
 
@@ -68,7 +71,7 @@ class SearchTranslationSubmissionParams extends BaseParameters
     public function setCustomTranslationData(array $customTranslationData = [])
     {
         if (0 < \count($customTranslationData)) {
-            $this->set('customTranslationData', \json_encode($customTranslationData));
+            $this->set('customTranslationData', $customTranslationData);
         }
 
         return $this;
@@ -97,7 +100,7 @@ class SearchTranslationSubmissionParams extends BaseParameters
     public function setTranslationSubmissionUid(array $translationSubmissionUids = [])
     {
         if (\count($translationSubmissionUids) > 0) {
-            $this->set('translationSubmissionUid', \json_encode($translationSubmissionUids));
+            $this->set('translationSubmissionUid', $translationSubmissionUids);
         }
 
         return $this;
@@ -106,7 +109,7 @@ class SearchTranslationSubmissionParams extends BaseParameters
     public function setTranslationRequestUid(array $translationRequestUids = [])
     {
         if (\count($translationRequestUids) > 0) {
-            $this->set('translationRequestUid', \json_encode($translationRequestUids));
+            $this->set('translationRequestUid', $translationRequestUids);
         }
 
         return $this;
