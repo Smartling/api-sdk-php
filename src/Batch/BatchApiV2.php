@@ -118,7 +118,16 @@ class BatchApiV2 extends BaseApiAbstract
         );
     }
 
-    public function uploadFileToABatch(string $batchUid, string $file, string $fileUri, string $fileType, array $localeIdsToAuthorize, string $smartlingNamespace = null, string $smartlingFileCharset = null, string $callbackUrl = null): void
+    public function uploadFileToABatch(
+        string $batchUid,
+        string $file,
+        string $fileUri,
+        string $fileType,
+        array $localeIdsToAuthorize,
+        string $smartlingNamespace = null,
+        string $smartlingFileCharset = null,
+        string $callbackUrl = null
+    ): void
     {
         $this->assertBatchUid($batchUid);
 
@@ -143,7 +152,7 @@ class BatchApiV2 extends BaseApiAbstract
         $this->sendRequest("batches/$batchUid/file", $requestData, self::HTTP_METHOD_POST);
     }
 
-    private function assertBatchUid(string $batchUid)
+    private function assertBatchUid(string $batchUid): void
     {
         if ($batchUid === '') {
             throw new \UnexpectedValueException('BatchUid cannot be empty.');
