@@ -14,13 +14,23 @@ use Smartling\Exceptions\SmartlingApiException;
 class BatchApiV2 extends BaseApiAbstract
 {
     public const ENDPOINT_URL = 'https://api.smartling.com/jobs-batches-api/v2/projects';
+    private const GET_BATCH_STATUS_ARRAY_SHAPE = [
+        'authorized' => 'bool',
+        'files' => 'array',
+        'generalErrors' => 'string',
+        'projectId' => 'string',
+        'status' => 'string',
+        'translationJobUid' => 'string',
+        'updatedDate' => 'string',
+    ];
 
     public function __construct(
         AuthApiInterface $authProvider,
         string $projectId,
         LoggerInterface $logger = null,
         ClientInterface $client = null
-    ) {
+    )
+    {
         if ($client === null) {
             $client = self::initializeHttpClient(self::ENDPOINT_URL);
         }
@@ -36,7 +46,8 @@ class BatchApiV2 extends BaseApiAbstract
         string $translationJobUid,
         array $fileUris,
         array $localeWorkflows = []
-    ): array {
+    ): array
+    {
         if (count($fileUris) === 0) {
             throw new \UnexpectedValueException('FileUris cannot be empty.');
         }
@@ -70,16 +81,9 @@ class BatchApiV2 extends BaseApiAbstract
     /**
      * @throws SmartlingApiException
      */
-    #[ArrayShape([
-        'authorized' => 'bool',
-        'files' => 'array',
-        'generalErrors' => 'string',
-        'projectId' => 'string',
-        'status' => 'string',
-        'translationJobUid' => 'string',
-        'updatedDate' => 'string',
-    ])]
-    public function getBatchStatus(string $batchUid): array {
+    #[ArrayShape(self::GET_BATCH_STATUS_ARRAY_SHAPE)]
+    public function getBatchStatus(string $batchUid): array
+    {
         $this->assertBatchUid($batchUid);
         return $this->sendRequest(
             "batches/$batchUid",
@@ -93,10 +97,12 @@ class BatchApiV2 extends BaseApiAbstract
      */
     public function processBatchAction(
         string $batchUid,
-        #[ExpectedValues(['CANCEL_FILE', 'REGISTER_FILE'])] string $action,
+        #[ExpectedValues(['CANCEL_FILE', 'REGISTER_FILE'])]
+        string $action,
         string $fileUri,
         string $reason = null
-    ): void {
+    ): void
+    {
         $this->assertBatchUid($batchUid);
         $parameters = [
             'action' => $action,
@@ -112,7 +118,8 @@ class BatchApiV2 extends BaseApiAbstract
         );
     }
 
-    public function uploadFileToABatch(string $batchUid, string $file, string $fileUri, string $fileType, array $localeIdsToAuthorize, string $smartlingNamespace = null, string $smartlingFileCharset = null, string $callbackUrl = null): void {
+    public function uploadFileToABatch(string $batchUid, string $file, string $fileUri, string $fileType, array $localeIdsToAuthorize, string $smartlingNamespace = null, string $smartlingFileCharset = null, string $callbackUrl = null): void
+    {
         $this->assertBatchUid($batchUid);
 
         $parameters = [
