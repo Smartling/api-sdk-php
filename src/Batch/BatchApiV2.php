@@ -3,26 +3,16 @@
 namespace Smartling\Batch;
 
 use GuzzleHttp\ClientInterface;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\ExpectedValues;
 use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
-use Smartling\Batch\Params\ListBatchesParameters;
 use Smartling\Exceptions\SmartlingApiException;
 
 class BatchApiV2 extends BaseApiAbstract
 {
-    public const ENDPOINT_URL = 'https://api.smartling.com/jobs-batches-api/v2/projects';
-    private const GET_BATCH_STATUS_ARRAY_SHAPE = [
-        'authorized' => 'bool',
-        'files' => 'array',
-        'generalErrors' => 'string',
-        'projectId' => 'string',
-        'status' => 'string',
-        'translationJobUid' => 'string',
-        'updatedDate' => 'string',
-    ];
+    public const ENDPOINT_URL = 'https://api.smartling.com/job-batches-api/v2/projects';
+
+    private const ACTION_CANCEL_FILE = 'CANCEL_FILE';
 
     public function __construct(
         AuthApiInterface $authProvider,
@@ -41,12 +31,34 @@ class BatchApiV2 extends BaseApiAbstract
     /**
      * @throws SmartlingApiException
      */
-    #[ArrayShape(['batchUid' => 'string'])]
-    public function createBatch(bool $authorize,
+    public function cancelBatchFile(string $batchUid, string $fileUri, string $reason = null): void
+    {
+        if ($batchUid === '') {
+            throw new \UnexpectedValueException('BatchUid cannot be empty.');
+        }
+        $parameters = [
+            'action' => self::ACTION_CANCEL_FILE,
+            'fileUri' => $fileUri,
+        ];
+        if ($reason !== null) {
+            $parameters['reason'] = $reason;
+        }
+        $this->sendRequest(
+            "batches/$batchUid",
+            $this->getDefaultRequestData('json', $parameters),
+            self::HTTP_METHOD_PUT,
+        );
+    }
+
+    /**
+     * @throws SmartlingApiException
+     */
+    public function createBatch(
+        bool $authorize,
         string $translationJobUid,
         array $fileUris,
         array $localeWorkflows = []
-    ): array
+    ): string
     {
         if (count($fileUris) === 0) {
             throw new \UnexpectedValueException('FileUris cannot be empty.');
@@ -63,99 +75,6 @@ class BatchApiV2 extends BaseApiAbstract
             'batches',
             $this->getDefaultRequestData('json', $parameters),
             self::HTTP_METHOD_POST,
-        );
-    }
-
-    /**
-     * @throws SmartlingApiException
-     */
-    public function listBatches(ListBatchesParameters $parameters): array
-    {
-        return $this->sendRequest(
-            "batches",
-            $this->getDefaultRequestData('query', $parameters->exportToArray()),
-            self::HTTP_METHOD_GET,
-        );
-    }
-
-    /**
-     * @throws SmartlingApiException
-     */
-    #[ArrayShape(self::GET_BATCH_STATUS_ARRAY_SHAPE)]
-    public function getBatchStatus(string $batchUid): array
-    {
-        $this->assertBatchUid($batchUid);
-        return $this->sendRequest(
-            "batches/$batchUid",
-            $this->getDefaultRequestData('query', []),
-            self::HTTP_METHOD_GET,
-        );
-    }
-
-    /**
-     * @throws SmartlingApiException
-     */
-    public function processBatchAction(
-        string $batchUid,
-        #[ExpectedValues(['CANCEL_FILE', 'REGISTER_FILE'])]
-        string $action,
-        string $fileUri,
-        string $reason = null
-    ): void
-    {
-        $this->assertBatchUid($batchUid);
-        $parameters = [
-            'action' => $action,
-            'fileUri' => $fileUri,
-        ];
-        if ($reason !== null) {
-            $parameters['reason'] = $reason;
-        }
-        $this->sendRequest(
-            "batches/$batchUid",
-            $this->getDefaultRequestData('json', $parameters),
-            self::HTTP_METHOD_PUT,
-        );
-    }
-
-    public function uploadFileToABatch(
-        string $batchUid,
-        string $file,
-        string $fileUri,
-        string $fileType,
-        array $localeIdsToAuthorize,
-        string $smartlingNamespace = null,
-        string $smartlingFileCharset = null,
-        string $callbackUrl = null
-    ): void
-    {
-        $this->assertBatchUid($batchUid);
-
-        $parameters = [
-            'file' => $file,
-            'fileUri' => $fileUri,
-            'fileType' => $fileType,
-            'localeIdsToAuthorize' => $localeIdsToAuthorize,
-        ];
-        if ($smartlingNamespace !== null) {
-            $parameters['smartling.namespace'] = $smartlingNamespace;
-        }
-        if ($smartlingFileCharset !== null) {
-            $parameters['smartling.file_charset'] = $smartlingFileCharset;
-        }
-        if ($callbackUrl !== null) {
-            $parameters['callbackUrl'] = $callbackUrl;
-        }
-
-        $requestData = $this->getDefaultRequestData('multipart', $parameters);
-
-        $this->sendRequest("batches/$batchUid/file", $requestData, self::HTTP_METHOD_POST);
-    }
-
-    private function assertBatchUid(string $batchUid): void
-    {
-        if ($batchUid === '') {
-            throw new \UnexpectedValueException('BatchUid cannot be empty.');
-        }
+        )['batchUid'];
     }
 }
