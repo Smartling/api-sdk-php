@@ -63,6 +63,21 @@ class BatchApiV2 extends BaseApiAbstract
         if (count($fileUris) === 0) {
             throw new \UnexpectedValueException('FileUris cannot be empty.');
         }
+        if (!function_exists('array_is_list')) {
+            function array_is_list(array $array): bool
+            {
+                $pointer = -1;
+                foreach ($array as $key => $_) {
+                    if ($key !== $pointer) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        if (!array_is_list($fileUris)) {
+            throw new \UnexpectedValueException('FileUris must be a list.');
+        }
         $parameters = [
             'authorize' => $authorize,
             'translationJobUid' => $translationJobUid,
