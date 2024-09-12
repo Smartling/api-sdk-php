@@ -94,4 +94,15 @@ class BatchApiV2Test extends ApiTestAbstract
             1 => 'fileUri',
         ]);
     }
+
+    public function testArrayIsListPolyfill()
+    {
+        $this->assertTrue(BatchApiV2::array_is_list([]));
+        $this->assertTrue(BatchApiV2::array_is_list(['a', 'b', 'c']));
+        $this->assertTrue(BatchApiV2::array_is_list(array_unique(['a', 'b', 'c'])));
+        $this->assertTrue(BatchApiV2::array_is_list(array_unique([0 => 'a', 1 => 'b', 2 => 'c'])));
+        $this->assertTrue(BatchApiV2::array_is_list(array_values(array_unique(['a', 'b', 'b', 'c']))));
+        $this->assertFalse(BatchApiV2::array_is_list(array_unique(['a', 'b', 'b', 'c'])));
+        $this->assertFalse(BatchApiV2::array_is_list([1 => 'a']));
+    }
 }
