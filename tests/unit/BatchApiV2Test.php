@@ -80,4 +80,18 @@ class BatchApiV2Test extends ApiTestAbstract
                 ->cancelBatchFile($batchId, $fileUri, $reason);
         });
     }
+
+    public function testBatchNotCreatedEmptyFileUris()
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        (new BatchApiV2($this->authProvider, $this->projectId, null, $this->client))->createBatch(true, 'jobUid', []);
+    }
+
+    public function testBatchNotCreatedFileUrisNotList()
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        (new BatchApiV2($this->authProvider, $this->projectId, null, $this->client))->createBatch(true, 'jobUid', [
+            1 => 'fileUri',
+        ]);
+    }
 }

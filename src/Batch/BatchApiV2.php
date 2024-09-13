@@ -7,6 +7,7 @@ use Psr\Log\LoggerInterface;
 use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
+use Smartling\Polyfills;
 
 class BatchApiV2 extends BaseApiAbstract
 {
@@ -62,6 +63,15 @@ class BatchApiV2 extends BaseApiAbstract
     {
         if (count($fileUris) === 0) {
             throw new \UnexpectedValueException('FileUris cannot be empty.');
+        }
+        if (!function_exists('array_is_list')) {
+            function array_is_list(array $array): bool
+            {
+                return Polyfills::array_is_list($array);
+            }
+        }
+        if (!array_is_list($fileUris)) {
+            throw new \UnexpectedValueException('FileUris must be a list.');
         }
         $parameters = [
             'authorize' => $authorize,
