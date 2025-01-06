@@ -217,27 +217,6 @@ try {
     echo $e->formatErrors('Error happened while getting file status for all locales');
 }
 
-
-
-/**
- * Getting Authorized locales for file
- */
-try {
-    echo '::: Get File Authorized Locales Example :::' . PHP_EOL;
-
-    $authProvider = \Smartling\AuthApi\AuthTokenProvider::create($userIdentifier, $userSecretKey);
-
-    $fileApi = \Smartling\File\FileApi::create($authProvider, $projectId);
-
-    $result = $fileApi->getAuthorizedLocales($fileName);
-
-    echo 'Get File Authorized Locales result:' . PHP_EOL;
-    echo \var_export($result, true) . PHP_EOL . PHP_EOL;
-
-} catch (\Smartling\Exceptions\SmartlingApiException $e) {
-    echo $e->formatErrors('Error happened while getting file authorized locales');
-}
-
 /**
  * Listing Files
  */
