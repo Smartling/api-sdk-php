@@ -960,40 +960,6 @@ class FileApiTest extends ApiTestAbstract
     }
 
     /**
-     * @covers \Smartling\File\FileApi::getAuthorizedLocales
-     */
-    public function testGetAuthorizedLocales()
-    {
-        $this->prepareClientResponseMock();
-        $endpointUrl = \vsprintf(
-            '%s/%s/file/authorized-locales',
-            [
-                FileApi::ENDPOINT_URL,
-                $this->projectId
-            ]
-        );
-
-        $this->client->expects($this->once())
-            ->method('request')
-            ->with('get', $endpointUrl, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Authorization' => \vsprintf('%s %s', [
-                        $this->authProvider->getTokenType(),
-                        $this->authProvider->getAccessToken(),
-                    ]),
-                ],
-                'exceptions' => false,
-                'query' => [
-                    'fileUri' => 'test.xml',
-                ],
-            ])
-            ->willReturn($this->responseMock);
-
-        $this->object->getAuthorizedLocales('test.xml');
-    }
-
-    /**
      * @covers \Smartling\File\FileApi::deleteFile
      */
     public function testDeleteFile()

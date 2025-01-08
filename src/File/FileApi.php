@@ -414,25 +414,6 @@ class FileApi extends BaseApiAbstract
     }
 
     /**
-     * Get list of authorized locales for given file.
-     *
-     * @param string $fileUri
-     * @param ParameterInterface $params
-     *
-     * @return array
-     * @throws SmartlingApiException
-     */
-    public function getAuthorizedLocales($fileUri, ParameterInterface $params = null)
-    {
-        $params = (\is_null($params)) ? [] : $params->exportToArray();
-        $params['fileUri'] = $fileUri;
-
-        $requestData = $this->getDefaultRequestData('query', $params);
-
-        return $this->sendRequest('file/authorized-locales', $requestData, self::HTTP_METHOD_GET);
-    }
-
-    /**
      * retrieve all statuses about file translations progress
      *
      * @param                    $fileUri

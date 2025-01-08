@@ -257,19 +257,6 @@ class FileApiFunctionalTest extends TestCase
     }
 
     /**
-     * Test for retrieving authorized locales.
-     */
-    public function testFileApiGetAuthorizedLocales() {
-        try {
-            $result = $this->fileApi->getAuthorizedLocales(self::FILE_NAME);
-
-            $this->assertArrayHasKey('items', $result);
-        } catch (SmartlingApiException $e) {
-            $this->fail($e->getMessage());
-        }
-    }
-
-    /**
      * Test for retrieving file list.
      */
     public function testFileApiGetList() {
