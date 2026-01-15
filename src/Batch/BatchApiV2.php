@@ -14,6 +14,7 @@ class BatchApiV2 extends BaseApiAbstract
     public const ENDPOINT_URL = 'https://api.smartling.com/job-batches-api/v2/projects';
 
     private const ACTION_CANCEL_FILE = 'CANCEL_FILE';
+    private const ACTION_REGISTER_FILE = 'REGISTER_FILE';
 
     public function __construct(
         AuthApiInterface $authProvider,
@@ -86,5 +87,23 @@ class BatchApiV2 extends BaseApiAbstract
             $this->getDefaultRequestData('json', $parameters),
             self::HTTP_METHOD_POST,
         )['batchUid'];
+    }
+
+    /**
+     * @throws SmartlingApiException
+     */
+    public function registerBatchFile(string $batchUid, string $fileUri): void
+    {
+        if ($batchUid === '') {
+            throw new \UnexpectedValueException('BatchUid cannot be empty.');
+        }
+        $this->sendRequest(
+            "batches/$batchUid",
+            $this->getDefaultRequestData('json', [
+                'action' => self::ACTION_REGISTER_FILE,
+                'fileUri' => $fileUri,
+            ]),
+            self::HTTP_METHOD_PUT,
+        );
     }
 }

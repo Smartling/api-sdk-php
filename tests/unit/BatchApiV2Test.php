@@ -94,4 +94,42 @@ class BatchApiV2Test extends ApiTestAbstract
             1 => 'fileUri',
         ]);
     }
+
+    public function testRegisterBatchFile()
+    {
+        $batchUid = 'test_batch_uid';
+        $fileUri = '/test/file.xml';
+
+        $this->client
+            ->expects($this->once())
+            ->method('request')
+            ->with('put', BatchApiV2::ENDPOINT_URL . "/$this->projectId/batches/$batchUid", [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => \vsprintf('%s %s', [
+                        $this->authProvider->getTokenType(),
+                        $this->authProvider->getAccessToken(),
+                    ]),
+                ],
+                'exceptions' => false,
+                'json' => [
+                    'action' => 'REGISTER_FILE',
+                    'fileUri' => $fileUri,
+                ],
+            ])
+            ->willReturn($this->responseMock);
+
+        $this->throwPreviousException(function () use ($batchUid, $fileUri) {
+            (new BatchApiV2($this->authProvider, $this->projectId, null, $this->client))
+                ->registerBatchFile($batchUid, $fileUri);
+        });
+    }
+
+    public function testRegisterBatchFileEmptyBatchUid()
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('BatchUid cannot be empty.');
+        (new BatchApiV2($this->authProvider, $this->projectId, null, $this->client))
+            ->registerBatchFile('', '/test/file.xml');
+    }
 }
