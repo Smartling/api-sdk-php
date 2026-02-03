@@ -102,9 +102,9 @@ class FileTranslationsApiFunctionalTest extends TestCase
             $progress = $this->api->getTranslationProgress($fileUid, $mtUid);
 
             $this->assertIsArray($progress);
-            $this->assertArrayHasKey('status', $progress);
+            $this->assertArrayHasKey('state', $progress);
 
-            $status = $progress['status'];
+            $status = $progress['state'];
 
             if ($status === 'COMPLETED') {
                 $completed = true;
@@ -126,33 +126,12 @@ class FileTranslationsApiFunctionalTest extends TestCase
         // Step 4: Download translated file
         $translatedContent = $this->api->downloadTranslatedFile($fileUid, $mtUid, 'es');
 
-        $this->assertIsString($translatedContent);
         $this->assertNotEmpty($translatedContent);
 
         // Verify it's valid JSON
         $translatedData = json_decode($translatedContent, true);
         $this->assertIsArray($translatedData);
         $this->assertNotNull($translatedData);
-    }
-
-    /**
-     * Tests downloading all translations as ZIP.
-     *
-     * This test depends on having a completed translation from the previous test.
-     * In practice, you would run this after a successful translation.
-     *
-     * @covers \Smartling\FileTranslations\FileTranslationsApi::downloadAllTranslationsZip
-     */
-    public function testDownloadAllTranslationsZip()
-    {
-        // This is a simplified test - in practice, you would need
-        // a fileUid and mtUid from a completed translation
-        $this->markTestIncomplete('Requires fileUid and mtUid from a completed translation');
-
-        // Example usage:
-        // $zipContent = $this->api->downloadAllTranslationsZip($fileUid, $mtUid);
-        // $this->assertIsString($zipContent);
-        // $this->assertNotEmpty($zipContent);
     }
 
     /**
@@ -189,9 +168,9 @@ class FileTranslationsApiFunctionalTest extends TestCase
 
         $progress = $this->api->getTranslationProgress($fileUid, $mtUid);
         $this->assertIsArray($progress);
-        $this->assertArrayHasKey('status', $progress);
+        $this->assertArrayHasKey('state', $progress);
 
-        // Status should be CANCELLED (or possibly still IN_PROGRESS if cancellation hasn't completed yet)
-        $this->assertContains($progress['status'], ['CANCELLED', 'IN_PROGRESS']);
+        // Status should be CANCELLED.
+        $this->assertEquals('CANCELED', $progress['state']);
     }
 }
