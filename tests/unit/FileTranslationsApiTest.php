@@ -4,7 +4,6 @@ namespace Smartling\Tests\Unit;
 
 use Smartling\FileTranslations\FileTranslationsApi;
 use Smartling\FileTranslations\Params\TranslateFileParameters;
-use Smartling\FileTranslations\Params\UploadFileParameters;
 
 /**
  * Test class for Smartling\FileTranslations\FileTranslationsApi.
@@ -76,7 +75,6 @@ class FileTranslationsApiTest extends ApiTestAbstract
 
         $this->assertEquals(\rtrim($expected_base_url, '/') . '/' . $accountUid,
             $this->invokeMethod($api, 'getBaseUrl'));
-        $this->assertEquals($accountUid, $this->invokeMethod($api, 'getAccountUid'));
         $this->assertEquals($client, $this->invokeMethod($api, 'getHttpClient'));
     }
 
@@ -145,8 +143,7 @@ class FileTranslationsApiTest extends ApiTestAbstract
                 return $this->responseMock;
             });
 
-        $params = new UploadFileParameters();
-        $this->object->uploadFile('tests/resources/test-fts.json', 'test.json', 'json', $params);
+        $this->object->uploadFile('tests/resources/test-fts.json', 'test.json', 'json');
     }
 
     /**

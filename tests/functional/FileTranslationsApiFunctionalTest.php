@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\FileTranslations\FileTranslationsApi;
 use Smartling\FileTranslations\Params\TranslateFileParameters;
-use Smartling\FileTranslations\Params\UploadFileParameters;
 
 /**
  * Functional test class for Smartling\FileTranslations\FileTranslationsApi.
@@ -71,12 +70,10 @@ class FileTranslationsApiFunctionalTest extends TestCase
     public function testCompleteTranslationWorkflow()
     {
         // Step 1: Upload file
-        $uploadParams = new UploadFileParameters();
         $uploadResult = $this->api->uploadFile(
             $this->testFilePath,
             'test-fts-' . time() . '.json',
-            'json',
-            $uploadParams
+            'json'
         );
 
         $this->assertIsArray($uploadResult);
@@ -166,12 +163,10 @@ class FileTranslationsApiFunctionalTest extends TestCase
     public function testCancelFileTranslation()
     {
         // Upload file
-        $uploadParams = new UploadFileParameters();
         $uploadResult = $this->api->uploadFile(
             $this->testFilePath,
             'test-cancel-' . time() . '.json',
-            'json',
-            $uploadParams
+            'json'
         );
 
         $fileUid = $uploadResult['fileUid'];

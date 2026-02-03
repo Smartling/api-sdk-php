@@ -20,7 +20,6 @@ require_once '../vendor/autoload.php';
 use Smartling\AuthApi\AuthTokenProvider;
 use Smartling\FileTranslations\FileTranslationsApi;
 use Smartling\FileTranslations\Params\TranslateFileParameters;
-use Smartling\FileTranslations\Params\UploadFileParameters;
 
 // Parse command line arguments
 $options = getopt('', [
@@ -57,11 +56,10 @@ try {
 
     // Step 2: Upload file
     echo "2. Uploading file: {$filePath}\n";
-    $uploadParams = new UploadFileParameters();
     $fileName = basename($filePath);
     $fileType = pathinfo($filePath, PATHINFO_EXTENSION);
 
-    $uploadResult = $api->uploadFile($filePath, $fileName, $fileType, $uploadParams);
+    $uploadResult = $api->uploadFile($filePath, $fileName, $fileType);
     $fileUid = $uploadResult['fileUid'];
     echo "   ✓ File uploaded successfully\n";
     echo "   File UID: {$fileUid}\n\n";
@@ -86,7 +84,7 @@ try {
 
     for ($i = 0; $i < $maxAttempts; $i++) {
         $progress = $api->getTranslationProgress($fileUid, $mtUid);
-        $status = $progress['status'];
+        $status = $progress['state'];
 
         echo "   Status: {$status}";
 
@@ -158,7 +156,7 @@ try {
     // Optional: Demonstrate cancellation with a new translation
     echo "7. (Optional) Demonstrating translation cancellation...\n";
     echo "   Uploading another file...\n";
-    $uploadResult2 = $api->uploadFile($filePath, "cancel-demo-{$fileName}", $fileType, $uploadParams);
+    $uploadResult2 = $api->uploadFile($filePath, "cancel-demo-{$fileName}", $fileType);
     $fileUid2 = $uploadResult2['fileUid'];
 
     echo "   Starting translation to many locales...\n";
@@ -171,13 +169,12 @@ try {
     $mtUid2 = $translateResult2['mtUid'];
 
     echo "   Cancelling translation...\n";
-    sleep(1); // Give it a moment to start
     $api->cancelFileTranslation($fileUid2, $mtUid2);
     echo "   ✓ Cancellation request sent\n";
 
     sleep(2);
     $progress = $api->getTranslationProgress($fileUid2, $mtUid2);
-    echo "   Final status: {$progress['status']}\n\n";
+    echo "   Final status: {$progress['state']}\n\n";
 
     echo "=== Example completed successfully ===\n";
 

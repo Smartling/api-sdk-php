@@ -7,7 +7,6 @@ use Smartling\AuthApi\AuthApiInterface;
 use Smartling\BaseApiAbstract;
 use Smartling\Exceptions\SmartlingApiException;
 use Smartling\FileTranslations\Params\TranslateFileParameters;
-use Smartling\FileTranslations\Params\UploadFileParameters;
 
 /**
  * Class FileTranslationsApi
@@ -85,6 +84,9 @@ class FileTranslationsApi extends BaseApiAbstract
                     if (array_key_exists('filename', $opts)) {
                         $data['filename'] = $opts['filename'];
                     }
+                } elseif ($data['name'] === 'request') {
+                    // Set Content-Type for the request JSON part
+                    $data['headers'] = ['Content-Type' => 'application/json'];
                 }
             }
         }
@@ -92,15 +94,6 @@ class FileTranslationsApi extends BaseApiAbstract
         return $opts;
     }
 
-    /**
-     * Get account UID.
-     *
-     * @return string
-     */
-    protected function getAccountUid()
-    {
-        return $this->accountUid;
-    }
 
     /**
      * Uploads a file for machine translation.
@@ -111,30 +104,18 @@ class FileTranslationsApi extends BaseApiAbstract
      *   Logical filename for the file.
      * @param string $fileType
      *   File type identifier (json, xml, html, etc.)
-     * @param UploadFileParameters $params
-     *   Optional additional parameters
      *
      * @return array
      *   Response data containing fileUid
      *
      * @throws SmartlingApiException
      */
-    public function uploadFile($realPath, $fileName, $fileType, UploadFileParameters $params = null)
+    public function uploadFile($realPath, $fileName, $fileType)
     {
-        if (is_null($params)) {
-            $params = new UploadFileParameters();
-        }
-
         // Build request JSON object
         $requestJson = [
             'fileType' => $fileType,
         ];
-
-        // Merge any additional parameters
-        $additionalParams = $params->exportToArray();
-        if (!empty($additionalParams)) {
-            $requestJson = array_merge($requestJson, $additionalParams);
-        }
 
         // Build multipart request
         $multipartParams = [
