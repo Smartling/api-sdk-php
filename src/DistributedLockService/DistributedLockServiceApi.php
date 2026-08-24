@@ -18,7 +18,7 @@ class DistributedLockServiceApi extends BaseApiAbstract
      *
      * @return self
      */
-    public static function create(AuthApiInterface $authProvider, $projectId, LoggerInterface $logger = null)
+    public static function create(AuthApiInterface $authProvider, $projectId, ?LoggerInterface $logger = null)
     {
         $instance = new self($projectId, self::initializeHttpClient(self::ENDPOINT_URL), $logger, self::ENDPOINT_URL);
         $instance->setAuth($authProvider);

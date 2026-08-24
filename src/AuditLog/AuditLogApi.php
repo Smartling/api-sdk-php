@@ -19,7 +19,7 @@ class AuditLogApi extends BaseApiAbstract
     /**
      * {@inheritdoc}
      */
-    public function __construct($projectId, ClientInterface $client, LoggerInterface $logger = null, $service_url = null)
+    public function __construct($projectId, ClientInterface $client, ?LoggerInterface $logger = null, $service_url = null)
     {
         parent::__construct($projectId, $client, $logger, $service_url);
 
@@ -29,7 +29,7 @@ class AuditLogApi extends BaseApiAbstract
         $this->setBaseUrl(\rtrim($service_url, '/'));
     }
 
-    public static function create(AuthApiInterface $authProvider, $projectId, LoggerInterface $logger = null)
+    public static function create(AuthApiInterface $authProvider, $projectId, ?LoggerInterface $logger = null)
     {
 
         $client = self::initializeHttpClient(self::ENDPOINT_URL);

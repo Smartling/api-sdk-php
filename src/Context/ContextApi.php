@@ -149,7 +149,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    public function matchContext($contextUid, MatchContextParameters $params = null)
+    public function matchContext($contextUid, ?MatchContextParameters $params = null)
     {
         $endpoint = \vsprintf('contexts/%s/match/async', [$contextUid]);
         $requestData = $this->getDefaultRequestData('json', \is_null($params) ? [] : $params->exportToArray());
@@ -165,7 +165,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      *
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    public function matchContextSync($contextUid, MatchContextParameters $params = null)
+    public function matchContextSync($contextUid, ?MatchContextParameters $params = null)
     {
         $this->wait($this->matchContext($contextUid, $params));
     }
@@ -216,7 +216,7 @@ class ContextApi extends BaseApiAbstract implements Waitable
      * @return array
      * @throws \Smartling\Exceptions\SmartlingApiException
      */
-    public function getMissingResources(MissingResourcesParameters $params = null) {
+    public function getMissingResources(?MissingResourcesParameters $params = null) {
         $requestData = $this->getDefaultRequestData('query', \is_null($params) ? [] : $params->exportToArray());
 
         return $this->sendRequest('missing-resources', $requestData, self::HTTP_METHOD_GET);
