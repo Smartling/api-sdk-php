@@ -125,7 +125,7 @@ class FileApi extends BaseApiAbstract
      *
      * @see http://docs.smartling.com/pages/API/FileAPI/Upload-File/
      */
-    public function uploadFile($realPath, $file_name, $file_type, UploadFileParameters $params = null)
+    public function uploadFile($realPath, $file_name, $file_type, ?UploadFileParameters $params = null)
     {
         if (\is_null($params)) {
             $params = new UploadFileParameters();
@@ -170,7 +170,7 @@ class FileApi extends BaseApiAbstract
      *
      * @see http://docs.smartling.com/pages/API/FileAPI/Download-File/
      */
-    public function downloadFile($fileUri, $locale = '', DownloadFileParameters $params = null)
+    public function downloadFile($fileUri, $locale = '', ?DownloadFileParameters $params = null)
     {
         if ((!\is_string($locale)) || \strlen($locale) < 2) {
             $message = \vsprintf(
@@ -192,7 +192,7 @@ class FileApi extends BaseApiAbstract
         return $this->sendRequest("locales/{$locale}/file", $requestData, self::HTTP_METHOD_GET, true);
     }
 
-    public function downloadAllTranslationsOfFile($fileUri, DownloadFileParameters $params = null)
+    public function downloadAllTranslationsOfFile($fileUri, ?DownloadFileParameters $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
@@ -203,7 +203,7 @@ class FileApi extends BaseApiAbstract
         return $this->sendRequest("locales/all/file/zip", $requestData, self::HTTP_METHOD_GET, true);
     }
 
-    public function downloadMultipleTranslationsOfFiles(DownloadMultipleFilesParameters $params = null)
+    public function downloadMultipleTranslationsOfFiles(?DownloadMultipleFilesParameters $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
 
@@ -228,7 +228,7 @@ class FileApi extends BaseApiAbstract
      * @throws SmartlingApiException
      * @see http://docs.smartling.com/pages/API/FileAPI/Status/
      */
-    public function getStatus($fileUri, $locale, ParameterInterface $params = null)
+    public function getStatus($fileUri, $locale, ?ParameterInterface $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
@@ -251,7 +251,7 @@ class FileApi extends BaseApiAbstract
      * @throws SmartlingApiException
      * @see http://docs.smartling.com/pages/API/v2/FileAPI/Status/All-Locales/
      */
-    public function getStatusForAllLocales($fileUri, ParameterInterface $params = null)
+    public function getStatusForAllLocales($fileUri, ?ParameterInterface $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
@@ -291,7 +291,7 @@ class FileApi extends BaseApiAbstract
      *
      * @see http://docs.smartling.com/pages/API/FileAPI/List/
      */
-    public function getList(ListFilesParameters $params = null)
+    public function getList(?ListFilesParameters $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
 
@@ -307,7 +307,7 @@ class FileApi extends BaseApiAbstract
      *   can only be of a value 'COMPLETED'
      * @return bool
      */
-    public function getExtendedList($locale, ExtendedListFilesParameters $params = null)
+    public function getExtendedList($locale, ?ExtendedListFilesParameters $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
 
@@ -334,7 +334,7 @@ class FileApi extends BaseApiAbstract
      * @throws SmartlingApiException
      * @see http://docs.smartling.com/pages/API/FileAPI/Rename/
      */
-    public function renameFile($fileUri, $newFileUri, ParameterInterface $params = null)
+    public function renameFile($fileUri, $newFileUri, ?ParameterInterface $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
@@ -360,7 +360,7 @@ class FileApi extends BaseApiAbstract
      * @return array
      * @throws SmartlingApiException
      */
-    public function deleteFile($fileUri, ParameterInterface $params = null)
+    public function deleteFile($fileUri, ?ParameterInterface $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
@@ -422,7 +422,7 @@ class FileApi extends BaseApiAbstract
      * @return array
      * @throws SmartlingApiException
      */
-    public function getStatusAllLocales($fileUri, ParameterInterface $params = null)
+    public function getStatusAllLocales($fileUri, ?ParameterInterface $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
@@ -442,7 +442,7 @@ class FileApi extends BaseApiAbstract
      * @return array
      * @throws SmartlingApiException
      */
-    public function getLastModified($fileUri, ParameterInterface $params = null)
+    public function getLastModified($fileUri, ?ParameterInterface $params = null)
     {
         $params = (\is_null($params)) ? [] : $params->exportToArray();
         $params['fileUri'] = $fileUri;
@@ -465,7 +465,7 @@ class FileApi extends BaseApiAbstract
      *
      * @see http://docs.smartling.com/pages/API/v2/FileAPI/Last-Modified/All-Locales/
      */
-    public function lastModified($fileUri, ParameterInterface $params = null)
+    public function lastModified($fileUri, ?ParameterInterface $params = null)
     {
         $result = $this->getLastModified($fileUri, $params);
 

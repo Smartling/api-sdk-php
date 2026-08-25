@@ -88,7 +88,7 @@ class BatchApi extends BaseApiAbstract
      *
      * @throws SmartlingApiException
      */
-    public function uploadBatchFile($realPath, $fileName, $fileType, $batchUid, UploadFileParameters $parameters = null) {
+    public function uploadBatchFile($realPath, $fileName, $fileType, $batchUid, ?UploadFileParameters $parameters = null) {
         // @TODO: let's pass file, fileUri and fileType in UploadFileParameters.
         // In this case we could get rid of passing these variables into this
         // method. But this approach requires changes in UploadFileParameters
@@ -121,7 +121,7 @@ class BatchApi extends BaseApiAbstract
      *
      * @throws SmartlingApiException
      */
-    public function executeBatch($batchUid, ExecuteBatchParameters $parameters = null)
+    public function executeBatch($batchUid, ?ExecuteBatchParameters $parameters = null)
     {
         $endpoint = \vsprintf('batches/%s', [$batchUid]);
 

@@ -19,8 +19,8 @@ class BatchApiV2 extends BaseApiAbstract
     public function __construct(
         AuthApiInterface $authProvider,
         string $projectId,
-        LoggerInterface $logger = null,
-        ClientInterface $client = null
+        ?LoggerInterface $logger = null,
+        ?ClientInterface $client = null
     )
     {
         if ($client === null) {
@@ -33,7 +33,7 @@ class BatchApiV2 extends BaseApiAbstract
     /**
      * @throws SmartlingApiException
      */
-    public function cancelBatchFile(string $batchUid, string $fileUri, string $reason = null): void
+    public function cancelBatchFile(string $batchUid, string $fileUri, ?string $reason = null): void
     {
         if ($batchUid === '') {
             throw new \UnexpectedValueException('BatchUid cannot be empty.');
